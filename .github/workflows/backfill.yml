@@ -19,9 +19,11 @@ jobs:
       contents: write
 
     steps:
-      - uses: actions/checkout@v6          # ← Updated to latest (Node 24 compatible)
+      - uses: actions/checkout@v6          # Latest stable version
+        with:
+          fetch-depth: 0                    # Recommended for backfill workflows (allows proper history)
 
-      - uses: actions/setup-python@v6     # ← Already good, but confirmed latest
+      - uses: actions/setup-python@v6
         with:
           python-version: '3.11'
 
@@ -38,10 +40,13 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+          
           git add data/history.json
+          
           if git diff --staged --quiet; then
-            echo "No changes to commit"
+            echo "✅ No changes to commit"
           else
             git commit -m "📦 Backfill ${{ github.event.inputs.start_date }}"
             git push
+            echo "✅ Successfully committed and pushed changes"
           fi
