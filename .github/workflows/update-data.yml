@@ -10,16 +10,21 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v6     # ← Updated (supports Node 24)
+      
+      - uses: actions/setup-python@v6   # ← Updated (supports Node 24)
         with:
           python-version: '3.11'
+
       - run: pip install requests
+
       - name: Fetch DialFire data
         env:
           DIALFIRE_CAMPAIGNS: ${{ secrets.DIALFIRE_CAMPAIGNS }}
         run: python scripts/fetch_dialfire.py
+
       - name: Commit data
         run: |
           git config user.name "github-actions[bot]"
