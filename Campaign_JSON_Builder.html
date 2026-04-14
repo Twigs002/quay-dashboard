@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>DialFire Campaign JSON Builder</title>
+<style>
+:root{
+  --navy:#0D1B2A;--navy2:#1A3050;--gold:#C9A84C;--gold-l:#F0D98B;
+  --light:#F0F4F8;--card:#fff;--green:#2F855A;--green-l:#C6F6D5;
+  --red:#C53030;--red-l:#FED7D7;--border:#E2E8F0;--muted:#718096;
+  --r:10px;--sh:0 2px 16px rgba(13,27,42,.09);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Arial,sans-serif;background:var(--light);color:#1A202C;min-height:100vh}
+
+header{background:linear-gradient(135deg,var(--navy),var(--navy2));padding:0 28px;
+  height:60px;display:flex;align-items:center;gap:14px;box-shadow:0 2px 10px rgba(0,0,0,.3)}
+.logo-ic{width:32px;height:32px;background:var(--gold);border-radius:7px;
+  display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+header h1{color:#fff;font-size:16px;font-weight:700}
+header p{color:var(--gold-l);font-size:10px;letter-spacing:.8px;text-transform:uppercase}
+
+main{max-width:1100px;margin:0 auto;padding:28px 20px 60px}
+
+/* INTRO CARD */
+.intro{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);
+  padding:22px 24px;margin-bottom:24px;border-left:4px solid var(--gold)}
+.intro h2{font-size:15px;font-weight:700;color:var(--navy);margin-bottom:8px}
+.intro p{font-size:13px;color:var(--muted);line-height:1.7}
+.steps{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+.step{background:var(--light);border-radius:7px;padding:10px 14px;font-size:12px;
+  color:var(--navy);font-weight:600;border:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.step-num{width:20px;height:20px;background:var(--navy);color:#fff;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0}
+
+/* TABLE */
+.table-wrap{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);
+  overflow:hidden;margin-bottom:20px}
+.table-head{padding:14px 20px;display:flex;justify-content:space-between;align-items:center;
+  background:var(--navy)}
+.table-head h2{color:#fff;font-size:13px;font-weight:700}
+.table-head span{color:var(--gold-l);font-size:11px}
+
+.rows-wrap{max-height:480px;overflow-y:auto}
+table{width:100%;border-collapse:collapse}
+thead th{background:#1c3a5c;color:#fff;padding:9px 12px;font-size:10px;
+  font-weight:700;text-transform:uppercase;letter-spacing:.5px;text-align:left;position:sticky;top:0}
+tbody tr{border-bottom:1px solid var(--border)}
+tbody tr:nth-child(even){background:#f9fafc}
+tbody tr:hover{background:#EBF8FF}
+tbody td{padding:7px 10px}
+
+input[type=text]{width:100%;border:1px solid var(--border);border-radius:6px;
+  padding:7px 10px;font-size:12px;color:#1A202C;background:#fff;outline:none;transition:.15s}
+input[type=text]:focus{border-color:var(--gold);background:#FFFDF5}
+input[type=text].token-input{font-family:monospace;font-size:11px;color:#553C9A;letter-spacing:.3px}
+input[type=text].err{border-color:var(--red);background:var(--red-l)}
+input[type=text].ok{border-color:var(--green);background:var(--green-l)}
+
+.del-btn{width:28px;height:28px;border-radius:6px;border:none;cursor:pointer;
+  background:var(--red-l);color:var(--red);font-size:14px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;transition:.15s;flex-shrink:0}
+.del-btn:hover{background:var(--red);color:#fff}
+.row-num{font-size:10px;color:var(--muted);font-weight:700;text-align:center;min-width:24px}
+
+/* ACTIONS */
+.actions{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;align-items:center}
+.btn{padding:9px 20px;border-radius:8px;border:none;cursor:pointer;
+  font-size:13px;font-weight:600;transition:.18s;display:flex;align-items:center;gap:6px}
+.btn-navy{background:var(--navy);color:#fff}.btn-navy:hover{background:var(--navy2)}
+.btn-gold{background:var(--gold);color:var(--navy)}.btn-gold:hover{filter:brightness(1.1)}
+.btn-green{background:var(--green);color:#fff}.btn-green:hover{filter:brightness(1.1)}
+.btn-outline{background:#fff;border:1px solid var(--border);color:var(--navy)}.btn-outline:hover{background:var(--light)}
+.btn-red{background:var(--red-l);color:var(--red);border:1px solid var(--red)}.btn-red:hover{background:var(--red);color:#fff}
+.count-badge{background:var(--gold-l);color:var(--navy);padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;margin-left:auto}
+
+/* BULK IMPORT */
+.bulk-card{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);
+  padding:20px 24px;margin-bottom:20px;border-left:4px solid var(--navy2)}
+.bulk-card h2{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:6px}
+.bulk-card p{font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.6}
+.bulk-textarea{width:100%;height:100px;border:1px solid var(--border);border-radius:7px;
+  padding:10px;font-size:12px;font-family:monospace;resize:vertical;outline:none;
+  background:#f8f9fa;color:#1A202C}
+.bulk-textarea:focus{border-color:var(--gold)}
+.bulk-actions{display:flex;gap:8px;margin-top:10px}
+
+/* OUTPUT */
+.output-card{background:var(--navy);border-radius:var(--r);box-shadow:var(--sh);
+  padding:0;overflow:hidden;margin-bottom:20px}
+.out-header{padding:14px 20px;display:flex;justify-content:space-between;align-items:center;
+  border-bottom:1px solid rgba(255,255,255,.1)}
+.out-header h2{color:#fff;font-size:13px;font-weight:700}
+.out-header-r{display:flex;gap:8px;align-items:center}
+.valid-badge{padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700}
+.valid-badge.ok{background:var(--green-l);color:var(--green)}
+.valid-badge.err{background:var(--red-l);color:var(--red)}
+.out-pre{background:#0a1520;color:#a8d8ea;font-family:monospace;font-size:11px;
+  padding:20px;max-height:300px;overflow-y:auto;white-space:pre;line-height:1.6}
+.copy-btn{padding:7px 18px;border-radius:7px;border:none;cursor:pointer;
+  background:var(--gold);color:var(--navy);font-size:12px;font-weight:700;transition:.15s}
+.copy-btn:hover{filter:brightness(1.1)}
+.copy-btn.copied{background:var(--green);color:#fff}
+
+/* GITHUB INSTRUCTIONS */
+.gh-card{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);
+  padding:20px 24px;border-left:4px solid var(--green)}
+.gh-card h2{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:10px}
+.gh-step{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);align-items:flex-start}
+.gh-step:last-child{border:none}
+.gh-num{width:24px;height:24px;background:var(--green);color:#fff;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;margin-top:1px}
+.gh-text{font-size:12px;color:var(--muted);line-height:1.7}
+.gh-text strong{color:var(--navy)}
+code{background:var(--light);padding:2px 6px;border-radius:4px;font-family:monospace;
+  font-size:11px;color:#553C9A;border:1px solid var(--border)}
+
+/* TOAST */
+.toast{position:fixed;bottom:20px;right:20px;background:var(--navy);color:#fff;
+  padding:11px 18px;border-radius:8px;font-size:13px;font-weight:600;
+  transform:translateY(60px);opacity:0;transition:.25s;z-index:999}
+.toast.show{transform:translateY(0);opacity:1}
+
+/* VALIDATION STATUS BAR */
+.val-bar{display:flex;gap:10px;align-items:center;padding:10px 16px;
+  background:var(--light);border-bottom:1px solid var(--border);flex-wrap:wrap}
+.val-item{font-size:11px;font-weight:600;display:flex;align-items:center;gap:4px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-ic">🔑</div>
+  <div>
+    <h1>DialFire Campaign JSON Builder</h1>
+    <p>Generate your DIALFIRE_CAMPAIGNS GitHub Secret</p>
+  </div>
+</header>
+
+<main>
+
+  <!-- INTRO -->
+  <div class="intro">
+    <h2>How this works</h2>
+    <p>Fill in your Campaign Name, Campaign ID, and Campaign Token for each of your DialFire campaigns below. When done, click <strong>Generate JSON</strong> — you'll get a single JSON string ready to paste into your GitHub Secret. The dashboard will then automatically pull data from all campaigns every morning.</p>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div>Add your campaigns below</div>
+      <div class="step"><div class="step-num">2</div>Click Generate JSON</div>
+      <div class="step"><div class="step-num">3</div>Copy the output</div>
+      <div class="step"><div class="step-num">4</div>Paste into GitHub Secret</div>
+    </div>
+  </div>
+
+  <!-- BULK IMPORT -->
+  <div class="bulk-card">
+    <h2>⚡ Quick Paste — Bulk Import</h2>
+    <p>Have your IDs and tokens in a spreadsheet or list? Paste them here — one campaign per line in any of these formats:<br/>
+    <code>CampaignName, ID, Token</code> &nbsp;or&nbsp; <code>ID, Token</code> &nbsp;or&nbsp; <code>ID Token</code> (tab separated)</p>
+    <textarea class="bulk-textarea" id="bulk-input" placeholder="Llamas, AC9EUK7GW85HJW3U, nkwWPjff5yxM64Qx...&#10;Proteas, XXXXXXXXXXXXXXXX, yourtoken123...&#10;Dragons, YYYYYYYYYYYYYYYY, anothertoken..."></textarea>
+    <div class="bulk-actions">
+      <button class="btn btn-navy" onclick="parseBulk()">⚡ Import from paste</button>
+      <button class="btn btn-outline" onclick="document.getElementById('bulk-input').value=''">Clear</button>
+    </div>
+  </div>
+
+  <!-- CAMPAIGN TABLE -->
+  <div class="table-wrap">
+    <div class="table-head">
+      <h2>Campaign List</h2>
+      <span id="tbl-count">0 campaigns</span>
+    </div>
+    <div class="val-bar" id="val-bar">
+      <span class="val-item">Add campaigns below to get started</span>
+    </div>
+    <div class="rows-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:36px">#</th>
+            <th style="width:200px">Campaign Name <span style="font-weight:400;opacity:.7">(optional but helpful)</span></th>
+            <th style="width:220px">Campaign ID</th>
+            <th>Campaign Token</th>
+            <th style="width:40px"></th>
+          </tr>
+        </thead>
+        <tbody id="campaign-rows"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ACTIONS -->
+  <div class="actions">
+    <button class="btn btn-navy" onclick="addRow()">➕ Add Campaign</button>
+    <button class="btn btn-gold" onclick="generateJSON()">⚙️ Generate JSON</button>
+    <button class="btn btn-outline" onclick="loadSample()">📋 Load Sample Data</button>
+    <button class="btn btn-red" onclick="clearAll()">🗑 Clear All</button>
+    <span class="count-badge" id="count-badge">0 campaigns</span>
+  </div>
+
+  <!-- OUTPUT -->
+  <div class="output-card" id="output-section" style="display:none">
+    <div class="out-header">
+      <h2>Generated JSON — ready to paste into GitHub Secret</h2>
+      <div class="out-header-r">
+        <span class="valid-badge" id="valid-badge">Validating…</span>
+        <button class="copy-btn" id="copy-btn" onclick="copyJSON()">📋 Copy</button>
+      </div>
+    </div>
+    <pre class="out-pre" id="json-output"></pre>
+  </div>
+
+  <!-- GITHUB INSTRUCTIONS -->
+  <div class="gh-card">
+    <h2>📌 Where to paste this in GitHub</h2>
+    <div class="gh-step">
+      <div class="gh-num">1</div>
+      <div class="gh-text">Go to your GitHub repo → click <strong>Settings</strong> (top tab bar)</div>
+    </div>
+    <div class="gh-step">
+      <div class="gh-num">2</div>
+      <div class="gh-text">In the left sidebar click <strong>Secrets and variables → Actions</strong></div>
+    </div>
+    <div class="gh-step">
+      <div class="gh-num">3</div>
+      <div class="gh-text">Click <strong>New repository secret</strong></div>
+    </div>
+    <div class="gh-step">
+      <div class="gh-num">4</div>
+      <div class="gh-text">Name: <code>DIALFIRE_CAMPAIGNS</code> — paste the generated JSON into the Value box → click <strong>Add secret</strong></div>
+    </div>
+    <div class="gh-step">
+      <div class="gh-num">5</div>
+      <div class="gh-text">Go to the <strong>Actions</strong> tab → click <strong>🔄 Daily DialFire Data Refresh</strong> → <strong>Run workflow</strong> → check for ✅</div>
+    </div>
+  </div>
+
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let campaigns = [];
+let rowId = 0;
+
+// ── INIT ─────────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  // Start with 5 empty rows
+  for(let i=0;i<5;i++) addRow();
+});
+
+// ── ADD ROW ──────────────────────────────────────────────────────
+function addRow(name='', id='', token='') {
+  const rid = ++rowId;
+  campaigns.push({ rid, name, id, token });
+  renderRows();
+}
+
+// ── RENDER ROWS ───────────────────────────────────────────────────
+function renderRows() {
+  const tbody = document.getElementById('campaign-rows');
+  tbody.innerHTML = campaigns.map((c, i) => `
+    <tr id="row-${c.rid}">
+      <td><div class="row-num">${i+1}</div></td>
+      <td><input type="text" placeholder="e.g. Llamas" value="${esc(c.name)}"
+        oninput="update(${c.rid},'name',this.value)" /></td>
+      <td><input type="text" placeholder="e.g. AC9EUK7GW85HJW3U" value="${esc(c.id)}"
+        oninput="update(${c.rid},'id',this.value)" class="${c.id&&c.id.length>8?'ok':c.id?'err':''}" /></td>
+      <td><input type="text" class="token-input ${c.token&&c.token.length>16?'ok':c.token?'err':''}"
+        placeholder="Paste full token here…" value="${esc(c.token)}"
+        oninput="update(${c.rid},'token',this.value)" /></td>
+      <td><button class="del-btn" onclick="delRow(${c.rid})" title="Remove">✕</button></td>
+    </tr>`).join('');
+
+  updateCounts();
+  updateValBar();
+}
+
+function esc(s){ return (s||'').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+
+function update(rid, field, val) {
+  const c = campaigns.find(c=>c.rid===rid);
+  if(c) c[field] = val.trim();
+  updateCounts();
+  updateValBar();
+  // Re-render just the input classes without full re-render (avoid losing focus)
+  const row = campaigns.find(c=>c.rid===rid);
+  if(!row) return;
+  const inputs = document.querySelectorAll(`#row-${rid} input`);
+  if(inputs[1]) inputs[1].className = row.id&&row.id.length>8?'ok':row.id?'err':'';
+  if(inputs[2]) inputs[2].className = 'token-input '+(row.token&&row.token.length>16?'ok':row.token?'err':'');
+}
+
+function delRow(rid) {
+  campaigns = campaigns.filter(c=>c.rid!==rid);
+  renderRows();
+}
+
+function clearAll() {
+  if(!confirm('Clear all campaigns?')) return;
+  campaigns = [];
+  rowId = 0;
+  for(let i=0;i<5;i++) addRow();
+  document.getElementById('output-section').style.display='none';
+}
+
+// ── COUNTS & VALIDATION BAR ───────────────────────────────────────
+function updateCounts() {
+  const filled = campaigns.filter(c=>c.id&&c.token).length;
+  const total  = campaigns.length;
+  document.getElementById('tbl-count').textContent = total + ' campaign' + (total===1?'':'s') + ' (' + filled + ' complete)';
+  document.getElementById('count-badge').textContent = filled + ' complete';
+}
+
+function updateValBar() {
+  const filled   = campaigns.filter(c=>c.id&&c.token);
+  const noId     = campaigns.filter(c=>c.token&&!c.id).length;
+  const noToken  = campaigns.filter(c=>c.id&&!c.token).length;
+  const empty    = campaigns.filter(c=>!c.id&&!c.token).length;
+  let html = '';
+  if(filled.length)  html += `<span class="val-item" style="color:var(--green)">✅ ${filled.length} ready</span>`;
+  if(noId)           html += `<span class="val-item" style="color:var(--red)">⚠️ ${noId} missing ID</span>`;
+  if(noToken)        html += `<span class="val-item" style="color:var(--red)">⚠️ ${noToken} missing token</span>`;
+  if(empty)          html += `<span class="val-item" style="color:var(--muted)">○ ${empty} empty rows</span>`;
+  if(!html)          html = '<span class="val-item">Add campaigns to begin</span>';
+  document.getElementById('val-bar').innerHTML = html;
+}
+
+// ── BULK IMPORT ───────────────────────────────────────────────────
+function parseBulk() {
+  const raw = document.getElementById('bulk-input').value.trim();
+  if(!raw){ toast('Paste something first!'); return; }
+
+  const lines = raw.split('\n').map(l=>l.trim()).filter(l=>l);
+  let added = 0;
+
+  lines.forEach(line => {
+    // Try comma, tab, semicolon separation
+    let parts = line.includes(',') ? line.split(',') :
+                line.includes('\t') ? line.split('\t') :
+                line.split(/\s+/);
+    parts = parts.map(p=>p.trim()).filter(p=>p);
+
+    let name='', id='', token='';
+    if(parts.length>=3){
+      [name, id, token] = parts;
+    } else if(parts.length===2){
+      [id, token] = parts;
+    } else if(parts.length===1){
+      id = parts[0];
+    }
+    if(id||token){
+      // Fill first empty row or add new one
+      const emptyRow = campaigns.find(c=>!c.id&&!c.token);
+      if(emptyRow){
+        emptyRow.name=name; emptyRow.id=id; emptyRow.token=token;
+      } else {
+        const rid=++rowId;
+        campaigns.push({rid,name,id,token});
+      }
+      added++;
+    }
+  });
+
+  renderRows();
+  document.getElementById('bulk-input').value='';
+  toast(`✅ Imported ${added} campaign${added===1?'':'s'}`);
+}
+
+// ── SAMPLE DATA ───────────────────────────────────────────────────
+function loadSample() {
+  campaigns = [];
+  rowId = 0;
+  const samples = [
+    {name:'Llamas',      id:'AC9EUK7GW85HJW3U', token:'nkwWPjff5yxM64Qx168pflp81NH_SAMPLE_ONLY'},
+    {name:'Proteas',     id:'PROTEASIDEXAMPLE1', token:'proteas_token_example_paste_real_one_here'},
+    {name:'Lions',       id:'LIONSIDEXAMPLE123', token:'lions_token_example_paste_real_one_here_'},
+    {name:'Gladiators',  id:'GLADIATORSIDEX12',  token:'gladiators_token_example_paste_real____'},
+    {name:'Dragons',     id:'DRAGONSIDEXAMPLE1', token:'dragons_token_example_paste_real_one___'},
+  ];
+  samples.forEach(s=>{ campaigns.push({rid:++rowId,...s}); });
+  // Add 5 blank rows
+  for(let i=0;i<5;i++) campaigns.push({rid:++rowId,name:'',id:'',token:''});
+  renderRows();
+  toast('📋 Sample data loaded — replace with your real values');
+}
+
+// ── GENERATE JSON ─────────────────────────────────────────────────
+function generateJSON() {
+  const valid = campaigns.filter(c=>c.id&&c.token);
+  if(!valid.length){
+    toast('❌ Add at least one campaign with an ID and Token first.');
+    return;
+  }
+
+  const arr = valid.map(c=>({
+    id:    c.id,
+    token: c.token,
+    ...(c.name ? {name: c.name} : {})
+  }));
+
+  const json = JSON.stringify(arr, null, 2);
+  document.getElementById('json-output').textContent = json;
+  document.getElementById('output-section').style.display='block';
+
+  // Validate JSON
+  try {
+    JSON.parse(json);
+    document.getElementById('valid-badge').textContent = `✅ Valid JSON — ${valid.length} campaigns`;
+    document.getElementById('valid-badge').className = 'valid-badge ok';
+  } catch {
+    document.getElementById('valid-badge').textContent = '❌ Invalid JSON';
+    document.getElementById('valid-badge').className = 'valid-badge err';
+  }
+
+  document.getElementById('output-section').scrollIntoView({behavior:'smooth', block:'start'});
+  toast(`✅ Generated JSON for ${valid.length} campaign${valid.length===1?'':'s'}`);
+}
+
+// ── COPY ──────────────────────────────────────────────────────────
+function copyJSON() {
+  const text = document.getElementById('json-output').textContent;
+  navigator.clipboard.writeText(text).then(()=>{
+    const btn = document.getElementById('copy-btn');
+    btn.textContent = '✅ Copied!';
+    btn.classList.add('copied');
+    setTimeout(()=>{ btn.textContent='📋 Copy'; btn.classList.remove('copied'); }, 2500);
+    toast('📋 JSON copied to clipboard!');
+  }).catch(()=>{
+    // Fallback
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    toast('📋 Copied!');
+  });
+}
+
+// ── TOAST ─────────────────────────────────────────────────────────
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 3000);
+}
+</script>
+</body>
+</html>
