@@ -19,8 +19,7 @@ jobs:
 
       - name: Fetch DialFire data
         env:
-          DIALFIRE_TENANT_ID: ${{ secrets.DIALFIRE_TENANT_ID }}
-          DIALFIRE_TENANT_TOKEN: ${{ secrets.DIALFIRE_TENANT_TOKEN }}
+          DIALFIRE_CAMPAIGNS: ${{ secrets.DIALFIRE_CAMPAIGNS }}
         run: python scripts/fetch_dialfire.py
 
       - name: Commit data
