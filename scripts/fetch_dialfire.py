@@ -1,24 +1,16 @@
 """
-DialFire Multi-Campaign -> weekly_data.json fetcher
-Uses the correct DialFire REST API as confirmed by DialFire support.
-group0=date&group1=user is required (date must come first).
-Response data lives in raw["groups"] as a nested date->user tree.
+DialFire fetcher - uses tenant API to auto-discover all campaigns,
+then fetches editsDef_v2 report per campaign using Bearer auth.
 """
 
 import os, json, time, requests
 from datetime import datetime, timedelta, timezone
 
-raw_campaigns = os.environ.get("DIALFIRE_CAMPAIGNS", "[]")
-try:
-    CAMPAIGNS = json.loads(raw_campaigns)
-except json.JSONDecodeError as e:
-    print(f"ERROR Could not parse DIALFIRE_CAMPAIGNS secret: {e}")
-    raise
+TENANT_ID    = os.environ.get("DIALFIRE_TENANT_ID", "")
+TENANT_TOKEN = os.environ.get("DIALFIRE_TENANT_TOKEN", "")
 
-if not CAMPAIGNS:
-    raise ValueError("DIALFIRE_CAMPAIGNS secret is empty.")
-
-print(f"Loaded {len(CAMPAIGNS)} campaigns from secret")
+if not TENANT_ID or not TENANT_TOKEN:
+    raise ValueError("DIALFIRE_TENANT_ID and DIALFIRE_TENANT_TOKEN secrets are required.")
 
 today    = datetime.now(timezone.utc).date()
 last_mon = today - timedelta(days=today.weekday() + 7)
@@ -35,62 +27,65 @@ def is_rm(name):
     n = name.lower()
     return any(rm.lower() in n or n in rm.lower() for rm in RM_NAMES)
 
-def fetch_campaign(campaign):
-    cid   = campaign["id"]
-    token = campaign["token"]
-    label = campaign.get("name", cid)
-    base  = f"https://api.dialfire.com/api/campaigns/{cid}"
+def get_all_campaigns():
+    """Use tenant API to get all campaigns + their tokens automatically."""
+    url = f"https://api.dialfire.com/api/tenants/{TENANT_ID}/campaigns/"
+    r = requests.get(url, headers={"Authorization": f"Bearer {TENANT_TOKEN}"}, timeout=30)
+    print(f"Tenant campaigns fetch -> HTTP {r.status_code}")
+    if r.status_code != 200:
+        print(f"ERROR: {r.text[:300]}")
+        return []
+    data = r.json()
+    campaigns = data if isinstance(data, list) else data.get("data", data.get("campaigns", []))
+    print(f"Found {len(campaigns)} campaigns via tenant API")
+    return campaigns
 
-    attempts = [
-        ("editsDef_v2", "metadata", "_token_",      {"days": "7"}),
-        ("editsDef_v2", "metadata", "_token_",      {"from": DATE_FROM, "to": DATE_TO}),
-        ("editsDef_v2", "report",   "access_token", {"from": DATE_FROM, "to": DATE_TO}),
-        ("dialerStat",  "report",   "access_token", {"from": DATE_FROM, "to": DATE_TO}),
-        ("dialerStat",  "metadata", "_token_",      {"days": "7"}),
-    ]
+def fetch_report(campaign):
+    cid   = campaign.get("id") or campaign.get("campaign_id") or campaign.get("_id", "")
+    token = campaign.get("token") or campaign.get("access_token") or campaign.get("campaignToken", "")
+    label = campaign.get("name") or campaign.get("label") or cid
 
-    try:
-        for template, path_type, token_key, date_params in attempts:
-            params = {
-                "asTree":  "true",
-                "group0":  "date",
-                "group1":  "user",
-                "column0": "completed",
-                "column1": "success",
-                "column2": "workTime",
-                token_key: token,
-                **date_params,
-            }
-            if template == "dialerStat":
-                params["column0"] = "count"
-                params["column1"] = "connects"
-
-            url = f"{base}/reports/{template}/{path_type}/de_DE"
-            r = requests.get(url, params=params, timeout=30)
-            print(f"  [{label}] {template}/{path_type} ({token_key}) -> HTTP {r.status_code}")
-
-            if r.status_code == 401:
-                print(f"  WARNING [{label}] 401 Unauthorized - check token")
-                return []
-            if r.status_code in (403, 404):
-                continue
-            if r.status_code != 200:
-                print(f"  [{label}] HTTP {r.status_code}: {r.text[:200]}")
-                continue
-
-            raw  = r.json()
-            rows = extract_rows(raw, label)
-            if rows:
-                print(f"  OK [{label}] {len(rows)} rows via {template}/{path_type}")
-                return rows
-            else:
-                print(f"  [{label}] {template}/{path_type} returned 0 rows - trying next")
-
-        print(f"  FAIL [{label}] No data from any combination")
+    if not cid or not token:
+        print(f"  SKIP — missing id or token in: {list(campaign.keys())}")
         return []
 
+    url = f"https://api.dialfire.com/api/campaigns/{cid}/reports/editsDef_v2/report/de_DE"
+    headers = {"Authorization": f"Bearer {token}"}
+    params  = {
+        "asTree":  "true",
+        "group0":  "date",
+        "group1":  "user",
+        "column0": "completed",
+        "column1": "success",
+        "column2": "workTime",
+        "from":    DATE_FROM,
+        "to":      DATE_TO,
+    }
+
+    try:
+        r = requests.get(url, headers=headers, params=params, timeout=30)
+        print(f"  [{label}] editsDef_v2/report -> HTTP {r.status_code}")
+
+        if r.status_code in (401, 403):
+            print(f"  [{label}] Auth failed — {r.text[:100]}")
+            return []
+        if r.status_code == 500:
+            # Try without columns — let DialFire return defaults
+            params2 = {"asTree": "true", "group0": "date", "group1": "user",
+                       "from": DATE_FROM, "to": DATE_TO}
+            r = requests.get(url, headers=headers, params=params2, timeout=30)
+            print(f"  [{label}] retry without columns -> HTTP {r.status_code}")
+        if r.status_code != 200:
+            print(f"  [{label}] HTTP {r.status_code}: {r.text[:150]}")
+            return []
+
+        raw  = r.json()
+        rows = extract_rows(raw, label)
+        print(f"  [{label}] {len(rows)} agent rows")
+        return rows
+
     except Exception as e:
-        print(f"  FAIL [{label}] Error: {e}")
+        print(f"  [{label}] Error: {e}")
         return []
 
 def extract_rows(raw, label):
@@ -98,13 +93,16 @@ def extract_rows(raw, label):
         return flatten_groups(raw)
     if isinstance(raw, dict):
         if "groups" in raw:
-            print(f"    [{label}] Parsing groups tree...")
-            return flatten_groups(raw["groups"])
-        if "data" in raw and isinstance(raw["data"], list):
-            return raw["data"]
-        if "rows" in raw:
-            return raw["rows"]
-        print(f"    [{label}] Response keys: {list(raw.keys())}")
+            g = raw["groups"]
+            print(f"    [{label}] groups: {len(g) if isinstance(g, list) else type(g).__name__} items")
+            if isinstance(g, list) and g:
+                print(f"    [{label}] First group sample: {str(g[0])[:150]}")
+            return flatten_groups(g)
+        for key in ("data", "rows", "items", "result"):
+            if key in raw and isinstance(raw[key], list):
+                return raw[key]
+        print(f"    [{label}] Unexpected response keys: {list(raw.keys())}")
+        print(f"    [{label}] Response sample: {str(raw)[:300]}")
     return []
 
 def flatten_groups(groups, depth=0):
@@ -151,7 +149,7 @@ def parse_row(row, campaign_name):
                 except: pass
         return 0.0
 
-    calls     = safe_int("completed", "total_calls", "calls", "count", "connects")
+    calls     = safe_int("completed", "calls", "count", "connects")
     success   = safe_int("success", "total_success")
     rental    = safe_int("RENTAL_LEAD", "rental_lead", "rental")
     seller    = safe_int("LEAD", "seller_lead", "seller")
@@ -186,24 +184,29 @@ def div_string(campaigns_list):
 
 def main():
     print(f"\n{'='*55}")
-    print(f"DialFire Multi-Campaign Fetcher")
+    print(f"DialFire Tenant-based Fetcher")
     print(f"Date: {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}")
     print(f"Week: {DATE_FROM} to {DATE_TO}")
-    print(f"Campaigns: {len(CAMPAIGNS)}")
+    print(f"Tenant: {TENANT_ID}")
     print(f"{'='*55}\n")
 
+    campaigns = get_all_campaigns()
+    if not campaigns:
+        print("No campaigns found — check DIALFIRE_TENANT_ID and DIALFIRE_TENANT_TOKEN")
+        return
+
     all_rows = []
-    for i, campaign in enumerate(CAMPAIGNS, 1):
-        label = campaign.get("name", campaign["id"])
-        print(f"[{i}/{len(CAMPAIGNS)}] {label}")
-        rows = fetch_campaign(campaign)
+    for i, campaign in enumerate(campaigns, 1):
+        label = campaign.get("name") or campaign.get("label") or campaign.get("id", f"Campaign {i}")
+        print(f"[{i}/{len(campaigns)}] {label}")
+        rows = fetch_report(campaign)
         for row in rows:
             parsed = parse_row(row, label)
             if parsed["calls"] > 0:
                 all_rows.append(parsed)
-        time.sleep(0.3)
+        time.sleep(0.2)
 
-    print(f"\nRaw rows fetched: {len(all_rows)}")
+    print(f"\nRaw rows: {len(all_rows)}")
     agents = merge_agents(all_rows)
     print(f"Unique agents: {len(agents)}")
 
