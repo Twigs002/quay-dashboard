@@ -95,9 +95,15 @@ def fetch_report(campaign):
 
     rows = []
 
-    # ── A: dialerStat/report — MINIMAL params, no grouping ────────
-    for template in ("dialerStat", "editsDef_v2", "activities"):
-        url  = f"{base}/reports/{template}/report/de_DE/Africa/Johannesburg"
+    # ── LookerStudio uses "Processing" report type ─────────────────
+    # API template names to try for the "Processing" report
+    PROCESSING_TEMPLATES = ("processing", "processDef", "editsDef", "editsDef_v2")
+    STAT_TEMPLATES       = ("dialerStat",)
+
+    # ── A: "Processing" /report/ — MINIMAL (no grouping) ──────────
+    # Exactly as LookerStudio connector would call it
+    for template in PROCESSING_TEMPLATES:
+        url = f"{base}/reports/{template}/report/de_DE/Africa/Johannesburg"
         params = {
             "access_token": token,
             "timespan":     f"0-{DAYS_BACK}day",
@@ -106,9 +112,9 @@ def fetch_report(campaign):
         if rows:
             return rows
 
-    # ── B: dialerStat/report — group0=user (no date nesting) ──────
-    for template in ("dialerStat", "editsDef_v2"):
-        url  = f"{base}/reports/{template}/report/de_DE/Africa/Johannesburg"
+    # ── B: "Processing" /report/ — group0=user ────────────────────
+    for template in PROCESSING_TEMPLATES:
+        url = f"{base}/reports/{template}/report/de_DE/Africa/Johannesburg"
         params = {
             "access_token": token,
             "timespan":     f"0-{DAYS_BACK}day",
@@ -118,23 +124,20 @@ def fetch_report(campaign):
         if rows:
             return rows
 
-    # ── C: dialerStat/report — full tree (date+user) ──────────────
-    for template in ("dialerStat", "editsDef_v2"):
-        url  = f"{base}/reports/{template}/report/de_DE/Africa/Johannesburg"
+    # ── C: dialerStat /report/ — minimal ──────────────────────────
+    for template in STAT_TEMPLATES:
+        url = f"{base}/reports/{template}/report/de_DE/Africa/Johannesburg"
         params = {
             "access_token": token,
             "timespan":     f"0-{DAYS_BACK}day",
-            "asTree":       "true",
-            "group0":       "date",
-            "group1":       "user",
         }
-        rows = _try_fetch(url, params, label, f"{template}/report[tree]")
+        rows = _try_fetch(url, params, label, f"{template}/report[minimal]")
         if rows:
             return rows
 
-    # ── D: editsDef_v2/metadata — group0=user (no date nesting) ───
-    for template in ("editsDef_v2", "dialerStat", "activities"):
-        url  = f"{base}/reports/{template}/metadata/de_DE"
+    # ── D: "Processing" /metadata/ — group0=user ──────────────────
+    for template in PROCESSING_TEMPLATES:
+        url = f"{base}/reports/{template}/metadata/de_DE"
         params = {
             "_token_": token,
             "days":    str(DAYS_BACK),
@@ -144,9 +147,22 @@ def fetch_report(campaign):
         if rows:
             return rows
 
-    # ── E: editsDef_v2/metadata — full tree (date+user) ───────────
+    # ── E: "Processing" /metadata/ — from/to date range ───────────
+    for template in PROCESSING_TEMPLATES:
+        url = f"{base}/reports/{template}/metadata/de_DE"
+        params = {
+            "_token_": token,
+            "from":    DATE_FROM,
+            "to":      DATE_TO,
+            "group0":  "user",
+        }
+        rows = _try_fetch(url, params, label, f"{template}/metadata[from/to]")
+        if rows:
+            return rows
+
+    # ── F: Full tree (date+user) fallback ─────────────────────────
     for template in ("editsDef_v2", "dialerStat"):
-        url  = f"{base}/reports/{template}/metadata/de_DE"
+        url = f"{base}/reports/{template}/metadata/de_DE"
         params = {
             "_token_": token,
             "days":    str(DAYS_BACK),
@@ -155,19 +171,6 @@ def fetch_report(campaign):
             "group1":  "user",
         }
         rows = _try_fetch(url, params, label, f"{template}/metadata[tree]")
-        if rows:
-            return rows
-
-    # ── F: /metadata/ with from/to date range ─────────────────────
-    for template in ("editsDef_v2", "dialerStat"):
-        url  = f"{base}/reports/{template}/metadata/de_DE"
-        params = {
-            "_token_": token,
-            "from":    DATE_FROM,
-            "to":      DATE_TO,
-            "group0":  "user",
-        }
-        rows = _try_fetch(url, params, label, f"{template}/metadata[from/to]")
         if rows:
             return rows
 
@@ -215,12 +218,9 @@ def _try_fetch(url, params, label, tag):
         try:
             raw = r.json()
         except Exception:
-            # Might be CSV — try parsing as plain text rows
             text = r.text.strip()
-            if "\n" in text:
-                print(f"{status_line}  (non-JSON text, {len(text)} chars — skipping)")
-            else:
-                print(f"{status_line}  (not JSON)")
+            ct   = r.headers.get("Content-Type", "?")
+            print(f"{status_line}  (not JSON, content-type={ct}, preview: {text[:120]!r})")
             return []
 
         rows = extract_rows(raw, label, tag)
