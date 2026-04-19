@@ -2,47 +2,56 @@
 DialFire Multi-Campaign -> weekly_data.json fetcher
 =====================================================
 Uses tenant API to discover all campaigns, then fetches
-per-campaign reports.
+per-campaign dialer statistics via the dialerStat report.
+
+KEY FINDING from logs:
+  - /report/ endpoints return CSV (text/csv), not JSON
+  - /metadata/ endpoints return JSON but track "edits" not calls
+  - dialerStat/report returns HTTP 200 with CSV containing actual call data
+  - We must parse CSV to get real call counts
 
 Secrets required:
   DIALFIRE_TENANT_ID    - e.g. 3f88c548
   DIALFIRE_TENANT_TOKEN - tenant-level Bearer token
 """
 
-import os, json, time, requests
+import os, json, time, requests, csv, io
 from datetime import datetime, timedelta, timezone
+
 
 TENANT_ID    = os.environ.get("DIALFIRE_TENANT_ID", "").strip()
 TENANT_TOKEN = os.environ.get("DIALFIRE_TENANT_TOKEN", "").strip()
 
+
 if not TENANT_ID or not TENANT_TOKEN:
     raise ValueError(
-        "DIALFIRE_TENANT_ID and DIALFIRE_TENANT_TOKEN secrets must be set.\n"
-        "  DIALFIRE_TENANT_ID    = 3f88c548\n"
-        "  DIALFIRE_TENANT_TOKEN = your tenant token"
+        "DIALFIRE_TENANT_ID and DIALFIRE_TENANT_TOKEN secrets must be set."
     )
 
-# ── Date range: last full Mon–Sun week ────────────────────────────
+
+# ── Date range: last full Mon-Sun week ───────────────────────────
 today    = datetime.now(timezone.utc).date()
 last_mon = today - timedelta(days=today.weekday() + 7)
 last_sun = last_mon + timedelta(days=6)
 DATE_FROM = last_mon.strftime("%Y-%m-%d")
 DATE_TO   = last_sun.strftime("%Y-%m-%d")
+# days_back = how many days ago Monday was (from today)
+DAYS_BACK = (today - last_mon).days + 1   # e.g. Mon=7 days ago + Sun=1 => 8 days span
 
-# days_back: how many days to cover (covers last full week + buffer)
-DAYS_BACK = (today - last_mon).days + 1   # e.g. 8
 
-# ── Classify RM vs Fancy Caller ───────────────────────────────────
+# ── Classify RM vs Fancy Caller ──────────────────────────────────
 RM_NAMES = {
     "Gio", "NaomiCiza", "Kay-LeeOrphan", "BrandonNtini",
     "SadiqaCarelse", "DeclanT", "CameronPaulse",
 }
 
+
 def is_rm(name):
     n = name.lower()
     return any(rm.lower() in n or n in rm.lower() for rm in RM_NAMES)
 
-# ── Step 1: Discover all campaigns via tenant API ─────────────────
+
+# ── Step 1: Discover all campaigns via tenant API ────────────────
 def get_all_campaigns():
     url = f"https://api.dialfire.com/api/tenants/{TENANT_ID}/campaigns/"
     print(f"Fetching campaign list from tenant API...")
@@ -64,7 +73,8 @@ def get_all_campaigns():
         print(f"  FAIL tenant API: {e}")
         return []
 
-# ── Step 2: Fetch report for one campaign ─────────────────────────
+
+# ── Step 2: Fetch dialerStat report for one campaign (CSV) ──────
 def fetch_report(campaign):
     cid   = campaign.get("id", "")
     label = campaign.get("title") or campaign.get("name") or cid
@@ -75,108 +85,39 @@ def fetch_report(campaign):
 
     base = f"https://api.dialfire.com/api/campaigns/{cid}"
 
-    # ── Attempt order (most likely to work first) ─────────────────
-    #
-    # Key findings from DialFire support:
-    #   1. /report/ uses: access_token=, timespan=0-Nday, LOCALE MUST HAVE TIMEZONE
-    #      e.g. dialerStat/report/de_DE/Africa/Johannesburg?access_token=X&timespan=0-30day
-    #
-    #   2. /metadata/ uses: _token_=, days=N
-    #      e.g. editsDef_v2/metadata/de_DE?_token_=X&days=30
-    #
-    #   3. group0/group1 params APPEAR to cause 500 on /report/ — try WITHOUT first
-    #
-    # We try:
-    #   A) /report/ with timespan, NO group params (exactly as support example)
-    #   B) /report/ with timespan + group0=user (just user, no date)
-    #   C) /report/ with timespan + group0=date + group1=user + asTree
-    #   D) /metadata/ with days, group0=user (user-only grouping)
-    #   E) /metadata/ with days, group0=date + group1=user + asTree
+    # dialerStat/report returns CSV with actual call counts per user
+    # Use timespan parameter: "0-Nday" means last N days
+    # We try with group0=user to get per-agent breakdown
+    # Locale must include timezone per DialFire docs: de_DE/Africa/Johannesburg
+    locale = "de_DE/Africa/Johannesburg"
 
-    rows = []
+    attempts = [
+        # (url_suffix, params_extra, description)
+        (
+            f"{base}/reports/dialerStat/report/{locale}",
+            {"group0": "user", "timespan": f"0-{DAYS_BACK}day"},
+            "dialerStat/report[group=user]"
+        ),
+        (
+            f"{base}/reports/dialerStat/report/{locale}",
+            {"timespan": f"0-{DAYS_BACK}day"},
+            "dialerStat/report[minimal]"
+        ),
+        # Fallback: metadata endpoint returns JSON (but tracks edits not calls)
+        (
+            f"{base}/reports/dialerStat/metadata/{locale.split('/')[0]}",
+            {"days": str(DAYS_BACK), "group0": "user"},
+            "dialerStat/metadata[group=user]"
+        ),
+    ]
 
-    # ── LookerStudio uses "Processing" report type ─────────────────
-    # API template names to try for the "Processing" report
-    PROCESSING_TEMPLATES = ("processing", "processDef", "editsDef", "editsDef_v2")
-    STAT_TEMPLATES       = ("dialerStat",)
+    for url, extra_params, tag in attempts:
+        params = {"_token_": token}
+        params.update(extra_params)
 
-    # ── A: "Processing" /report/ — MINIMAL (no grouping) ──────────
-    # Exactly as LookerStudio connector would call it
-    for template in PROCESSING_TEMPLATES:
-        url = f"{base}/reports/{template}/report/de_DE/Africa/Johannesburg"
-        params = {
-            "access_token": token,
-            "timespan":     f"0-{DAYS_BACK}day",
-        }
-        rows = _try_fetch(url, params, label, f"{template}/report[minimal]")
-        if rows is None: return []  # 401 bad token — stop
-        if rows:
-            return rows
-
-    # ── B: "Processing" /report/ — group0=user ────────────────────
-    for template in PROCESSING_TEMPLATES:
-        url = f"{base}/reports/{template}/report/de_DE/Africa/Johannesburg"
-        params = {
-            "access_token": token,
-            "timespan":     f"0-{DAYS_BACK}day",
-            "group0":       "user",
-        }
-        rows = _try_fetch(url, params, label, f"{template}/report[group=user]")
-        if rows is None: return []  # 401 bad token — stop
-        if rows:
-            return rows
-
-    # ── C: dialerStat /report/ — minimal ──────────────────────────
-    for template in STAT_TEMPLATES:
-        url = f"{base}/reports/{template}/report/de_DE/Africa/Johannesburg"
-        params = {
-            "access_token": token,
-            "timespan":     f"0-{DAYS_BACK}day",
-        }
-        rows = _try_fetch(url, params, label, f"{template}/report[minimal]")
-        if rows is None: return []  # 401 bad token — stop
-        if rows:
-            return rows
-
-    # ── D: "Processing" /metadata/ — group0=user ──────────────────
-    for template in PROCESSING_TEMPLATES:
-        url = f"{base}/reports/{template}/metadata/de_DE"
-        params = {
-            "_token_": token,
-            "days":    str(DAYS_BACK),
-            "group0":  "user",
-        }
-        rows = _try_fetch(url, params, label, f"{template}/metadata[group=user]")
-        if rows is None: return []  # 401 bad token — stop
-        if rows:
-            return rows
-
-    # ── E: "Processing" /metadata/ — from/to date range ───────────
-    for template in PROCESSING_TEMPLATES:
-        url = f"{base}/reports/{template}/metadata/de_DE"
-        params = {
-            "_token_": token,
-            "from":    DATE_FROM,
-            "to":      DATE_TO,
-            "group0":  "user",
-        }
-        rows = _try_fetch(url, params, label, f"{template}/metadata[from/to]")
-        if rows is None: return []  # 401 bad token — stop
-        if rows:
-            return rows
-
-    # ── F: Full tree (date+user) fallback ─────────────────────────
-    for template in ("editsDef_v2", "dialerStat"):
-        url = f"{base}/reports/{template}/metadata/de_DE"
-        params = {
-            "_token_": token,
-            "days":    str(DAYS_BACK),
-            "asTree":  "true",
-            "group0":  "date",
-            "group1":  "user",
-        }
-        rows = _try_fetch(url, params, label, f"{template}/metadata[tree]")
-        if rows is None: return []  # 401 bad token — stop
+        rows = _try_fetch(url, params, label, tag)
+        if rows is None:
+            return []  # 401 bad token - stop
         if rows:
             return rows
 
@@ -184,34 +125,35 @@ def fetch_report(campaign):
     return []
 
 
+# ── HTTP fetch + parse (CSV or JSON) ────────────────────────────
 def _try_fetch(url, params, label, tag):
     """
     Make a request and return rows if successful, else [].
-    Handles HTTP 202 (async report generation) by polling up to 5 times.
-    Returns None on 401 (bad token — stop trying this campaign).
+    Handles HTTP 202 (async) by polling.
+    Handles both CSV and JSON responses.
+    Returns None on 401 (bad token).
     """
     try:
         r = requests.get(url, params=params, timeout=30)
         status_line = f"  [{label}] {tag} -> HTTP {r.status_code}"
 
-        # ── 202 Accepted: DialFire is building the report async ───
+        # ── 202: async report, poll ───────────────────────────
         if r.status_code == 202:
             print(f"{status_line}  (async, polling...)")
-            for attempt in range(6):
-                time.sleep(4)
+            for attempt in range(5):
+                time.sleep(5)
                 r = requests.get(url, params=params, timeout=30)
                 if r.status_code == 200:
                     break
                 if r.status_code == 202:
-                    print(f"    [{label}] still 202, attempt {attempt+1}/6...")
+                    print(f"    [{label}] still 202, attempt {attempt+1}/5...")
                     continue
-                # Any other code — give up on this attempt
                 break
             status_line = f"  [{label}] {tag} -> HTTP {r.status_code} (after poll)"
 
         if r.status_code == 401:
             print(f"{status_line}  (bad token)")
-            return None   # stop trying for this campaign
+            return None
         if r.status_code in (403, 404):
             print(f"{status_line}")
             return []
@@ -220,13 +162,22 @@ def _try_fetch(url, params, label, tag):
             print(f"{status_line}  {snippet}")
             return []
 
-        # HTTP 200 — parse
+        ct = r.headers.get("Content-Type", "")
+
+        # ── CSV response ──────────────────────────────────────
+        if "text/csv" in ct or "text/plain" in ct:
+            rows = parse_csv_response(r.text, label, tag)
+            if rows:
+                print(f"{status_line}  -> {len(rows)} CSV rows  ✓")
+            else:
+                print(f"{status_line}  -> 0 CSV rows (empty or no user column)")
+            return rows
+
+        # ── JSON response ─────────────────────────────────────
         try:
             raw = r.json()
         except Exception:
-            text = r.text.strip()
-            ct   = r.headers.get("Content-Type", "?")
-            print(f"{status_line}  (not JSON, content-type={ct}, preview: {text[:120]!r})")
+            print(f"{status_line}  (not JSON, content-type={ct}, preview: {r.text[:80]!r})")
             return []
 
         rows = extract_rows(raw, label, tag)
@@ -241,45 +192,80 @@ def _try_fetch(url, params, label, tag):
         return []
 
 
+# ── Parse CSV response into list of dicts ────────────────────────
+def parse_csv_response(text, label, tag):
+    """
+    DialFire CSV reports have a header row then data rows.
+    Typical dialerStat columns (may vary by locale/config):
+      User, Completed, Success, Work time, Waiting time, Talk time, ...
+    We normalise column names to lowercase with underscores.
+    """
+    if not text or not text.strip():
+        return []
+
+    try:
+        reader = csv.DictReader(io.StringIO(text), delimiter=";")
+        rows = []
+        for row in reader:
+            # Normalise keys: strip whitespace, lowercase
+            normalised = {k.strip().lower().replace(" ", "_"): v.strip()
+                          for k, v in row.items() if k}
+            if normalised:
+                rows.append(normalised)
+
+        if not rows:
+            # Try comma delimiter
+            reader2 = csv.DictReader(io.StringIO(text), delimiter=",")
+            for row in reader2:
+                normalised = {k.strip().lower().replace(" ", "_"): v.strip()
+                              for k, v in row.items() if k}
+                if normalised:
+                    rows.append(normalised)
+
+        # Print sample of column names for debugging
+        if rows:
+            sample_keys = list(rows[0].keys())[:10]
+            print(f"    [{label}] CSV columns: {sample_keys}")
+
+        return rows
+
+    except Exception as e:
+        print(f"    [{label}] CSV parse error: {e}")
+        return []
+
+
+# ── Parse JSON response shapes ────────────────────────────────────
 def extract_rows(raw, label, tag=""):
-    """Parse any DialFire response shape into a flat list of dicts."""
+    """Parse any DialFire JSON response shape into a flat list of dicts."""
     if isinstance(raw, dict):
-        keys    = list(raw.keys())[:8]
-        grp     = raw.get("groups")
+        keys = list(raw.keys())[:8]
+        grp  = raw.get("groups")
         grp_len = (len(grp) if isinstance(grp, list)
                    else "dict" if isinstance(grp, dict)
                    else type(grp).__name__ if grp is not None
                    else "missing")
         print(f"    [{label}] keys={keys}  groups={grp_len}")
 
-    # Plain list response
     if isinstance(raw, list):
         return flatten_groups(raw)
 
     if not isinstance(raw, dict):
         return []
 
-    # "groups" key — can be a list (tree) OR a dict
     if "groups" in raw:
         g = raw["groups"]
-
-        # ── List of nodes ─────────────────────────────────────────
         if isinstance(g, list):
             if g:
                 first_keys = list(g[0].keys()) if isinstance(g[0], dict) else []
                 print(f"    [{label}] first group keys: {first_keys}")
             return flatten_groups(g)
 
-        # ── Dict of nodes (keyed by user name or date) ────────────
-        # e.g. {"AgentName": {"completed": 5, "workTime": 3600}, ...}
-        # or   {"AgentName": {"groups": {...}, "values": {...}}, ...}
         if isinstance(g, dict) and g:
             print(f"    [{label}] groups is dict with {len(g)} keys, sample: {list(g.keys())[:5]}")
             rows = []
             for key, val in g.items():
                 if not isinstance(val, dict):
                     continue
-                # If the value itself has sub-groups, recurse
                 if "groups" in val:
                     sub = val["groups"]
                     if isinstance(sub, dict):
@@ -291,7 +277,6 @@ def extract_rows(raw, label, tag=""):
                     elif isinstance(sub, list):
                         rows.extend(flatten_groups(sub))
                 else:
-                    # Leaf: key is agent name, val contains metrics
                     values = val.get("values", val)
                     row = {"name": key}
                     if isinstance(values, dict):
@@ -299,12 +284,10 @@ def extract_rows(raw, label, tag=""):
                     rows.append(row)
             return rows
 
-    # Flat "data" or "rows" arrays
     for key in ("data", "rows", "records", "items", "result"):
         if key in raw and isinstance(raw[key], list):
             return raw[key]
 
-    # Single-row: top-level dict with a "key" field
     if "key" in raw:
         return [raw]
 
@@ -312,10 +295,7 @@ def extract_rows(raw, label, tag=""):
 
 
 def flatten_groups(groups, depth=0):
-    """
-    Recursively flatten DialFire groups tree into agent rows.
-    Each node: { key: str, values: {col: val}, groups: [...] }
-    """
+    """Recursively flatten DialFire groups tree into agent rows."""
     rows = []
     if depth > 6 or not isinstance(groups, list):
         return rows
@@ -327,7 +307,6 @@ def flatten_groups(groups, depth=0):
         if sub_groups and isinstance(sub_groups, list) and sub_groups:
             rows.extend(flatten_groups(sub_groups, depth + 1))
         else:
-            # Leaf node — this is an agent row
             key = node.get("key", "")
             row = {"name": key}
             if isinstance(values, dict):
@@ -338,20 +317,31 @@ def flatten_groups(groups, depth=0):
 
 # ── Parse one row into our standard schema ────────────────────────
 def parse_row(row, campaign_name):
+    """
+    Handles both JSON rows (from metadata) and CSV rows (from report).
+    CSV column names from dialerStat typically include:
+      'user', 'completed', 'success', 'work_time', 'rental_lead',
+      'seller_lead', 'got_email' (varies by campaign config)
+    """
+    # Get agent name - CSV uses 'user', JSON uses 'name'/'key'
     name = (
-        row.get("name") or row.get("key") or row.get("user") or
+        row.get("user") or row.get("name") or row.get("key") or
         row.get("agent_name") or row.get("username") or "Unknown"
     )
     if isinstance(name, dict):
         name = name.get("label") or name.get("value") or "Unknown"
     name = str(name).strip()
 
+    # Skip system/empty/total rows
+    if not name or name.lower() in ("unknown", "system", "", "total", "--"):
+        return None
+
     def safe_int(*keys):
         for k in keys:
             v = row.get(k)
-            if v is not None and v != "":
+            if v is not None and str(v).strip() not in ("", "-", "N/A"):
                 try:
-                    return int(float(str(v)))
+                    return int(float(str(v).replace(",", ".")))
                 except (ValueError, TypeError):
                     pass
         return 0
@@ -359,20 +349,25 @@ def parse_row(row, campaign_name):
     def safe_float(*keys):
         for k in keys:
             v = row.get(k)
-            if v is not None and v != "":
+            if v is not None and str(v).strip() not in ("", "-", "N/A"):
                 try:
-                    return float(str(v))
+                    return float(str(v).replace(",", "."))
                 except (ValueError, TypeError):
                     pass
         return 0.0
 
+    # CSV columns (dialerStat): completed, success, rental_lead, seller_lead,
+    #                            got_email, work_time (in seconds or hours)
+    # JSON columns (metadata):  completed, success, RENTAL_LEAD, SELLER_LEAD,
+    #                            GOT_EMAIL, workTime
     calls   = safe_int("completed", "total_calls", "calls", "count", "connects")
     success = safe_int("success", "total_success")
-    rental  = safe_int("RENTAL_LEAD", "rental_lead", "rental")
-    seller  = safe_int("SELLER_LEAD", "seller_lead", "seller")
-    email   = safe_int("GOT_EMAIL", "got_email", "email")
+    rental  = safe_int("rental_lead", "RENTAL_LEAD", "rental")
+    seller  = safe_int("seller_lead", "SELLER_LEAD", "seller")
+    email   = safe_int("got_email", "GOT_EMAIL", "email")
 
-    wt_raw    = safe_float("workTime", "work_time", "worktime", "dial_time")
+    wt_raw    = safe_float("work_time", "workTime", "worktime", "dial_time")
+    # If work_time > 1000, it's in seconds; otherwise it's already in hours
     work_time = round(wt_raw / 3600, 2) if wt_raw > 1000 else round(wt_raw, 2)
 
     return {
@@ -387,7 +382,7 @@ def parse_row(row, campaign_name):
     }
 
 
-# ── Merge agents across campaigns ─────────────────────────────────
+# ── Merge agents across campaigns ────────────────────────────────
 def merge_agents(all_rows):
     merged = {}
     for row in all_rows:
@@ -396,12 +391,12 @@ def merge_agents(all_rows):
             continue
         if name in merged:
             m = merged[name]
-            m["calls"]     += row["calls"]
-            m["success"]   += row["success"]
-            m["rental"]    += row["rental"]
-            m["seller"]    += row["seller"]
-            m["email"]     += row["email"]
-            m["workTime"]   = round(m["workTime"] + row["workTime"], 2)
+            m["calls"]    += row["calls"]
+            m["success"]  += row["success"]
+            m["rental"]   += row["rental"]
+            m["seller"]   += row["seller"]
+            m["email"]    += row["email"]
+            m["workTime"]  = round(m["workTime"] + row["workTime"], 2)
             m["_campaigns"] = list(set(m["_campaigns"] + row["_campaigns"]))
         else:
             merged[name] = dict(row)
@@ -412,7 +407,7 @@ def div_string(campaigns_list):
     return " / ".join(sorted(set(c for c in campaigns_list if c)))
 
 
-# ── Main ──────────────────────────────────────────────────────────
+# ── Main ─────────────────────────────────────────────────────────
 def main():
     print(f"\n{'='*60}")
     print(f"DialFire Multi-Campaign Fetcher  (tenant API)")
@@ -423,9 +418,8 @@ def main():
 
     campaigns = get_all_campaigns()
     if not campaigns:
-        raise RuntimeError("No campaigns found from tenant API — check DIALFIRE_TENANT_ID and DIALFIRE_TENANT_TOKEN")
+        raise RuntimeError("No campaigns found from tenant API")
 
-    # Only process active / non-hidden campaigns
     active = [c for c in campaigns if not c.get("hidden", False)]
     print(f"\nProcessing {len(active)} active campaigns (of {len(campaigns)} total)\n")
 
@@ -442,9 +436,9 @@ def main():
         rows = fetch_report(campaign)
         for row in rows:
             parsed = parse_row(row, label)
-            if parsed["calls"] > 0:
+            if parsed and parsed["calls"] > 0:
                 all_rows.append(parsed)
-        time.sleep(0.2)
+        time.sleep(0.3)
 
     print(f"\n{'─'*50}")
     print(f"Raw agent rows with calls > 0: {len(all_rows)}")
