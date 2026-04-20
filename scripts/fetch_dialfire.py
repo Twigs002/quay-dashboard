@@ -6,9 +6,8 @@ per-campaign agent statistics via the editsDef_v2 report.
 
 KEY FIX (DialFire support confirmed):
   - Use asTree=true  ->  API returns JSON  (NOT CSV)
-  - Use asTree=false ->  API returns CSV
-  - Correct endpoint: /reports/{template}/report/{locale}
-  - Auth: access_token={campaign_token}  (query param)
+  - JSON structure: {"groups": {user: {col0: val,...}}, "columnDefs": [...], "groupDefs": [...]}
+  - Must unwrap "groups" key and map col0/col1/... to columnDefs names
 
 Secrets required:
   DIALFIRE_TENANT_ID    - e.g. 3f88c548
@@ -54,13 +53,11 @@ BENCHMARKS = {
 
 # ── Tenant API: list all campaigns ───────────────────────────────────────────
 def get_all_campaigns():
-    # Try with trailing slash (matches the previously working URL)
     url     = f"https://api.dialfire.com/api/tenants/{TENANT_ID}/campaigns/"
     headers = {"Authorization": f"Bearer {TENANT_TOKEN}"}
 
     print(f"Fetching campaign list from tenant API...")
     print(f"  URL: {url.replace(TENANT_ID, '***')}")
-    print(f"  Token prefix: {TENANT_TOKEN[:8] if len(TENANT_TOKEN) >= 8 else '(too short)'}...")
 
     try:
         r = requests.get(url, headers=headers, timeout=30)
@@ -70,16 +67,13 @@ def get_all_campaigns():
             print(f"  Body: {r.text[:500]}")
             print()
             print("  *** TENANT TOKEN IS INVALID OR EXPIRED ***")
-            print("  Please update the DIALFIRE_TENANT_TOKEN secret in:")
-            print("  GitHub repo -> Settings -> Secrets and variables -> Actions")
+            print("  Update DIALFIRE_TENANT_TOKEN in: GitHub repo -> Settings -> Secrets -> Actions")
             print()
-            # Try with access_token as query param instead of Bearer header
-            print("  Trying with access_token as query param instead...")
+            print("  Trying access_token as query param instead...")
             r2 = requests.get(url, params={"access_token": TENANT_TOKEN}, timeout=30)
             print(f"  Tenant API (access_token param) -> HTTP {r2.status_code}")
             if r2.status_code == 200:
                 return _parse_campaigns(r2.json())
-            print(f"  Body: {r2.text[:200]}")
             return []
 
         if r.status_code != 200:
@@ -94,7 +88,6 @@ def get_all_campaigns():
 
 
 def _parse_campaigns(data):
-    """Parse the campaigns response (list or dict wrapper)."""
     if isinstance(data, list):
         return data
     if isinstance(data, dict):
@@ -108,9 +101,9 @@ def _parse_campaigns(data):
 # ── Fetch JSON report using asTree=true ──────────────────────────────────────
 def fetch_json_report(url, params, label, tag):
     """
-    Fetch a report with asTree=true to get JSON back.
-    Handles HTTP 202 (async, poll up to 6x with 5s delay).
-    Returns parsed JSON data or None on 401 (bad token).
+    Fetch a report with asTree=true to get JSON.
+    Handles HTTP 202 (async polling).
+    Returns (json_data, column_defs) tuple, or (None, None) on 401.
     """
     params = dict(params)
     params["asTree"] = "true"
@@ -133,96 +126,158 @@ def fetch_json_report(url, params, label, tag):
             status_line = f"  [{label}] {tag} -> HTTP {r.status_code} (after poll)"
 
         if r.status_code == 401:
-            print(f"{status_line}  (bad campaign token - skipping)")
-            return None
+            print(f"{status_line}  (bad token - skip)")
+            return None, None
 
-        if r.status_code == 500:
-            snippet = r.text[:100].replace('\n', ' ')
-            print(f"{status_line}  (server error: {snippet})")
-            return []
+        if r.status_code in (404, 500):
+            snippet = r.text[:80].replace('\n', ' ')
+            print(f"{status_line}  (skip: {snippet})")
+            return [], []
 
         if r.status_code != 200:
             print(f"{status_line}  (unexpected status)")
-            return []
+            return [], []
 
         ct = r.headers.get("Content-Type", "")
         print(f"{status_line}  ct={ct[:40]}")
 
         try:
             data = r.json()
-            return data
+            return data, None  # caller will extract columnDefs from data
         except Exception as e:
             print(f"    [{label}] JSON parse failed: {e}")
             print(f"    First 200 chars: {r.text[:200]}")
-            return []
+            return [], []
 
     except Exception as e:
         print(f"  [{label}] {tag} -> Exception: {e}")
-        return []
+        return [], []
 
 
-# ── Extract agent rows from JSON tree response ────────────────────────────────
-def extract_rows_from_tree(data, label):
+# ── Extract agent rows from DialFire asTree=true JSON ────────────────────────
+def extract_rows_from_tree(data, label, column_names):
     """
-    DialFire asTree=true JSON structure varies by grouping:
-      group0=user  ->  {user: {stats}}
-      group0=date&group1=user  ->  {date: {user: {stats}}}
-    Returns list of dicts: [{"name": user, "completed": N, ...}]
+    DialFire asTree=true returns:
+      {
+        "groups": {
+          "UserName": {"col0": 123, "col1": 45, ...},
+          "UserName2": {...},
+          ...
+        },
+        "groupDefs": ["user"],
+        "columnDefs": ["completed", "success", "successRate", "workTime", ...]
+      }
+
+    With group0=date, group1=user (nested):
+      {
+        "groups": {
+          "2026-04-13": {
+            "groups": {
+              "UserName": {"col0": 10, ...},
+              ...
+            }
+          },
+          ...
+        },
+        "groupDefs": ["date", "user"],
+        "columnDefs": [...]
+      }
+
+    column_names: list of column names from params (e.g. ["completed","success","workTime"])
+    Returns list of {"name": user, "completed": N, "success": N, "workTime": N, "successRate": R}
     """
     rows = []
 
-    if not isinstance(data, dict) or not data:
-        print(f"  [{label}] Empty or non-dict tree: {type(data)} len={len(str(data))}")
+    if not isinstance(data, dict):
+        print(f"  [{label}] Non-dict response: {type(data)}")
         return rows
 
-    # Unwrap "children" wrapper if present
-    if "children" in data and isinstance(data["children"], dict):
-        data = data["children"]
+    # Get columnDefs from the response (overrides our params if present)
+    col_defs = data.get("columnDefs", column_names or [])
+    group_defs = data.get("groupDefs", [])
+    groups = data.get("groups", {})
 
-    sample_keys = list(data.keys())[:3]
-    print(f"  [{label}] Tree keys sample: {sample_keys}")
+    print(f"  [{label}] groupDefs={group_defs}  columnDefs={col_defs[:6]}")
+
+    if not groups:
+        print(f"  [{label}] No 'groups' key or empty groups")
+        return rows
+
+    # Build colname->colN mapping
+    col_map = {name: f"col{i}" for i, name in enumerate(col_defs)}
+    print(f"  [{label}] col_map sample: {dict(list(col_map.items())[:5])}")
+
+    # Check depth: is top-level key a date or a user?
+    sample_keys = list(groups.keys())[:3]
+    print(f"  [{label}] groups keys sample: {sample_keys}")
 
     date_pattern = re.compile(r'^\d{4}-\d{2}-\d{2}$')
     looks_like_dates = bool(sample_keys) and all(
         date_pattern.match(str(k)) for k in sample_keys if k not in ('total', '--', '')
     )
 
-    if looks_like_dates:
-        # {date: {user: {stats}}}
+    if looks_like_dates and group_defs and len(group_defs) > 1:
+        # Nested: {date: {groups: {user: {colN: val}}}}
         user_agg = {}
-        for date_key, user_dict in data.items():
-            if date_key in ('total', '--', '') or not isinstance(user_dict, dict):
+        for date_key, date_data in groups.items():
+            if date_key in ('total', '--', ''):
                 continue
-            for user_key, stats in user_dict.items():
+            # date_data may be {"groups": {user: stats}, "columnDefs": [...]}
+            if isinstance(date_data, dict) and "groups" in date_data:
+                inner_groups = date_data["groups"]
+                inner_col_defs = date_data.get("columnDefs", col_defs)
+                inner_col_map = {name: f"col{i}" for i, name in enumerate(inner_col_defs)}
+            elif isinstance(date_data, dict):
+                inner_groups = date_data
+                inner_col_map = col_map
+            else:
+                continue
+
+            for user_key, stats in inner_groups.items():
                 if user_key in ('total', '--', '') or not isinstance(stats, dict):
                     continue
                 if user_key not in user_agg:
                     user_agg[user_key] = {"name": user_key, "completed": 0, "success": 0, "workTime": 0}
                 agg = user_agg[user_key]
-                agg["completed"] += _safe_int(stats.get("completed", stats.get("count", 0)))
-                agg["success"]   += _safe_int(stats.get("success", 0))
-                agg["workTime"]  += _safe_int(stats.get("workTime", 0))
+                agg["completed"] += _safe_int(_get_col(stats, inner_col_map, "completed", "count", 0))
+                agg["success"]   += _safe_int(_get_col(stats, inner_col_map, "success", None, 0))
+                agg["workTime"]  += _safe_int(_get_col(stats, inner_col_map, "workTime", None, 0))
+
         for agg in user_agg.values():
             if agg["completed"] > 0:
                 agg["successRate"] = round(agg["success"] / agg["completed"] * 100, 1)
             else:
                 agg["successRate"] = 0.0
         rows = list(user_agg.values())
+
     else:
-        # {user: {stats}}
-        for user_key, stats in data.items():
+        # Flat: {user: {colN: val}}
+        for user_key, stats in groups.items():
             if user_key in ('total', '--', '') or not isinstance(stats, dict):
                 continue
             rows.append({
                 "name":        user_key,
-                "completed":   _safe_int(stats.get("completed", stats.get("count", 0))),
-                "success":     _safe_int(stats.get("success", 0)),
-                "workTime":    _safe_int(stats.get("workTime", 0)),
-                "successRate": _safe_float(stats.get("successRate", stats.get("success_rate", 0))),
+                "completed":   _safe_int(_get_col(stats, col_map, "completed", "count", 0)),
+                "success":     _safe_int(_get_col(stats, col_map, "success", None, 0)),
+                "workTime":    _safe_int(_get_col(stats, col_map, "workTime", None, 0)),
+                "successRate": _safe_float(_get_col(stats, col_map, "successRate", "success_rate", 0)),
             })
 
-    print(f"  [{label}] Extracted {len(rows)} user rows from tree")
+    print(f"  [{label}] Extracted {len(rows)} user rows")
     return rows
+
+
+def _get_col(stats, col_map, *names):
+    """Get a value from stats dict using colN key, trying multiple column names. Last arg is default."""
+    default = names[-1]
+    for name in names[:-1]:
+        key = col_map.get(name)
+        if key and key in stats:
+            return stats[key]
+        # Also try direct name (in case stats uses named keys)
+        if name in stats:
+            return stats[name]
+    return default
 
 
 def _safe_int(v):
@@ -240,22 +295,22 @@ def _safe_float(v):
 
 # ── Parse a single agent row into dashboard format ───────────────────────────
 def parse_row(row, label):
-    name = str(row.get("name", row.get("user", row.get("key", "")))).strip()
+    name = str(row.get("name", row.get("user", ""))).strip()
     if not name or name.lower() in ("total", "--", "grand total"):
         return None
 
-    calls     = _safe_int(row.get("completed", row.get("count", 0)))
+    calls     = _safe_int(row.get("completed", row.get("count", row.get("calls", 0))))
     success   = _safe_int(row.get("success", 0))
     work_secs = _safe_int(row.get("workTime", 0))
 
     if calls == 0:
         return None
 
-    # workTime: DialFire returns seconds
+    # workTime in DialFire is seconds
     work_hrs = work_secs / 3600.0 if work_secs > 0 else 0
 
     cph = round(calls / work_hrs, 1) if work_hrs > 0 else 0
-    sr  = _safe_float(row.get("successRate", row.get("success_rate", 0)))
+    sr  = _safe_float(row.get("successRate", 0))
     if sr == 0 and calls > 0:
         sr = round(success / calls * 100, 1)
 
@@ -279,7 +334,6 @@ def fetch_report(campaign, index, total):
     label = f"{index+1}/{total} {cname[:25]}"
 
     if not token:
-        print(f"  [{label}] No campaign token - skipping")
         return []
 
     base = f"https://api.dialfire.com/api/campaigns/{cid}"
@@ -288,83 +342,52 @@ def fetch_report(campaign, index, total):
         "timespan":     f"0-{DAYS_BACK}day",
     }
 
-    # Strategy 1: editsDef_v2/report with group0=user
-    url1    = f"{base}/reports/editsDef_v2/report/{LOCALE}"
-    params1 = {
-        **base_params,
-        "group0":   "user",
-        "column0":  "completed",
-        "column1":  "success",
-        "column2":  "successRate",
-        "column3":  "workTime",
-        "column4":  "success_p_h",
-        "column5":  "completed_p_h",
-    }
-    data1 = fetch_json_report(url1, params1, label, "editsDef_v2/report[user]")
-    if data1 is None:
-        return []
+    col_names_edits  = ["completed", "success", "successRate", "workTime", "success_p_h", "completed_p_h"]
+    col_names_dialer = ["count", "connects", "answeringmachines", "norespons", "connectRate"]
+
+    # Strategy 1: editsDef_v2/report group0=user (flat, direct per-user)
+    url1 = f"{base}/reports/editsDef_v2/report/{LOCALE}"
+    p1   = {**base_params, "group0": "user",
+             "column0": "completed", "column1": "success", "column2": "successRate",
+             "column3": "workTime", "column4": "success_p_h", "column5": "completed_p_h"}
+    data1, _ = fetch_json_report(url1, p1, label, "editsDef_v2/report[user]")
+    if data1 is None: return []
     if data1:
-        rows = extract_rows_from_tree(data1, label)
-        if rows:
-            return rows
+        rows = extract_rows_from_tree(data1, label, col_names_edits)
+        if rows: return rows
 
-    # Strategy 2: dialerStat/report with group0=user
-    url2    = f"{base}/reports/dialerStat/report/{LOCALE}"
-    params2 = {
-        **base_params,
-        "group0":  "user",
-        "column0": "count",
-        "column1": "connects",
-        "column2": "answeringmachines",
-        "column3": "norespons",
-        "column4": "connectRate",
-    }
-    data2 = fetch_json_report(url2, params2, label, "dialerStat/report[user]")
-    if data2 is None:
-        return []
+    # Strategy 2: dialerStat/report group0=user
+    url2 = f"{base}/reports/dialerStat/report/{LOCALE}"
+    p2   = {**base_params, "group0": "user",
+             "column0": "count", "column1": "connects",
+             "column2": "answeringmachines", "column3": "norespons", "column4": "connectRate"}
+    data2, _ = fetch_json_report(url2, p2, label, "dialerStat/report[user]")
+    if data2 is None: return []
     if data2:
-        rows = extract_rows_from_tree(data2, label)
-        if rows:
-            return rows
+        rows = extract_rows_from_tree(data2, label, col_names_dialer)
+        if rows: return rows
 
-    # Strategy 3: editsDef_v2/metadata with group0=date group1=user
-    url3    = f"{base}/reports/editsDef_v2/metadata/{LOCALE}"
-    params3 = {
-        **base_params,
-        "group0":  "date",
-        "group1":  "user",
-        "column0": "completed",
-        "column1": "success",
-        "column2": "successRate",
-        "column3": "workTime",
-    }
-    data3 = fetch_json_report(url3, params3, label, "editsDef_v2/metadata[date,user]")
-    if data3 is None:
-        return []
+    # Strategy 3: editsDef_v2/metadata group0=date group1=user
+    url3 = f"{base}/reports/editsDef_v2/metadata/{LOCALE}"
+    p3   = {**base_params, "group0": "date", "group1": "user",
+             "column0": "completed", "column1": "success",
+             "column2": "successRate", "column3": "workTime"}
+    data3, _ = fetch_json_report(url3, p3, label, "editsDef_v2/metadata[date,user]")
+    if data3 is None: return []
     if data3:
-        rows = extract_rows_from_tree(data3, label)
-        if rows:
-            return rows
+        rows = extract_rows_from_tree(data3, label, ["completed","success","successRate","workTime"])
+        if rows: return rows
 
-    # Strategy 4: dialerStat/report with group0=date group1=user
-    url4    = f"{base}/reports/dialerStat/report/{LOCALE}"
-    params4 = {
-        **base_params,
-        "group0":  "date",
-        "group1":  "user",
-        "column0": "count",
-        "column1": "connects",
-        "column2": "connectRate",
-    }
-    data4 = fetch_json_report(url4, params4, label, "dialerStat/report[date,user]")
-    if data4 is None:
-        return []
+    # Strategy 4: dialerStat/report group0=date group1=user
+    url4 = f"{base}/reports/dialerStat/report/{LOCALE}"
+    p4   = {**base_params, "group0": "date", "group1": "user",
+             "column0": "count", "column1": "connects", "column2": "connectRate"}
+    data4, _ = fetch_json_report(url4, p4, label, "dialerStat/report[date,user]")
+    if data4 is None: return []
     if data4:
-        rows = extract_rows_from_tree(data4, label)
-        if rows:
-            return rows
+        rows = extract_rows_from_tree(data4, label, ["count","connects","connectRate"])
+        if rows: return rows
 
-    print(f"  [{label}] All strategies returned 0 rows")
     return []
 
 
@@ -379,7 +402,7 @@ def main():
     if not campaigns:
         print()
         print("FATAL: No campaigns returned from tenant API.")
-        print("Check that DIALFIRE_TENANT_TOKEN secret is valid and not expired.")
+        print("Check that DIALFIRE_TENANT_TOKEN is valid.")
         raise SystemExit(1)
 
     print(f"Found {len(campaigns)} campaigns total")
@@ -394,8 +417,8 @@ def main():
 
     print()
     print(f"Raw agent rows collected: {len(all_rows)}")
-    agent_rows_with_calls = [r for r in all_rows if r.get("calls", r.get("completed", 0)) > 0]
-    print(f"Raw agent rows with calls > 0: {len(agent_rows_with_calls)}")
+    rows_with_calls = [r for r in all_rows if _safe_int(r.get("completed", r.get("calls", 0))) > 0]
+    print(f"Raw agent rows with calls > 0: {len(rows_with_calls)}")
 
     merged = {}
     for row in all_rows:
@@ -418,8 +441,8 @@ def main():
 
     print(f"Unique agents after merge: {len(merged)}")
 
-    rm_agents     = []
-    fancy_agents  = []
+    rm_agents    = []
+    fancy_agents = []
     for name, agent in sorted(merged.items()):
         if name in RM_NAMES:
             rm_agents.append(agent)
@@ -441,12 +464,12 @@ def main():
             print(f"  {a['name']:25s} calls={a['calls']:4d}  cph={a['cph']:5.1f}  sr={a['successRate']:5.1f}%")
 
     weekly_data = {
-        "weekStart":    DATE_FROM,
-        "weekEnd":      DATE_TO,
-        "lastUpdated":  datetime.now(timezone.utc).isoformat(),
-        "benchmarks":   BENCHMARKS,
-        "rm":           rm_agents,
-        "fancy":        fancy_agents,
+        "weekStart":   DATE_FROM,
+        "weekEnd":     DATE_TO,
+        "lastUpdated": datetime.now(timezone.utc).isoformat(),
+        "benchmarks":  BENCHMARKS,
+        "rm":          rm_agents,
+        "fancy":       fancy_agents,
     }
 
     out_path = os.path.normpath(os.path.join(os.path.dirname(__file__), "..", "data", "weekly_data.json"))
