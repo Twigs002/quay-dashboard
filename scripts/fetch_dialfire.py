@@ -3,20 +3,9 @@ DialFire Campaign Stats -> weekly_data.json fetcher
 ====================================================
 Uses per-campaign tokens to fetch agent statistics.
 
-API endpoint (confirmed by DialFire support):
-  GET /api/campaigns/{campaign_id}/reports/{template}/report/{locale}
-  ?asTree=true  -> returns JSON
-  ?asTree=false -> returns CSV
-
-GitHub Secrets required:
-  DIALFIRE_TENANT_ID     - tenant id
-  DIALFIRE_TENANT_TOKEN  - tenant-level Bearer token
-
-  Per-campaign:
-  CAMPAIGN_1_ID          - campaign id  (e.g. DXX5XQHGZ3R4W6R3)
-  CAMPAIGN_1_TOKEN       - campaign-level access token
-  CAMPAIGN_2_ID          - campaign id  (e.g. N9EA67VHYX6HZHFG)
-  CAMPAIGN_2_TOKEN       - campaign-level access token
+Timespan format notes (discovered via testing):
+  Dialfire example uses: timespan=0-0day  (today only)
+  We try multiple formats to find one that returns data.
 """
 
 import os, json, re, time, datetime, pytz
@@ -139,11 +128,12 @@ def extract_rows_from_tree(data, label):
     print(f"  [{label}] DIAG keys={list(data.keys())}")
     print(f"  [{label}] DIAG groupDefs={group_names}")
     print(f"  [{label}] DIAG colNames={col_names}")
-    print(f"  [{label}] DIAG groups type={type(groups_raw).__name__} len={len(groups_raw) if hasattr(groups_raw,'__len__') else '?'}")
+    grp_len = len(groups_raw) if hasattr(groups_raw, '__len__') else '?'
+    print(f"  [{label}] DIAG groups type={type(groups_raw).__name__} len={grp_len}")
     if isinstance(groups_raw, dict) and groups_raw:
-        sample_k = list(groups_raw.keys())[:2]
+        sample_k = list(groups_raw.keys())[:3]
         for k in sample_k:
-            print(f"  [{label}] DIAG groups[{k!r}]={json.dumps(groups_raw[k])[:300]}")
+            print(f"  [{label}] DIAG groups[{repr(k)}]={json.dumps(groups_raw[k])[:300]}")
     elif isinstance(groups_raw, list) and groups_raw:
         print(f"  [{label}] DIAG groups[0]={json.dumps(groups_raw[0])[:300]}")
 
@@ -274,6 +264,44 @@ def parse_row(row):
     }
 
 
+# -- Probe timespan formats to find one that returns data ---------------------
+def probe_timespans(base, base_params_no_ts, label):
+    """
+    Try different timespan formats to find one that returns non-empty groups.
+    Returns (working_timespan, sample_data) or (None, None).
+    """
+    # Dialfire confirmed format in their docs: timespan=0-0day means today
+    # We need to find the right format for a 14-day lookback.
+    candidates = [
+        f"0-{DAYS_BACK}day",     # our current attempt
+        f"-{DAYS_BACK}-0day",    # negative start
+        f"0-0day",               # today only (confirmed working)
+        f"-1-0day",              # yesterday to today
+        f"-7-0day",              # last 7 days
+        f"0-1day",               # next 1 day (wrong direction?)
+    ]
+    for ts in candidates:
+        params = {**base_params_no_ts, "timespan": ts, "asTree": "true",
+                  "group0": "date", "column0": "count", "column1": "connects"}
+        data = fetch_json_report(
+            f"{base}/reports/dialerStat/report/{LOCALE}",
+            params, label, f"PROBE timespan={ts}"
+        )
+        if isinstance(data, dict) and data:
+            grp = data.get("groups", [])
+            if isinstance(grp, dict) and grp:
+                print(f"  [{label}] PROBE SUCCESS: timespan={ts} groups has {len(grp)} keys")
+                return ts, data
+            elif isinstance(grp, list) and grp:
+                print(f"  [{label}] PROBE SUCCESS: timespan={ts} groups has {len(grp)} items")
+                return ts, data
+            else:
+                print(f"  [{label}] PROBE: timespan={ts} groups empty (type={type(grp).__name__})")
+        if data is None:
+            break  # 403 - stop probing
+    return None, None
+
+
 # -- Fetch stats for one campaign ---------------------------------------------
 def fetch_report(campaign, index, total):
     cid   = campaign.get("id", "")
@@ -283,8 +311,19 @@ def fetch_report(campaign, index, total):
     if not cid or not token:
         return []
 
-    base        = f"{API_BASE}/api/campaigns/{cid}"
-    base_params = {"access_token": token, "timespan": f"0-{DAYS_BACK}day", "asTree": "true"}
+    base             = f"{API_BASE}/api/campaigns/{cid}"
+    base_params_no_ts = {"access_token": token}
+
+    # First: probe timespan formats to find the right one
+    print(f"  [{label}] Probing timespan formats...")
+    working_ts, _ = probe_timespans(base, base_params_no_ts, label)
+
+    if working_ts is None:
+        print(f"  [{label}] No working timespan found - using default 0-{DAYS_BACK}day")
+        working_ts = f"0-{DAYS_BACK}day"
+
+    base_params = {**base_params_no_ts, "timespan": working_ts, "asTree": "true"}
+    print(f"  [{label}] Using timespan={working_ts}")
 
     # Strategy 1: editsDef_v2 grouped by user
     data1 = fetch_json_report(
@@ -295,7 +334,7 @@ def fetch_report(campaign, index, total):
         label, "editsDef_v2/report[user]"
     )
     if data1 is None:
-        print(f"  [{label}] 403 on first call - campaign token invalid, skipping")
+        print(f"  [{label}] 403 - campaign token invalid, skipping")
         return []
     if isinstance(data1, dict) and data1:
         rows = extract_rows_from_tree(data1, label)
