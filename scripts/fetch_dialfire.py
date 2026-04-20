@@ -8,163 +8,95 @@ API endpoint (confirmed by DialFire support):
   ?asTree=true  -> returns JSON
   ?asTree=false -> returns CSV
 
-JSON response structure:
-  {
-    "groups": {user_name: {"col0": val, "col1": val, ...}}
-             OR [] if no data for this period
-             OR {date: {"groups": {user: {...}}}}
-    "groupDefs": [{"name": "user", ...}, ...]
-    "columnDefs": [{"name": "completed", ...}, ...]
-  }
-
 GitHub Secrets required:
-  DIALFIRE_TENANT_ID     - tenant id (e.g. 3f88c548)
-  DIALFIRE_TENANT_TOKEN  - tenant-level Bearer token (for campaign discovery)
+  DIALFIRE_TENANT_ID     - tenant id
+  DIALFIRE_TENANT_TOKEN  - tenant-level Bearer token
 
-  Per-campaign (preferred - faster, avoids 246-campaign scan):
+  Per-campaign:
   CAMPAIGN_1_ID          - campaign id  (e.g. DXX5XQHGZ3R4W6R3)
   CAMPAIGN_1_TOKEN       - campaign-level access token
   CAMPAIGN_2_ID          - campaign id  (e.g. N9EA67VHYX6HZHFG)
   CAMPAIGN_2_TOKEN       - campaign-level access token
 """
 
-import os, json, time, requests, re
-from datetime import datetime, timedelta, timezone
+import os, json, re, time, datetime, pytz
+import requests
 
-
-# ── Config ────────────────────────────────────────────────────────────────────
-TENANT_ID    = os.environ.get("DIALFIRE_TENANT_ID", "").strip()
-TENANT_TOKEN = os.environ.get("DIALFIRE_TENANT_TOKEN", "").strip()
-
+# -- Config -------------------------------------------------------------------
+LOCALE    = "en_US"
 DAYS_BACK = 14
-now_utc   = datetime.now(timezone.utc)
-DATE_FROM = (now_utc - timedelta(days=DAYS_BACK)).strftime("%Y-%m-%d")
-DATE_TO   = now_utc.strftime("%Y-%m-%d")
+TIMEZONE  = pytz.timezone("Africa/Johannesburg")
+API_BASE  = "https://api.dialfire.com"
 
-LOCALE = "de_DE/Africa/Johannesburg"
+BENCHMARKS = {
+    "cph":            45,
+    "daily_calls":    315,
+    "rm_success_rate":  17,
+    "fc_success_rate":  20,
+}
 
 RM_NAMES = {
     "Gio", "NaomiCiza", "Kay-LeeOrphan", "BrandonNtini",
     "SadiqaCarelse", "DeclanT", "CameronPaulse",
 }
 
-BENCHMARKS = {
-    "cph":             45,
-    "daily_calls":     315,
-    "rm_success_rate":  17.0,
-    "fc_success_rate":  20.0,
-}
 
-
-# ── Build campaign list from env ──────────────────────────────────────────────
-def get_campaigns_from_env():
-    campaigns = []
-    i = 1
-    while True:
-        cid   = os.environ.get(f"CAMPAIGN_{i}_ID", "").strip()
-        token = os.environ.get(f"CAMPAIGN_{i}_TOKEN", "").strip()
-        if not cid or not token:
-            break
-        campaigns.append({"id": cid, "token": token})
-        i += 1
-    return campaigns
-
-
-def get_campaigns_from_tenant():
-    if not TENANT_ID or not TENANT_TOKEN:
-        return []
-    url     = f"https://api.dialfire.com/api/tenants/{TENANT_ID}/campaigns/"
-    headers = {"Authorization": f"Bearer {TENANT_TOKEN}"}
-    print(f"  Discovering campaigns via tenant API: {url.replace(TENANT_ID, '***')}")
+# -- Poll helper --------------------------------------------------------------
+def fetch_json_report(url, params, label, tag, max_polls=8, poll_interval=3):
     try:
-        r = requests.get(url, headers=headers, timeout=30)
-        print(f"  Tenant API -> HTTP {r.status_code}")
-        if r.status_code != 200:
-            return []
-        data = r.json()
-        raw = _parse_campaigns(data)
-        result = []
-        for c in raw:
-            if isinstance(c, dict):
-                cid   = c.get("id", c.get("campaignId", ""))
-                token = c.get("token", c.get("access_token", TENANT_TOKEN))
-                if cid:
-                    result.append({"id": cid, "token": token})
-        return result
-    except Exception as e:
-        print(f"  Tenant API exception: {e}")
-        return []
-
-
-def _parse_campaigns(data):
-    if isinstance(data, list):
-        return data
-    if isinstance(data, dict):
-        for key in ("campaigns", "data", "items", "results"):
-            if key in data and isinstance(data[key], list):
-                return data[key]
-        return list(data.values()) if data else []
-    return []
-
-
-# ── HTTP helpers ──────────────────────────────────────────────────────────────
-def fetch_json_report(url, params, label, tag, max_polls=5, poll_wait=4):
-    all_params = {**params, "asTree": "true"}
-    try:
-        r = requests.get(url, params=all_params, timeout=45)
-        status_line = f"  [{label}] {tag} -> HTTP {r.status_code}"
-
-        if r.status_code == 202:
-            print(f"{status_line}  (async, polling...)")
-            for _ in range(max_polls):
-                time.sleep(poll_wait)
-                r = requests.get(url, params=all_params, timeout=45)
-                status_line = f"  [{label}] {tag} -> HTTP {r.status_code} (after poll)"
-                if r.status_code != 202:
-                    break
-            if r.status_code == 202:
-                print(f"{status_line}  (still 202 after polling, skip)")
-                return []
-
-        if r.status_code == 401:
-            print(f"{status_line}  (bad token)")
+        r = requests.get(url, params=params, timeout=30)
+        if r.status_code == 403:
+            print(f"  [{label}] {tag} -> HTTP 403  (skip)")
             return None
-
-        if r.status_code in (403, 404, 500):
-            print(f"{status_line}  (skip)")
+        if r.status_code == 404:
+            print(f"  [{label}] {tag} -> HTTP 404  (skip)")
+            return None
+        if r.status_code == 202:
+            print(f"  [{label}] {tag} -> HTTP 202  (async, polling...)")
+            for attempt in range(max_polls):
+                time.sleep(poll_interval)
+                r2 = requests.get(url, params=params, timeout=30)
+                if r2.status_code == 200:
+                    print(f"  [{label}] {tag} -> HTTP 200 (after poll)")
+                    try:
+                        return r2.json()
+                    except Exception as e:
+                        print(f"  [{label}] JSON parse error after poll: {e}")
+                        return []
+                if r2.status_code == 403:
+                    return None
+                if r2.status_code not in (202, 200):
+                    print(f"  [{label}] {tag} -> HTTP {r2.status_code} during poll")
+                    return []
+            print(f"  [{label}] {tag} -> timed out after {max_polls} polls")
             return []
-
-        if r.status_code != 200:
-            print(f"{status_line}  (unexpected status {r.status_code})")
-            return []
-
-        ct = r.headers.get("Content-Type", "")
-        print(f"{status_line}  ct={ct[:40]}")
-
-        try:
-            return r.json()
-        except Exception as e:
-            print(f"    [{label}] JSON parse error: {e} | body={r.text[:120]}")
-            return []
-
+        if r.status_code == 200:
+            print(f"  [{label}] {tag} -> HTTP 200")
+            try:
+                return r.json()
+            except Exception as e:
+                print(f"  [{label}] JSON parse error: {e} | body={r.text[:200]}")
+                return []
+        print(f"  [{label}] {tag} -> HTTP {r.status_code}")
+        return []
     except Exception as e:
         print(f"  [{label}] {tag} -> Exception: {e}")
         return []
 
 
-# ── Column name helpers ───────────────────────────────────────────────────────
-def _extract_col_names(col_defs_raw):
-    if not col_defs_raw:
-        return []
-    result = []
-    for item in col_defs_raw:
-        if isinstance(item, str):
-            result.append(item)
-        elif isinstance(item, dict):
-            result.append(item.get("name", ""))
-        else:
-            result.append(str(item))
-    return result
+# -- Column helpers -----------------------------------------------------------
+def _safe_int(v):
+    try:
+        return int(float(v)) if v not in (None, "", "--") else 0
+    except (TypeError, ValueError):
+        return 0
+
+
+def _safe_float(v, default=0.0):
+    try:
+        return float(v) if v not in (None, "", "--") else default
+    except (TypeError, ValueError):
+        return default
 
 
 def _get_col(stats, col_map, *names, default=0):
@@ -177,38 +109,43 @@ def _get_col(stats, col_map, *names, default=0):
     return default
 
 
-def _safe_int(v):
-    try:
-        return int(float(v)) if v not in (None, "", "--") else 0
-    except (TypeError, ValueError):
-        return 0
+def _build_col_names(col_defs_raw):
+    result = []
+    for item in col_defs_raw:
+        if isinstance(item, str):
+            result.append(item)
+        elif isinstance(item, dict):
+            result.append(item.get("name", ""))
+        else:
+            result.append(str(item))
+    return result
 
 
-def _safe_float(v):
-    try:
-        return float(v) if v not in (None, "", "--") else 0.0
-    except (TypeError, ValueError):
-        return 0.0
-
-
-# ── Parse asTree=true JSON into user rows ─────────────────────────────────────
-def extract_rows_from_tree(data, label, first_campaign=False):
+# -- Parse asTree=true JSON into user rows ------------------------------------
+def extract_rows_from_tree(data, label):
     rows = []
     if not isinstance(data, dict):
+        print(f"  [{label}] DIAG: data is not dict, type={type(data).__name__}")
         return rows
 
     col_defs_raw   = data.get("columnDefs", [])
     group_defs_raw = data.get("groupDefs", [])
     groups_raw     = data.get("groups", data.get("children", {}))
 
-    col_names   = _extract_col_names(col_defs_raw)
-    group_names = _extract_col_names(group_defs_raw)
+    col_names   = _build_col_names(col_defs_raw)
+    group_names = _build_col_names(group_defs_raw)
     col_map     = {name: f"col{i}" for i, name in enumerate(col_names)}
 
-    if first_campaign:
-        print(f"  [{label}] DIAG groupDefs={group_names} colNames={col_names[:8]}")
-        print(f"  [{label}] DIAG top-level keys: {list(data.keys())}")
-        print(f"  [{label}] DIAG groups type={type(groups_raw).__name__} len={len(groups_raw) if hasattr(groups_raw, '__len__') else '?'}")
+    print(f"  [{label}] DIAG keys={list(data.keys())}")
+    print(f"  [{label}] DIAG groupDefs={group_names}")
+    print(f"  [{label}] DIAG colNames={col_names}")
+    print(f"  [{label}] DIAG groups type={type(groups_raw).__name__} len={len(groups_raw) if hasattr(groups_raw,'__len__') else '?'}")
+    if isinstance(groups_raw, dict) and groups_raw:
+        sample_k = list(groups_raw.keys())[:2]
+        for k in sample_k:
+            print(f"  [{label}] DIAG groups[{k!r}]={json.dumps(groups_raw[k])[:300]}")
+    elif isinstance(groups_raw, list) and groups_raw:
+        print(f"  [{label}] DIAG groups[0]={json.dumps(groups_raw[0])[:300]}")
 
     # Normalise groups to a dict
     if isinstance(groups_raw, list):
@@ -227,11 +164,12 @@ def extract_rows_from_tree(data, label, first_campaign=False):
         return rows
 
     if not groups:
+        print(f"  [{label}] DIAG: groups empty after normalise")
         return rows
 
     # Detect nested structure (group0=date, group1=user)
-    sample_keys    = [k for k in list(groups.keys())[:3] if k not in ("total", "--", "")]
-    date_pattern   = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+    sample_keys      = [k for k in list(groups.keys())[:3] if k not in ("total", "--", "")]
+    date_pattern     = re.compile(r"^\d{4}-\d{2}-\d{2}$")
     looks_like_dates = bool(sample_keys) and all(date_pattern.match(str(k)) for k in sample_keys)
 
     if looks_like_dates and len(group_names) > 1:
@@ -252,7 +190,7 @@ def extract_rows_from_tree(data, label, first_campaign=False):
                 inner_groups = inner_groups_raw if isinstance(inner_groups_raw, dict) else {}
 
             inner_col_raw = date_node.get("columnDefs", col_defs_raw)
-            inner_names   = _extract_col_names(inner_col_raw)
+            inner_names   = _build_col_names(inner_col_raw)
             inner_map     = {name: f"col{i}" for i, name in enumerate(inner_names)}
 
             for user_key, stats in inner_groups.items():
@@ -262,8 +200,12 @@ def extract_rows_from_tree(data, label, first_campaign=False):
                     user_agg[user_key] = {"name": user_key, "completed": 0, "success": 0, "workTime": 0, "declines": 0}
                 agg = user_agg[user_key]
                 agg["completed"] += _safe_int(_get_col(stats, inner_map, "completed", "count"))
-                agg["success"]   += _safe_int(_get_col(stats, inner_map, "success"))
+                agg["success"]   += _safe_int(_get_col(stats, inner_map, "success", "connects"))
                 agg["workTime"]  += _safe_int(_get_col(stats, inner_map, "workTime"))
+                agg["declines"]  += (
+                    _safe_int(_get_col(stats, inner_map, "norespons", "noResponse")) +
+                    _safe_int(_get_col(stats, inner_map, "answeringmachines", "answeringMachines"))
+                )
 
         for agg in user_agg.values():
             agg["successRate"] = round(agg["success"] / agg["completed"] * 100, 1) if agg["completed"] > 0 else 0.0
@@ -278,7 +220,7 @@ def extract_rows_from_tree(data, label, first_campaign=False):
             work_time = _safe_int(_get_col(stats, col_map, "workTime"))
             norespons = _safe_int(_get_col(stats, col_map, "norespons", "noResponse"))
             answering = _safe_int(_get_col(stats, col_map, "answeringmachines", "answeringMachines"))
-            sr        = _safe_float(_get_col(stats, col_map, "successRate", "connectRate", "success_rate", default=0))
+            sr        = _safe_float(_get_col(stats, col_map, "successRate", "connectRate", "success_rate"))
             rows.append({
                 "name":        user_key,
                 "completed":   completed,
@@ -290,10 +232,12 @@ def extract_rows_from_tree(data, label, first_campaign=False):
 
     if rows:
         print(f"  [{label}] Extracted {len(rows)} user rows")
+    else:
+        print(f"  [{label}] DIAG: 0 rows from {len(groups)} groups")
     return rows
 
 
-# ── Parse a raw row into a dashboard agent dict ───────────────────────────────
+# -- Parse a raw row into a dashboard agent dict ------------------------------
 def parse_row(row):
     if not isinstance(row, dict):
         return None
@@ -310,11 +254,13 @@ def parse_row(row):
     if calls == 0:
         return None
 
-    work_hrs = work_secs / 3600.0 if work_secs > 0 else 0
-    cph = round(calls / work_hrs, 1) if work_hrs > 0 else 0
-    sr  = _safe_float(row.get("successRate", 0))
-    if sr == 0 and calls > 0:
-        sr = round(success / calls * 100, 1)
+    work_hrs = work_secs / 3600.0
+    cph      = round(calls / work_hrs, 1) if work_hrs > 0 else 0.0
+    sr       = row.get("successRate")
+    if sr is None or sr == "":
+        sr = round(success / calls * 100, 1) if calls > 0 else 0.0
+    else:
+        sr = _safe_float(sr)
 
     return {
         "name":        name,
@@ -328,20 +274,19 @@ def parse_row(row):
     }
 
 
-# ── Fetch stats for one campaign ──────────────────────────────────────────────
+# -- Fetch stats for one campaign ---------------------------------------------
 def fetch_report(campaign, index, total):
-    cid      = campaign.get("id", "")
-    token    = campaign.get("token", "")
-    label    = f"{index + 1}/{total} {cid}"
-    is_first = (index == 0)
+    cid   = campaign.get("id", "")
+    token = campaign.get("token", "")
+    label = f"{index + 1}/{total} {cid}"
 
     if not cid or not token:
         return []
 
-    base        = f"https://api.dialfire.com/api/campaigns/{cid}"
-    base_params = {"access_token": token, "timespan": f"0-{DAYS_BACK}day"}
+    base        = f"{API_BASE}/api/campaigns/{cid}"
+    base_params = {"access_token": token, "timespan": f"0-{DAYS_BACK}day", "asTree": "true"}
 
-    # Strategy 1: editsDef_v2 group by user
+    # Strategy 1: editsDef_v2 grouped by user
     data1 = fetch_json_report(
         f"{base}/reports/editsDef_v2/report/{LOCALE}",
         {**base_params, "group0": "user",
@@ -350,13 +295,14 @@ def fetch_report(campaign, index, total):
         label, "editsDef_v2/report[user]"
     )
     if data1 is None:
+        print(f"  [{label}] 403 on first call - campaign token invalid, skipping")
         return []
     if isinstance(data1, dict) and data1:
-        rows = extract_rows_from_tree(data1, label, is_first)
+        rows = extract_rows_from_tree(data1, label)
         if rows:
             return rows
 
-    # Strategy 2: dialerStat group by user (has declines)
+    # Strategy 2: dialerStat grouped by user (has norespons/answeringmachines)
     data2 = fetch_json_report(
         f"{base}/reports/dialerStat/report/{LOCALE}",
         {**base_params, "group0": "user",
@@ -367,11 +313,11 @@ def fetch_report(campaign, index, total):
     if data2 is None:
         return []
     if isinstance(data2, dict) and data2:
-        rows = extract_rows_from_tree(data2, label, False)
+        rows = extract_rows_from_tree(data2, label)
         if rows:
             return rows
 
-    # Strategy 3: editsDef_v2 group by date+user (nested)
+    # Strategy 3: editsDef_v2 grouped by date then user (nested)
     data3 = fetch_json_report(
         f"{base}/reports/editsDef_v2/report/{LOCALE}",
         {**base_params, "group0": "date", "group1": "user",
@@ -382,65 +328,80 @@ def fetch_report(campaign, index, total):
     if data3 is None:
         return []
     if isinstance(data3, dict) and data3:
-        rows = extract_rows_from_tree(data3, label, False)
+        rows = extract_rows_from_tree(data3, label)
         if rows:
             return rows
 
+    print(f"  [{label}] No agent rows extracted from any strategy")
     return []
 
 
-# ── Main ──────────────────────────────────────────────────────────────────────
+# -- Main ---------------------------------------------------------------------
 def main():
+    now_utc  = datetime.datetime.now(datetime.timezone.utc)
+    now_sast = now_utc.astimezone(TIMEZONE)
+
+    period_end   = now_sast.date()
+    period_start = period_end - datetime.timedelta(days=DAYS_BACK)
+
     print("=== DialFire Weekly Fetch ===")
-    print(f"Period : {DATE_FROM} to {DATE_TO}  ({DAYS_BACK} days, asTree=true JSON)")
-    print(f"Tenant : {'***' if TENANT_ID else '(not set)'}")
+    print(f"Period : {period_start} to {period_end}  ({DAYS_BACK} days, asTree=true JSON)")
 
-    # 1. Build campaign list
-    campaigns = get_campaigns_from_env()
-    if campaigns:
-        print(f"Using {len(campaigns)} campaign(s) from CAMPAIGN_n_ID/TOKEN secrets")
-    else:
-        print("No CAMPAIGN_n_ID/TOKEN secrets found — falling back to tenant discovery...")
-        campaigns = get_campaigns_from_tenant()
-        if not campaigns:
-            raise RuntimeError(
-                "No campaigns found. Set CAMPAIGN_1_ID + CAMPAIGN_1_TOKEN secrets, "
-                "or set DIALFIRE_TENANT_ID + DIALFIRE_TENANT_TOKEN."
-            )
+    tenant_id = os.environ.get("DIALFIRE_TENANT_ID", "")
+    print(f"Tenant : {'***' if tenant_id else '(not set)'}")
 
-    total = len(campaigns)
-    print(f"Active campaigns: {total}\n")
+    # Collect campaigns from CAMPAIGN_n_ID/TOKEN secrets
+    campaigns = []
+    i = 1
+    while True:
+        cid  = os.environ.get(f"CAMPAIGN_{i}_ID", "").strip()
+        ctok = os.environ.get(f"CAMPAIGN_{i}_TOKEN", "").strip()
+        if not cid:
+            break
+        if ctok:
+            campaigns.append({"id": cid, "token": ctok})
+            print(f"  Campaign {i}: {cid} (token=***)")
+        else:
+            print(f"  Campaign {i}: {cid} (NO TOKEN - skipping)")
+        i += 1
 
-    # 2. Fetch per-campaign stats
+    if not campaigns:
+        print("No campaigns configured. Set CAMPAIGN_1_ID + CAMPAIGN_1_TOKEN secrets.")
+        return
+
+    print(f"Using {len(campaigns)} campaign(s) from CAMPAIGN_n_ID/TOKEN secrets")
+    print(f"Active campaigns: {len(campaigns)}")
+    print()
+
+    # Fetch per-campaign rows
     all_rows = []
-    for i, campaign in enumerate(campaigns):
-        rows = fetch_report(campaign, i, total)
+    for idx, campaign in enumerate(campaigns):
+        rows = fetch_report(campaign, idx, len(campaigns))
         all_rows.extend(rows)
 
-    rows_with_calls = [r for r in all_rows if _safe_int(r.get("completed", r.get("calls", 0))) > 0]
-    print(f"\nRaw agent rows collected: {len(all_rows)}")
-    print(f"Raw agent rows with calls > 0: {len(rows_with_calls)}")
+    print()
+    print(f"Raw agent rows collected: {len(all_rows)}")
+    rows_with_calls = sum(1 for r in all_rows if _safe_int(r.get("completed", r.get("count", r.get("calls", 0)))) > 0)
+    print(f"Raw agent rows with calls > 0: {rows_with_calls}")
 
-    # 3. Merge rows by agent name
+    # Merge rows by agent name
     merged = {}
     for row in all_rows:
-        parsed = parse_row(row)
-        if not parsed:
+        agent = parse_row(row)
+        if agent is None:
             continue
-        name = parsed["name"]
-        if name not in merged:
-            merged[name] = parsed
-        else:
+        name = agent["name"]
+        if name in merged:
             ex = merged[name]
-            ex["calls"]    += parsed["calls"]
-            ex["success"]  += parsed["success"]
-            ex["declines"] += parsed["declines"]
-            ex["workHours"] = round(ex["workHours"] + parsed["workHours"], 2)
-            if ex["workHours"] > 0:
-                ex["cph"] = round(ex["calls"] / ex["workHours"], 1)
-            if ex["calls"] > 0:
-                ex["successRate"] = round(ex["success"] / ex["calls"] * 100, 1)
-            ex["meetsTarget"] = ex["cph"] >= BENCHMARKS["cph"]
+            ex["calls"]     += agent["calls"]
+            ex["success"]   += agent["success"]
+            ex["declines"]  += agent["declines"]
+            ex["workHours"]  = round(ex["workHours"] + agent["workHours"], 2)
+            ex["cph"]        = round(ex["calls"] / ex["workHours"], 1) if ex["workHours"] > 0 else 0.0
+            ex["successRate"]= round(ex["success"] / ex["calls"] * 100, 1) if ex["calls"] > 0 else 0.0
+            ex["meetsTarget"]= ex["cph"] >= BENCHMARKS["cph"]
+        else:
+            merged[name] = agent
 
     print(f"Unique agents after merge: {len(merged)}")
 
@@ -465,44 +426,44 @@ def main():
         for a in fancy_agents[:15]:
             print(f"  {a['name']:25s} calls={a['calls']:4d}  success={a['success']:4d}  declines={a['declines']:4d}  cph={a['cph']:5.1f}  sr={a['successRate']:5.1f}%")
 
-    # 4. Write weekly_data.json
-    weekly_data = {
+    # Build output
+    data_dir = os.path.join(os.path.dirname(__file__), "..", "data")
+    os.makedirs(data_dir, exist_ok=True)
+
+    weekly_path = os.path.join(data_dir, "weekly_data.json")
+    weekly = {
         "generated":   now_utc.isoformat(),
-        "periodStart": DATE_FROM,
-        "periodEnd":   DATE_TO,
+        "periodStart": str(period_start),
+        "periodEnd":   str(period_end),
         "rm":          rm_agents,
         "fancy":       fancy_agents,
     }
-    data_dir  = os.path.normpath(os.path.join(os.path.dirname(__file__), "..", "data"))
-    os.makedirs(data_dir, exist_ok=True)
-    data_path = os.path.join(data_dir, "weekly_data.json")
-    with open(data_path, "w") as f:
-        json.dump(weekly_data, f, indent=2)
+    with open(weekly_path, "w") as f:
+        json.dump(weekly, f, indent=2)
     print(f"Saved weekly_data.json  (rm={len(rm_agents)}, fancy={len(fancy_agents)})")
 
-    # 5. Update history.json
-    hist_path = os.path.join(data_dir, "history.json")
-    history = []
-    if os.path.exists(hist_path):
-        try:
-            raw_hist = json.load(open(hist_path))
-            if isinstance(raw_hist, list):
-                history = [h for h in raw_hist if isinstance(h, dict) and "weekStart" in h]
-        except Exception:
-            history = []
+    # Update history
+    history_path = os.path.join(data_dir, "history.json")
+    try:
+        with open(history_path) as f:
+            raw_hist = json.load(f)
+    except Exception:
+        raw_hist = []
+    history = [h for h in raw_hist if isinstance(h, dict) and "weekStart" in h]
 
-    week_entry = {
-        "weekStart": DATE_FROM,
-        "weekEnd":   DATE_TO,
-        "rm":        len(rm_agents),
-        "fancy":     len(fancy_agents),
-    }
-    history = [h for h in history if h.get("weekStart") != DATE_FROM]
-    history.append(week_entry)
-    history.sort(key=lambda h: h.get("weekStart", ""), reverse=True)
-    history = history[:52]
+    week_key = str(period_start)
+    history  = [h for h in history if h.get("weekStart") != week_key]
+    history.append({
+        "weekStart": week_key,
+        "weekEnd":   str(period_end),
+        "generated": now_utc.isoformat(),
+        "rm":        rm_agents,
+        "fancy":     fancy_agents,
+    })
+    history.sort(key=lambda x: x["weekStart"])
+    history = history[-12:]
 
-    with open(hist_path, "w") as f:
+    with open(history_path, "w") as f:
         json.dump(history, f, indent=2)
     print(f"Updated history.json  ({len(history)} weeks)")
 
