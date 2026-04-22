@@ -3,18 +3,17 @@ DialFire Campaign Stats -> weekly_data.json fetcher
 ====================================================
 Fetches agent stats from DialFire API using per-campaign tokens.
 
-Columns fetched per agent:
-  completed   = total calls made
-  success     = successful outcomes
-  successRate = success / completed (as fraction 0-1)
-  workTime    = time on dialer (seconds or hours depending on campaign)
-  seller      = seller leads
-  rental      = rental leads
-  gotEmail    = emails collected
-
 API response format (asTree):
   groups is a list of {"value": "AgentName", "columns": [v0, v1, ...]}
   where column order matches columnDefs order.
+
+Leads and email counts:
+  Fetched via a second report call (editsDef_v2 grouped by user+disposition).
+  Disposition-to-field mapping:
+    seller: dispositions containing 'seller' or 'SELLER_LEAD'
+    rental: dispositions containing 'rental' or 'RENTAL_LEAD'
+    email:  any disposition where hs_lead_status != 'NOT_ENGAGING'
+            (i.e. email was obtained)
 """
 
 import os, json, re, time, datetime, pytz
@@ -38,18 +37,12 @@ RM_NAMES = {
     "SadiqaCarelse", "DeclanT", "CameronPaulse",
 }
 
-# Columns to request from Dialfire API (in order -> index 0,1,2,...)
-# The column name is passed as the Dialfire report column identifier.
-# We try the primary set; if a column returns all zeros we note it.
-REPORT_COLUMNS = [
-    ("completed",   "calls"),
-    ("success",     "success"),
-    ("successRate", "successRate"),
-    ("workTime",    "workTime"),
-    ("seller",      "seller"),
-    ("rental",      "rental"),
-    ("gotEmail",    "email"),
-]
+# Disposition keywords (lowercase) -> lead type
+# Adjust these based on your actual Dialfire disposition names
+SELLER_KEYS = {"seller", "seller_lead", "selling", "for_sale"}
+RENTAL_KEYS = {"rental", "rental_lead", "renting", "for_rent", "tenant"}
+# Email is obtained when hs_lead_status is NOT one of these values:
+NO_EMAIL_STATUSES = {"not_engaging", "no_email", "no_contact", "bad_number", "do_not_contact"}
 
 
 # -- Poll helper --------------------------------------------------------------
@@ -105,7 +98,6 @@ def _safe_float(v, default=0.0):
         return default
 
 def _col_names(col_defs):
-    """Extract column name strings from columnDefs list."""
     if not col_defs:
         return []
     names = []
@@ -121,24 +113,21 @@ def _col_names(col_defs):
 
 # -- Row extractor ------------------------------------------------------------
 def extract_rows(data, label):
-    """Extract agent rows from Dialfire API asTree response."""
     if not isinstance(data, dict):
         return []
 
-    col_defs  = data.get("columnDefs", [])
-    grp_names = _col_names(col_defs)
+    col_defs   = data.get("columnDefs", [])
+    grp_names  = _col_names(col_defs)
     groups_raw = data.get("groups", [])
 
-    print(f"  [{label}] DIAG grpDefs={grp_names} cols={grp_names} groups={type(groups_raw).__name__}[{len(groups_raw) if hasattr(groups_raw,'__len__') else '?'}]")
+    print(f"  [{label}] DIAG grpDefs={grp_names} groups={type(groups_raw).__name__}[{len(groups_raw) if hasattr(groups_raw,'__len__') else '?'}]")
 
-    def _cn(col_defs_local):
-        return _col_names(col_defs_local) or grp_names
+    def _cn(cd):
+        return _col_names(cd) or grp_names
 
     def _parse_group_item(item, cn):
-        """Parse a single group item into a flat dict keyed by column name."""
         if not isinstance(item, dict):
             return None
-        # New API format: {"value": "AgentName", "columns": [v0, v1, ...]}
         if "value" in item and "columns" in item:
             cols = item["columns"]
             name = str(item["value"])
@@ -150,7 +139,6 @@ def extract_rows(data, label):
             elif isinstance(cols, dict):
                 d.update(cols)
             return d
-        # Old API format: {"user": "AgentName", "col0": v, ...}
         if any(k in item for k in ("user", "name", "username", "agent")):
             name = (item.get("user") or item.get("name") or
                     item.get("username") or item.get("agent") or "")
@@ -165,7 +153,6 @@ def extract_rows(data, label):
     date_re = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
     if isinstance(groups_raw, list):
-        # Check for nested date-grouped structure
         sample_values = []
         for item in groups_raw[:3]:
             if isinstance(item, dict):
@@ -222,23 +209,92 @@ def extract_rows(data, label):
     return rows
 
 
+# -- Fetch disposition counts per agent --------------------------------------
+def fetch_dispositions(cid, token, ts, label):
+    """
+    Fetch a disposition-grouped report to count seller/rental/email per agent.
+    Returns dict: {agent_name: {"seller": N, "rental": N, "email": N}}
+    """
+    base = f"{API_BASE}/api/campaigns/{cid}"
+    result = {}
+
+    # Try nested grouping: group0=user, group1=disposition, column0=completed
+    params = {
+        "access_token": token,
+        "asTree": "true",
+        "timespan": ts,
+        "group0": "user",
+        "group1": "disposition",
+        "column0": "completed",
+    }
+    data = fetch_json(f"{base}/reports/editsDef_v2/report/{LOCALE}", params,
+                      label, "disposition report")
+
+    if not isinstance(data, dict):
+        return result
+
+    groups = data.get("groups", [])
+    if not isinstance(groups, list):
+        return result
+
+    print(f"  [{label}] disposition groups: {len(groups)}")
+
+    for agent_item in groups:
+        if not isinstance(agent_item, dict):
+            continue
+        agent_name = str(agent_item.get("value", agent_item.get("name", agent_item.get("user", "")))).strip()
+        if not agent_name:
+            continue
+
+        # Inner groups are dispositions
+        inner_groups = agent_item.get("groups", agent_item.get("children", []))
+        if not isinstance(inner_groups, list):
+            continue
+
+        seller = 0
+        rental = 0
+        email  = 0
+
+        for disp_item in inner_groups:
+            if not isinstance(disp_item, dict):
+                continue
+            disp_name = str(disp_item.get("value", disp_item.get("name", ""))).lower().strip()
+            cols = disp_item.get("columns", [])
+            count = _safe_int(cols[0] if isinstance(cols, list) and cols else disp_item.get("completed", 0))
+
+            if any(k in disp_name for k in SELLER_KEYS):
+                seller += count
+            if any(k in disp_name for k in RENTAL_KEYS):
+                rental += count
+            # Email: any disposition that is NOT a no-email status
+            if count > 0 and not any(k in disp_name for k in NO_EMAIL_STATUSES):
+                email += count
+
+        if agent_name not in result:
+            result[agent_name] = {"seller": 0, "rental": 0, "email": 0}
+        result[agent_name]["seller"] += seller
+        result[agent_name]["rental"] += rental
+        result[agent_name]["email"]  += email
+
+    print(f"  [{label}] disposition result: {result}")
+    return result
+
+
 # -- Parse one row into agent dict -------------------------------------------
 def parse_row(row):
     name = str(row.get("name", row.get("user", row.get("agent", "")))).strip()
     if not name or name in ("", "null", "None"):
         return None
 
-    calls = _safe_int(row.get("completed", row.get("calls", row.get("completed", 0))))
+    calls   = _safe_int(row.get("completed", row.get("calls", 0)))
     success = _safe_int(row.get("success", 0))
     seller  = _safe_int(row.get("seller", 0))
     rental  = _safe_int(row.get("rental", 0))
-    email   = _safe_int(row.get("gotEmail", row.get("email", row.get("got_email", 0))))
+    email   = _safe_int(row.get("email", row.get("gotEmail", row.get("got_email", 0))))
 
-    # workTime from Dialfire: detect if seconds (>1000) or hours
-    wt_raw = _safe_float(row.get("workTime", row.get("workHours", row.get("work_time", 0))))
+    wt_raw    = _safe_float(row.get("workTime", row.get("workHours", 0)))
     work_time = round(wt_raw / 3600, 2) if wt_raw > 100 else round(wt_raw, 2)
 
-    # successRate: may be fraction (0-1) or percent (0-100)
     sr = row.get("successRate", "")
     if sr == "" or sr is None:
         sr = round(success / calls * 100, 1) if calls > 0 else 0.0
@@ -272,18 +328,16 @@ def fetch_campaign(cid, token, index, total):
 
     timespans = ["0-0day", f"{DAYS_BACK}-0day", "14-0day", "7-0day", "30-0day"]
 
-    # Build column params dynamically from REPORT_COLUMNS
-    col_params = {}
-    for i, (df_col, _alias) in enumerate(REPORT_COLUMNS):
-        col_params[f"column{i}"] = df_col
-
     for ts in timespans:
         params = {
             "access_token": token,
             "asTree": "true",
             "timespan": ts,
             "group0": "user",
-            **col_params,
+            "column0": "completed",
+            "column1": "success",
+            "column2": "successRate",
+            "column3": "workTime",
         }
         data = fetch_json(f"{base}/reports/editsDef_v2/report/{LOCALE}", params,
                           label, f"editsDef_v2 ts={ts}")
@@ -298,6 +352,15 @@ def fetch_campaign(cid, token, index, total):
                 rows = extract_rows(data, label)
                 if rows:
                     print(f"  [{label}] SUCCESS with ts={ts}")
+                    # Also fetch disposition counts
+                    disps = fetch_dispositions(cid, token, ts, label)
+                    # Merge disposition counts into rows
+                    for row in rows:
+                        name = row.get("name", "")
+                        if name in disps:
+                            row["seller"] = disps[name]["seller"]
+                            row["rental"] = disps[name]["rental"]
+                            row["email"]  = disps[name]["email"]
                     return rows
         else:
             print(f"  [{label}] ts={ts} got non-dict: {type(data).__name__}")
@@ -308,9 +371,9 @@ def fetch_campaign(cid, token, index, total):
 
 # -- Main ---------------------------------------------------------------------
 def main():
-    now_utc = datetime.datetime.now(datetime.timezone.utc)
-    now_sast = now_utc.astimezone(TIMEZONE)
-    period_end = now_sast.date()
+    now_utc    = datetime.datetime.now(datetime.timezone.utc)
+    now_sast   = now_utc.astimezone(TIMEZONE)
+    period_end   = now_sast.date()
     period_start = period_end - datetime.timedelta(days=DAYS_BACK)
 
     print("=== DialFire Weekly Fetch ===")
@@ -318,7 +381,7 @@ def main():
 
     campaigns = []
 
-    ch_id = os.environ.get("CAMPAIGN_CLIENTHUB_ID", "").strip()
+    ch_id  = os.environ.get("CAMPAIGN_CLIENTHUB_ID", "").strip()
     ch_tok = os.environ.get("CAMPAIGN_CLIENTHUB_TOKEN", "").strip()
     if ch_id and ch_tok:
         campaigns.append({"id": ch_id, "token": ch_tok, "label": "CLIENTHUB"})
@@ -328,7 +391,7 @@ def main():
 
     i = 1
     while True:
-        cid = os.environ.get(f"CAMPAIGN_{i}_ID", "").strip()
+        cid  = os.environ.get(f"CAMPAIGN_{i}_ID", "").strip()
         ctok = os.environ.get(f"CAMPAIGN_{i}_TOKEN", "").strip()
         if not cid:
             break
@@ -362,37 +425,31 @@ def main():
         name = agent["name"]
         if name in merged:
             ex = merged[name]
-            ex["calls"]   += agent["calls"]
-            ex["success"] += agent["success"]
-            ex["seller"]  += agent["seller"]
-            ex["rental"]  += agent["rental"]
-            ex["email"]   += agent["email"]
-            ex["workTime"] = round(ex["workTime"] + agent["workTime"], 2)
-            ex["cph"]     = round(ex["calls"] / ex["workTime"], 1) if ex["workTime"] > 0 else 0.0
+            ex["calls"]    += agent["calls"]
+            ex["success"]  += agent["success"]
+            ex["seller"]   += agent["seller"]
+            ex["rental"]   += agent["rental"]
+            ex["email"]    += agent["email"]
+            ex["workTime"]  = round(ex["workTime"] + agent["workTime"], 2)
+            ex["cph"]       = round(ex["calls"] / ex["workTime"], 1) if ex["workTime"] > 0 else 0.0
             ex["successRate"] = round(ex["success"] / ex["calls"] * 100, 1) if ex["calls"] > 0 else 0.0
             ex["meetsTarget"] = ex["cph"] >= BENCHMARKS["cph"]
         else:
             merged[name] = agent
 
-    agents = list(merged.values())
+    agents       = list(merged.values())
+    rm_agents    = sorted([a for a in agents if a["name"] in RM_NAMES],    key=lambda x: -x["calls"])
+    fancy_agents = sorted([a for a in agents if a["name"] not in RM_NAMES], key=lambda x: -x["calls"])
+
     print(f"Unique agents: {len(agents)}")
-
-    rm_agents    = sorted([a for a in agents if a["name"] in RM_NAMES],
-                          key=lambda x: -x["calls"])
-    fancy_agents = sorted([a for a in agents if a["name"] not in RM_NAMES],
-                          key=lambda x: -x["calls"])
-
     print(f"RM: {len(rm_agents)} | Fancy: {len(fancy_agents)}")
     for a in rm_agents:
         print(f"  RM   {a['name']:<22} calls={a['calls']:>4} success={a['success']:>3} "
-              f"seller={a['seller']:>3} rental={a['rental']:>3} email={a['email']:>3} "
-              f"cph={a['cph']:>5}")
+              f"seller={a['seller']:>3} rental={a['rental']:>3} email={a['email']:>3} cph={a['cph']:>5}")
     for a in fancy_agents:
         print(f"  FANCY {a['name']:<22} calls={a['calls']:>4} success={a['success']:>3} "
-              f"seller={a['seller']:>3} rental={a['rental']:>3} email={a['email']:>3} "
-              f"cph={a['cph']:>5}")
+              f"seller={a['seller']:>3} rental={a['rental']:>3} email={a['email']:>3} cph={a['cph']:>5}")
 
-    # -- Build output JSON ----------------------------------------------------
     week_str = str(period_start)
     output = {
         "generated":   now_utc.isoformat(),
@@ -403,13 +460,11 @@ def main():
         "fancy":       fancy_agents,
     }
 
-    # Save weekly_data.json
     os.makedirs("data", exist_ok=True)
     with open("data/weekly_data.json", "w") as f:
         json.dump(output, f, indent=2)
     print(f"Saved weekly_data.json (rm={len(rm_agents)}, fancy={len(fancy_agents)})")
 
-    # -- Update history.json --------------------------------------------------
     hist_path = "data/history.json"
     try:
         with open(hist_path) as f:
@@ -427,7 +482,6 @@ def main():
         "rm":        rm_agents,
         "fancy":     fancy_agents,
     }
-    # Replace existing entry for this week or append
     replaced = False
     for idx2, h in enumerate(history):
         if h.get("weekStart") == str(period_start) or h.get("week") == week_str:
@@ -437,9 +491,7 @@ def main():
     if not replaced:
         history.append(week_entry)
 
-    # Keep last 52 weeks
     history = history[-52:]
-
     with open(hist_path, "w") as f:
         json.dump(history, f, indent=2)
     print(f"Updated history.json ({len(history)} weeks)")
