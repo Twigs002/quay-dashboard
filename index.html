@@ -589,16 +589,16 @@ async function init(){
       fetch('./data/history.json?t='+Date.now())
     ]);
     if(r1.ok) CUR  = await r1.json();
-    if(r2.ok) HIST = await r2.json();
+    if(r2.ok){ const _raw=await r2.json(); if(Array.isArray(_raw)){ HIST={}; _raw.forEach(e=>{const k=e.week||e.weekStart||e.periodStart; if(k) HIST[k]=e;}); }else{ HIST=_raw; } }
   }catch(e){
     err('Could not load data files. Check GitHub Pages is enabled and the data/ folder exists.');
   }
 
   if(CUR){
     // Seed HIST with current week so date ranges always have something to show
-    if(!HIST[CUR.week]) HIST[CUR.week] = CUR;
+    if(!HIST[CUR.week||CUR.periodStart]) HIST[CUR.week||CUR.periodStart] = CUR;
 
-    document.getElementById('weekLabel').textContent = fmtWeek(CUR.week);
+    document.getElementById('weekLabel').textContent = fmtWeek(CUR.week||CUR.periodStart);
     document.getElementById('genTime').textContent   = 'Updated: '+new Date(CUR.generated).toLocaleString('en-ZA',{dateStyle:'medium',timeStyle:'short'});
     document.getElementById('rm-cnt').textContent  = CUR.rm.length;
     document.getElementById('fc-cnt').textContent  = CUR.fancy.length;
@@ -1338,7 +1338,7 @@ function exportCSV(){
   ].join('\n');
   const blob=new Blob([hdr+rows],{type:'text/csv'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);
-  a.download=`quay1_performance_${CUR.week}.csv`;a.click();
+  a.download=`quay1_performance_${CUR.week||CUR.periodStart}.csv`;a.click();
   toast('📥 Exported!');
 }
 
