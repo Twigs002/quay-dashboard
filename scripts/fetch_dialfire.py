@@ -10,7 +10,7 @@ API response format (asTree):
 Leads and email counts:
   Fetched via a second report call (editsDef_v2 grouped by user+disposition).
   Disposition-to-field mapping:
-    seller: dispositions containing 'seller' or 'SELLER_LEAD'
+    seller: dispositions containing 'lead' or 'SELLER_LEAD'
     rental: dispositions containing 'rental' or 'RENTAL_LEAD'
     email:  any disposition where hs_lead_status != 'NOT_ENGAGING'
             (i.e. email was obtained)
