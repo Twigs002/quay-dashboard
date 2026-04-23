@@ -4,7 +4,8 @@ DialFire Historical Backfill Script
 Fetches every Mon-Sun week between START_DATE and END_DATE,
 and writes each week into history.json.
 
-Uses the same api.dialfire.com + access_token approach as fetch_dialfire.py.
+Uses the same api.dialfire.com + access_token + editsDef_v2 approach as fetch_dialfire.py.
+Converts absolute dates to relative timespans (e.g. "36-30day") for the editsDef_v2 endpoint.
 Skips weeks that already have real agent data (rm or fancy not empty).
 
 Environment variables:
@@ -17,7 +18,7 @@ Environment variables:
 """
 
 import os, json, time, requests
-from datetime import datetime, timedelta, timezone, date
+from datetime import datetime, timedelta, timezone, date as date_type
 
 LOCALE = "en_US"
 API_BASE = "https://api.dialfire.com"
@@ -75,7 +76,20 @@ def get_weeks(start_str, end_str):
     return weeks
 
 
-def fetch_json(url, params, label, tag, max_poll=8):
+def dates_to_timespan(date_from, date_to):
+    """Convert absolute dates to Dialfire relative timespan format.
+    Dialfire timespan 'X-Yday' means from X days ago to Y days ago (from today UTC).
+    We add 1 to the end to include the full end day.
+    """
+    today = datetime.now(timezone.utc).date()
+    days_from = (today - date_from).days
+    days_to   = (today - date_to).days - 1  # -1 to include end day
+    if days_to < 0:
+        days_to = 0
+    return f"{days_from}-{days_to}day"
+
+
+def fetch_json(url, params, label, tag, max_poll=10):
     try:
         r = requests.get(url, params=params, timeout=30)
         if r.status_code == 202:
@@ -88,8 +102,8 @@ def fetch_json(url, params, label, tag, max_poll=8):
                         return r2.json()
                     except Exception:
                         return {}
-                if r2.status_code == 403:
-                    print(f"  [{label}] {tag} -> 403")
+                if r2.status_code in (401, 403):
+                    print(f"  [{label}] {tag} -> {r2.status_code}")
                     return None
             return {}
         if r.status_code in (401, 403):
@@ -99,9 +113,9 @@ def fetch_json(url, params, label, tag, max_poll=8):
             try:
                 return r.json()
             except Exception as e:
-                print(f"  [{label}] JSON error: {e}")
+                print(f"  [{label}] JSON error: {e} | body={r.text[:200]}")
                 return {}
-        print(f"  [{label}] {tag} -> HTTP {r.status_code}")
+        print(f"  [{label}] {tag} -> HTTP {r.status_code} | {r.text[:100]}")
         return {}
     except Exception as e:
         print(f"  [{label}] {tag} -> error: {e}")
@@ -114,72 +128,45 @@ def fetch_campaign_week(campaign, date_from, date_to):
     label = campaign.get("name", cid)
     base  = f"{API_BASE}/api/campaigns/{cid}"
 
-    attempts = [
-        {
-            "url": f"{base}/firebase/reports/calls",
-            "params": {
-                "access_token": token,
-                "from": str(date_from),
-                "to":   str(date_to),
-                "groupBy": "agent",
-                "reportType": "processing",
-            },
-            "tag": "firebase/reports/calls from/to",
-        },
-        {
-            "url": f"{base}/reports/editsDef_v2/report/{LOCALE}",
-            "params": {
-                "access_token": token,
-                "asTree": "true",
-                "from": str(date_from),
-                "to":   str(date_to),
-                "group0": "user",
-                "column0": "completed",
-                "column1": "success",
-                "column2": "successRate",
-                "column3": "workTime",
-            },
-            "tag": "editsDef_v2 from/to",
-        },
-    ]
+    ts = dates_to_timespan(date_from, date_to)
+    print(f"  [{label}] timespan={ts} (for {date_from} -> {date_to})")
 
-    for attempt in attempts:
-        data = fetch_json(attempt["url"], attempt["params"], label, attempt["tag"])
-        if data is None:
-            print(f"  [{label}] 403 -- token invalid, skipping campaign")
-            return []
-        if not data:
-            continue
+    # Use editsDef_v2 with relative timespan -- same as daily fetch_dialfire.py
+    params = {
+        "access_token": token,
+        "asTree": "true",
+        "timespan": ts,
+        "group0": "user",
+        "column0": "completed",
+        "column1": "success",
+        "column2": "successRate",
+        "column3": "workTime",
+    }
 
-        rows = []
-        if isinstance(data, list):
-            rows = data
-        elif isinstance(data, dict):
-            grp = data.get("groups", [])
-            if isinstance(grp, list) and len(grp) > 0:
-                rows = grp
-            else:
-                d = data.get("data", data.get("rows", []))
-                if isinstance(d, list):
-                    rows = d
+    data = fetch_json(f"{base}/reports/editsDef_v2/report/{LOCALE}", params, label, f"editsDef_v2 ts={ts}")
+    if data is None:
+        print(f"  [{label}] 403 -- token invalid, skipping campaign")
+        return []
+    if not data:
+        print(f"  [{label}] No data returned")
+        return []
 
-        if rows:
-            print(f"  [{label}] {attempt['tag']} -> {len(rows)} rows")
-            return rows
+    grp = data.get("groups", [])
+    if isinstance(grp, list) and len(grp) > 0:
+        print(f"  [{label}] editsDef_v2 -> {len(grp)} groups")
+        return grp
 
-    print(f"  [{label}] No data for {date_from} -> {date_to}")
+    print(f"  [{label}] editsDef_v2 -> empty groups")
     return []
 
 
 def parse_row(row):
-    name = (
-        row.get("agent_name") or row.get("username") or
-        row.get("user") or row.get("value") or row.get("name", "Unknown")
-    ).strip()
+    name = str(row.get("value") or row.get("name") or row.get("user") or row.get("username") or row.get("agent_name") or "Unknown").strip()
 
-    calls   = int(row.get("completed")  or row.get("total_calls")   or row.get("calls",   0) or 0)
-    success = int(row.get("success")    or row.get("total_success") or 0)
-    wt_raw  = float(row.get("workTime") or row.get("work_time")     or 0)
+    calls   = int(row.get("completed")  or row.get("calls",   0) or 0)
+    success = int(row.get("success")    or 0)
+    wt_raw  = float(row.get("workTime") or 0)
+    # workTime from editsDef_v2 is in hours; >1000 means it was in ms
     work_hrs = wt_raw / 3600000 if wt_raw > 1000 else wt_raw
 
     cph = round(calls / work_hrs, 1) if work_hrs > 0 else 0.0
@@ -244,7 +231,6 @@ def main():
         key = str(date_from)
         print(f"\n***{week_idx+1}/{total_weeks}*** Week {date_from} -> {date_to}")
 
-        # Only skip if this week already has REAL data
         if key in weeks_with_data:
             print(f"  Already has data -- skipping")
             continue
@@ -279,7 +265,6 @@ def main():
 
         print(f"  {len(agents)} agents, {sum(v['calls'] for v in agents.values())} calls, {len(rm)} RM, {len(fancy)} Fancy")
 
-        # Remove any existing (empty) entry for this week, then insert fresh
         history = [e for e in history if e.get("weekStart") != key and e.get("week") != key]
         history.insert(0, {
             "generated": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
