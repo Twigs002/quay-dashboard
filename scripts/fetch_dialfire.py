@@ -163,13 +163,37 @@ def extract_rows(data, label):
 def fetch_lead_counts(cid, token, ts, label):
     """
     Fetch hs_lead_status counts per agent.
-    Tries multiple approaches to find where hs_lead_status data lives.
+    Uses contacts/filter POST endpoint with Bearer auth (per pyDialfire library).
     Returns: {agent_name: {"seller": N, "rental": N, "email": N}, ...}
     """
     result = {}
     base_url = f"{API_BASE}/api/campaigns/{cid}/reports/editsDef_v2/report/{LOCALE}"
+    contacts_url = f"{API_BASE}/api/campaigns/{cid}/contacts/filter"
+    headers_bearer = {"Authorization": f"Bearer {token}", "Content-Type": "text/plain"}
 
-    # Approach 1: group0=hs_lead_status, group1=user + column1=hs_lead_status
+    # --- Try contacts/filter POST (per pyDialfire library) ---
+    try:
+        r_chk = requests.post(contacts_url, headers=headers_bearer,
+                              json=[], timeout=30)
+        print(f"  [{label}] contacts/filter check: HTTP {r_chk.status_code}")
+        if r_chk.status_code == 200:
+            try:
+                j_chk = r_chk.json()
+                if isinstance(j_chk, list) and len(j_chk) > 0:
+                    sample = j_chk[0] if isinstance(j_chk[0], dict) else {}
+                    keys = list(sample.keys())[:15]
+                    print(f"  [{label}] contacts/filter sample keys: {keys}")
+                    hs_val = sample.get("hs_lead_status", sample.get("$hs_lead_status", "MISSING"))
+                    assigned = sample.get("assigned_user", sample.get("$assigned_user", "MISSING"))
+                    print(f"  [{label}] sample hs_lead_status={repr(hs_val)} assigned={repr(assigned)}")
+                elif isinstance(j_chk, dict):
+                    print(f"  [{label}] contacts/filter dict keys: {list(j_chk.keys())[:10]}")
+            except Exception as e:
+                print(f"  [{label}] contacts/filter parse error: {e}")
+    except Exception as e:
+        print(f"  [{label}] contacts/filter exception: {e}")
+
+    # --- Approach 1: editsDef_v2 group0=hs_lead_status, group1=user ---
     params1 = {
         "access_token": token,
         "asTree": "true",
@@ -177,10 +201,9 @@ def fetch_lead_counts(cid, token, ts, label):
         "group0": "hs_lead_status",
         "group1": "user",
         "column0": "completed",
-        "column1": "hs_lead_status",
     }
     data1 = fetch_json(base_url, params1, label,
-                       "leads ap1: hs_lead_status>user + col_hs",
+                       "leads ap1: hs_lead_status>user",
                        timeout=30, max_polls=30)
     if data1 is not None and isinstance(data1, dict):
         groups1 = data1.get("groups", [])
@@ -192,7 +215,7 @@ def fetch_lead_counts(cid, token, ts, label):
                 fv = first.get("value", "")
                 fc = first.get("columns", [])
                 inner = first.get("groups", first.get("children", None))
-                print(f"  [{label}] leads ap1 first: value={repr(str(fv))[:50]} cols={fc} inner={type(inner).__name__ if inner is not None else 'NONE'}")
+                print(f"  [{label}] leads ap1 first: value={repr(str(fv))[:60]} cols={fc} inner={type(inner).__name__ if inner is not None else 'NONE'}")
                 if isinstance(inner, list) and len(inner) > 0:
                     for grp in groups1:
                         status_val = str(grp.get("value", "")).lower()
@@ -212,7 +235,8 @@ def fetch_lead_counts(cid, token, ts, label):
                                     bucket = "email"
                                     break
                         if bucket:
-                            for u in inner:
+                            inner_grps = grp.get("groups", grp.get("children", []))
+                            for u in (inner_grps if isinstance(inner_grps, list) else []):
                                 if isinstance(u, dict):
                                     agent_name = str(u.get("value", ""))
                                     ucols = u.get("columns", [])
@@ -234,7 +258,7 @@ def fetch_lead_counts(cid, token, ts, label):
                     flat_cols = [g.get("columns",[]) for g in groups1 if isinstance(g, dict)]
                     print(f"  [{label}] leads ap1 flat: values={flat_vals[:6]} sample_cols={flat_cols[:3]}")
 
-    # Approach 2: group0=user, group1=hs_lead_status
+    # --- Approach 2: editsDef_v2 group0=user, group1=hs_lead_status ---
     params2 = {
         "access_token": token,
         "asTree": "true",
@@ -254,7 +278,7 @@ def fetch_lead_counts(cid, token, ts, label):
             if isinstance(first2, dict):
                 inner2 = first2.get("groups", first2.get("children", None))
                 cols2 = first2.get("columns", [])
-                print(f"  [{label}] leads ap2 first: value={repr(str(first2.get('value',''))[:30])} cols={cols2} inner={type(inner2).__name__ if inner2 is not None else 'NONE'}")
+                print(f"  [{label}] leads ap2 first: value={repr(str(first2.get('value',''))[:40])} cols={cols2} inner={type(inner2).__name__ if inner2 is not None else 'NONE'}")
                 if isinstance(inner2, list) and len(inner2) > 0:
                     sample = [{"v": str(x.get("value",""))[:20], "c": x.get("columns",[])} for x in inner2[:3] if isinstance(x,dict)]
                     print(f"  [{label}] leads ap2 inner sample: {sample}")
@@ -297,24 +321,7 @@ def fetch_lead_counts(cid, token, ts, label):
                     if result:
                         print(f"  [{label}] leads ap2 SUCCESS: {result}")
                         return result
-                    print(f"  [{label}] leads ap2: no matching lead statuses found")
-
-    # Approach 3: No grouping, just column0=hs_lead_status
-    params3 = {
-        "access_token": token,
-        "timespan": ts,
-        "column0": "hs_lead_status",
-    }
-    data3 = fetch_json(base_url, params3, label,
-                       "leads ap3: no-group col=hs_lead_status",
-                       timeout=30, max_polls=30)
-    if data3 is not None and isinstance(data3, dict):
-        colDefs3 = data3.get("columnDefs", [])
-        groups3 = data3.get("groups", [])
-        print(f"  [{label}] leads ap3: colDefs={colDefs3} groups={len(groups3) if isinstance(groups3,list) else type(groups3).__name__}")
-        if isinstance(groups3, list) and len(groups3) > 0:
-            sample3 = [{"v": str(g.get("value",""))[:20], "c": g.get("columns",[])} for g in groups3[:3] if isinstance(g,dict)]
-            print(f"  [{label}] leads ap3 sample: {sample3}")
+                    print(f"  [{label}] leads ap2: no matching statuses in inner groups")
 
     print(f"  [{label}] leads: all approaches failed - leads will be 0")
     return result
