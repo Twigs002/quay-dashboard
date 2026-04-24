@@ -1,56 +1,56 @@
 [
   {
-    "generated": "2026-04-24T12:25:15.346393+00:00",
+    "generated": "2026-04-24T12:32:19.673556+00:00",
     "week": "2026-04-17",
     "weekStart": "2026-04-17",
     "weekEnd": "2026-04-24",
     "rm": [
       {
         "name": "Gio",
-        "calls": 183,
-        "success": 42,
+        "calls": 187,
+        "success": 43,
         "seller": 0,
         "rental": 0,
         "email": 0,
         "cph": 50.8,
         "successRate": 23.0,
-        "workTime": 3.6,
+        "workTime": 3.68,
         "meetsTarget": true
       },
       {
         "name": "SadiqaCarelse",
-        "calls": 114,
-        "success": 18,
+        "calls": 116,
+        "success": 20,
         "seller": 0,
         "rental": 0,
         "email": 0,
-        "cph": 45.2,
-        "successRate": 15.8,
-        "workTime": 2.52,
-        "meetsTarget": false
+        "cph": 45.0,
+        "successRate": 17.2,
+        "workTime": 2.58,
+        "meetsTarget": true
       },
       {
         "name": "NaomiCiza",
-        "calls": 77,
-        "success": 19,
+        "calls": 79,
+        "success": 20,
         "seller": 0,
         "rental": 0,
         "email": 0,
-        "cph": 36.0,
-        "successRate": 24.7,
-        "workTime": 2.14,
+        "cph": 35.3,
+        "successRate": 25.3,
+        "workTime": 2.24,
         "meetsTarget": false
       },
       {
         "name": "BrandonNtini",
-        "calls": 43,
-        "success": 14,
+        "calls": 46,
+        "success": 16,
         "seller": 0,
         "rental": 0,
         "email": 0,
-        "cph": 27.7,
-        "successRate": 32.6,
-        "workTime": 1.55,
+        "cph": 28.2,
+        "successRate": 34.8,
+        "workTime": 1.63,
         "meetsTarget": false
       }
     ],
@@ -69,14 +69,14 @@
       },
       {
         "name": "NeelamJameel",
-        "calls": 9,
+        "calls": 14,
         "success": 5,
         "seller": 0,
         "rental": 0,
         "email": 0,
-        "cph": 39.1,
-        "successRate": 55.6,
-        "workTime": 0.23,
+        "cph": 41.2,
+        "successRate": 35.7,
+        "workTime": 0.34,
         "meetsTarget": false
       }
     ]
