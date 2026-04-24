@@ -541,7 +541,7 @@ function stHTML(s){
 }
 function fmtWeek(str){
   try{
-    const d=new Date(str+'T00:00:00'),e=new Date(d);e.setDate(d.getDate()+6);
+    const d=new Date(str+'T00:00:00'),e=new Date(d);e.setDate(d.getDate()+4);
     const f=x=>x.toLocaleDateString('en-ZA',{day:'numeric',month:'short'});
     return `Week of ${f(d)} – ${f(e)}`;
   }catch{return str}
@@ -575,7 +575,7 @@ async function init(){
 
   if(CUR){
     // Seed HIST with current week so date ranges always have something to show
-    if(!HIST[CUR.week||CUR.periodStart]) HIST[CUR.week||CUR.periodStart] = CUR;
+    const curKey=CUR.week||CUR.periodStart; if(curKey&&!HIST[curKey]) HIST[curKey] = CUR;
 
     document.getElementById('weekLabel').textContent = fmtWeek(CUR.week||CUR.periodStart);
     document.getElementById('genTime').textContent   = 'Updated: '+new Date(CUR.generated).toLocaleString('en-ZA',{dateStyle:'medium',timeStyle:'short'});
@@ -661,7 +661,7 @@ function renderExec(){
   const t = today();
   let from, to = t;
   if(execPeriod==='week'){
-    const d=new Date(); from=addDays(t,-((d.getDay()+6)%7));
+    const d=new Date(); from=addDays(t,-((d.getDay()+6)%7)); to=addDays(from,4);
   } else if(execPeriod==='month'){
     from=firstOfMonth(); to=t;
   } else if(execPeriod==='quarter'){
@@ -712,7 +712,7 @@ function renderExec(){
 
   // ── WEEKLY BREAKDOWN ──────────────────────────────────────────
   const histEntries = Object.entries(HIST)
-    .filter(([d])=>d>=from&&d<=to)
+    .filter(([d])=>toMonday(d)>=from&&toMonday(d)<=to)
     .sort(([a],[b])=>b.localeCompare(a));
 
   let weeklyHTML = '';
@@ -751,15 +751,19 @@ function renderExec(){
   const allHist = Object.entries(HIST).sort(([a],[b])=>b.localeCompare(a));
   const monthMap = {};
   allHist.forEach(([week, v])=>{
-    const ym = week.substring(0,7);
-    if(!monthMap[ym]) monthMap[ym]={calls:0,success:0,leads:0,email:0,rm:new Set(),fancy:new Set(),weeks:0};
+    // Normalise to the Monday of this week to avoid counting duplicates
+    const wDate = new Date(week+'T00:00:00');
+    const monday = new Date(wDate); monday.setDate(wDate.getDate() - wDate.getDay() + (wDate.getDay()===0?-6:1));
+    const monStr = monday.toISOString().split('T')[0];
+    const ym = monStr.substring(0,7);
+    if(!monthMap[ym]) monthMap[ym]={calls:0,success:0,leads:0,email:0,rm:new Set(),fancy:new Set(),weeks:new Set()};
     const m = monthMap[ym];
     const all=[...(v.rm||[]),...(v.fancy||[])];
     m.calls  += all.reduce((a,d)=>a+d.calls,0);
     m.success+= all.reduce((a,d)=>a+d.success,0);
     m.leads  += all.reduce((a,d)=>a+d.seller+d.rental,0);
     m.email  += all.reduce((a,d)=>a+d.email,0);
-    m.weeks++;
+    m.weeks.add(monStr);
     (v.rm||[]).forEach(d=>m.rm.add(d.name));
     (v.fancy||[]).forEach(d=>m.fancy.add(d.name));
   });
@@ -771,7 +775,7 @@ function renderExec(){
       const mSR = m.calls>0?m.success/m.calls:0;
       return `<tr>
         <td style="font-weight:800;color:var(--brand)">${fmtMonth(ym)}</td>
-        <td style="color:var(--muted);font-size:11px">${m.weeks} week${m.weeks!==1?'s':''}</td>
+        <td style="color:var(--muted);font-size:11px">${m.weeks.size} week${m.weeks.size!==1?'s':''}</td>
         <td><span class="mx neu">${m.rm.size} RMs</span> <span class="mx pur">${m.fancy.size} Fancy</span></td>
         <td><strong>${m.calls.toLocaleString()}</strong></td>
         <td><span class="mx ${mc(mSR,.17)}">${pct(mSR)}</span></td>
@@ -824,8 +828,11 @@ function exportMonthly(){
   const allHist = Object.entries(HIST).sort(([a],[b])=>b.localeCompare(a));
   const monthMap = {};
   allHist.forEach(([week, v])=>{
-    const ym = week.substring(0,7);
-    if(!monthMap[ym]) monthMap[ym]={calls:0,success:0,leads:0,email:0,rental:0,seller:0,rm:new Set(),fancy:new Set(),weeks:0};
+    const wDate = new Date(week+'T00:00:00');
+    const monday = new Date(wDate); monday.setDate(wDate.getDate() - wDate.getDay() + (wDate.getDay()===0?-6:1));
+    const monStr = monday.toISOString().split('T')[0];
+    const ym = monStr.substring(0,7);
+    if(!monthMap[ym]) monthMap[ym]={calls:0,success:0,leads:0,email:0,rental:0,seller:0,rm:new Set(),fancy:new Set(),weeks:new Set()};
     const m = monthMap[ym];
     const all=[...(v.rm||[]),...(v.fancy||[])];
     m.calls+=all.reduce((a,d)=>a+d.calls,0);
@@ -834,14 +841,14 @@ function exportMonthly(){
     m.email+=all.reduce((a,d)=>a+d.email,0);
     m.rental+=all.reduce((a,d)=>a+d.rental,0);
     m.seller+=all.reduce((a,d)=>a+d.seller,0);
-    m.weeks++;
+    m.weeks.add(monStr);
     (v.rm||[]).forEach(d=>m.rm.add(d.name));
     (v.fancy||[]).forEach(d=>m.fancy.add(d.name));
   });
   const hdr='Month,Weeks of Data,RM Callers,Fancy Callers,Total Calls,Success Rate,Total Leads,Seller Leads,Rental Leads,Emails\n';
   const rows=Object.entries(monthMap).sort(([a],[b])=>b.localeCompare(a)).map(([ym,m])=>{
     const sr=m.calls>0?m.success/m.calls:0;
-    return `${fmtMonth(ym)},${m.weeks},${m.rm.size},${m.fancy.size},${m.calls},${pct(sr)},${m.leads},${m.seller},${m.rental},${m.email}`;
+    return `${fmtMonth(ym)},${m.weeks.size},${m.rm.size},${m.fancy.size},${m.calls},${pct(sr)},${m.leads},${m.seller},${m.rental},${m.email}`;
   }).join('\n');
   const blob=new Blob([hdr+rows],{type:'text/csv'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);
@@ -955,7 +962,7 @@ function buildPresets(){
   const t=today();
   const presets=[
     {lbl:'This Week',  from:addDays(t,-((new Date().getDay()+6)%7)), to:t},
-    {lbl:'Last Week',  from:addDays(t,-((new Date().getDay()+6)%7+7)), to:addDays(t,-((new Date().getDay()+6)%7+1))},
+    {lbl:'Last Week',  from:addDays(t,-((new Date().getDay()+6)%7+7)), to:addDays(t,-((new Date().getDay()+6)%7+3))},
     {lbl:'This Month', from:firstOfMonth(), to:t},
     {lbl:'Last Month', from:firstOfMonth(-1), to:lastOfMonth(-1)},
     {lbl:'Last 30d',   from:addDays(t,-30), to:t},
@@ -988,9 +995,18 @@ function applyRange(){
   renderReport(entries, from, to);
 }
 
+function toMonday(dateStr){
+  const d=new Date(dateStr+'T00:00:00');
+  const day=d.getDay();
+  d.setDate(d.getDate()-(day===0?6:day-1));
+  return d.toISOString().split('T')[0];
+}
 function getHistoryInRange(from,to){
   return Object.entries(HIST)
-    .filter(([d])=>d>=from&&d<=to)
+    .filter(([d])=>{
+      const mon=toMonday(d);
+      return mon>=from&&mon<=to;
+    })
     .map(([,v])=>v);
 }
 
@@ -1115,7 +1131,7 @@ function updateCompare(){
   const rangeVal=document.getElementById('cmp-range').value;
   const t=today();
   let from, to=t;
-  if(rangeVal==='current'){ const d=new Date();from=addDays(t,-((d.getDay()+6)%7)); }
+  if(rangeVal==='current'){ const d=new Date();from=addDays(t,-((d.getDay()+6)%7)); to=addDays(from,4); }
   else if(rangeVal==='month'){ from=addDays(t,-30); }
   else if(rangeVal==='quarter'){ from=addDays(t,-90); }
   else { from='2020-01-01'; }
