@@ -9,9 +9,9 @@
   },
   {
     "generated": "2026-04-24T12:40:05.673019+00:00",
-    "week": "2026-04-17",
-    "weekStart": "2026-04-17",
-    "weekEnd": "2026-04-24",
+    "week": "2026-04-13",
+    "weekStart": "2026-04-13",
+    "weekEnd": "2026-04-17",
     "rm": [
       {
         "name": "Gio",
@@ -32,7 +32,7 @@
         "seller": 0,
         "rental": 0,
         "email": 0,
-        "cph": 45.0,
+        "cph": 45,
         "successRate": 17.2,
         "workTime": 2.58,
         "meetsTarget": true
@@ -57,7 +57,7 @@
         "rental": 0,
         "email": 0,
         "cph": 29.1,
-        "successRate": 38.0,
+        "successRate": 38,
         "workTime": 1.72,
         "meetsTarget": false
       }
@@ -83,71 +83,17 @@
         "rental": 0,
         "email": 0,
         "cph": 46.5,
-        "successRate": 25.0,
+        "successRate": 25,
         "workTime": 0.43,
         "meetsTarget": true
       }
     ]
   },
   {
-    "generated": "2026-04-23T07:01:31.213342+00:00",
-    "week": "2026-04-16",
-    "weekStart": "2026-04-16",
-    "weekEnd": "2026-04-23",
-    "rm": [
-      {
-        "name": "NaomiCiza",
-        "calls": 9,
-        "success": 3,
-        "seller": 0,
-        "rental": 0,
-        "email": 0,
-        "cph": 32.1,
-        "successRate": 0.3,
-        "workTime": 0.28,
-        "meetsTarget": false
-      },
-      {
-        "name": "Gio",
-        "calls": 7,
-        "success": 3,
-        "seller": 0,
-        "rental": 0,
-        "email": 0,
-        "cph": 31.8,
-        "successRate": 0.4,
-        "workTime": 0.22,
-        "meetsTarget": false
-      }
-    ],
-    "fancy": [
-      {
-        "name": "WhitneyMalgas",
-        "calls": 15,
-        "success": 5,
-        "seller": 0,
-        "rental": 0,
-        "email": 0,
-        "cph": 60.0,
-        "successRate": 0.3,
-        "workTime": 0.25,
-        "meetsTarget": false
-      }
-    ]
-  },
-  {
-    "generated": "2026-04-23T06:29:57Z",
-    "week": "2026-04-13",
-    "weekStart": "2026-04-13",
-    "weekEnd": "2026-04-19",
-    "rm": [],
-    "fancy": []
-  },
-  {
     "generated": "2026-04-23T06:28:56Z",
     "week": "2026-04-06",
     "weekStart": "2026-04-06",
-    "weekEnd": "2026-04-12",
+    "weekEnd": "2026-04-10",
     "rm": [],
     "fancy": []
   },
@@ -155,7 +101,7 @@
     "generated": "2026-04-23T06:27:55Z",
     "week": "2026-03-30",
     "weekStart": "2026-03-30",
-    "weekEnd": "2026-04-05",
+    "weekEnd": "2026-04-03",
     "rm": [],
     "fancy": []
   },
@@ -163,7 +109,7 @@
     "generated": "2026-04-23T06:26:54Z",
     "week": "2026-03-23",
     "weekStart": "2026-03-23",
-    "weekEnd": "2026-03-29",
+    "weekEnd": "2026-03-27",
     "rm": [],
     "fancy": []
   },
@@ -171,7 +117,7 @@
     "generated": "2026-04-23T06:25:53Z",
     "week": "2026-03-16",
     "weekStart": "2026-03-16",
-    "weekEnd": "2026-03-22",
+    "weekEnd": "2026-03-20",
     "rm": [],
     "fancy": []
   },
@@ -179,7 +125,7 @@
     "generated": "2026-04-23T06:24:52Z",
     "week": "2026-03-09",
     "weekStart": "2026-03-09",
-    "weekEnd": "2026-03-15",
+    "weekEnd": "2026-03-13",
     "rm": [],
     "fancy": []
   },
@@ -187,7 +133,7 @@
     "generated": "2026-04-23T06:23:51Z",
     "week": "2026-03-02",
     "weekStart": "2026-03-02",
-    "weekEnd": "2026-03-08",
+    "weekEnd": "2026-03-06",
     "rm": [],
     "fancy": []
   },
@@ -195,91 +141,7 @@
     "generated": "2026-04-23T06:22:50Z",
     "week": "2026-02-23",
     "weekStart": "2026-02-23",
-    "weekEnd": "2026-03-01",
-    "rm": [],
-    "fancy": []
-  },
-  {
-    "generated": "2026-04-22T20:39:17.808650+00:00",
-    "week": "2026-04-15",
-    "weekStart": "2026-04-15",
-    "weekEnd": "2026-04-22",
-    "rm": [
-      {
-        "name": "Gio",
-        "calls": 272,
-        "success": 37,
-        "seller": 0,
-        "rental": 0,
-        "email": 0,
-        "cph": 45.3,
-        "successRate": 0.1,
-        "workTime": 6.0,
-        "meetsTarget": false
-      },
-      {
-        "name": "NaomiCiza",
-        "calls": 202,
-        "success": 32,
-        "seller": 0,
-        "rental": 0,
-        "email": 0,
-        "cph": 44.9,
-        "successRate": 0.2,
-        "workTime": 4.5,
-        "meetsTarget": false
-      },
-      {
-        "name": "DeclanT",
-        "calls": 81,
-        "success": 14,
-        "seller": 0,
-        "rental": 0,
-        "email": 0,
-        "cph": 38.6,
-        "successRate": 0.2,
-        "workTime": 2.1,
-        "meetsTarget": false
-      },
-      {
-        "name": "CameronPaulse",
-        "calls": 2,
-        "success": 1,
-        "seller": 0,
-        "rental": 0,
-        "email": 0,
-        "cph": 66.7,
-        "successRate": 0.5,
-        "workTime": 0.03,
-        "meetsTarget": false
-      }
-    ],
-    "fancy": [
-      {
-        "name": "CraigCarroll",
-        "calls": 101,
-        "success": 18,
-        "seller": 0,
-        "rental": 0,
-        "email": 0,
-        "cph": 39.3,
-        "successRate": 0.2,
-        "workTime": 2.57,
-        "meetsTarget": false
-      }
-    ]
-  },
-  {
-    "weekStart": "2026-04-07",
-    "weekEnd": "2026-04-21",
-    "generated": "2026-04-20T22:07:05.678730+00:00",
-    "rm": [],
-    "fancy": []
-  },
-  {
-    "weekStart": "2026-04-14",
-    "weekEnd": "2026-04-21",
-    "generated": "2026-04-21T07:04:02.048549+00:00",
+    "weekEnd": "2026-02-27",
     "rm": [],
     "fancy": []
   }
