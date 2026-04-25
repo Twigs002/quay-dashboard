@@ -546,19 +546,10 @@ function fmtWeek(str){
     return `Week of ${f(d)} – ${f(e)}`;
   }catch{return str}
 }
-function today(){ return new Date().toISOString().split('T')[0]; }
-function addDays(str,n){
-  const d=new Date(str+'T00:00:00');d.setDate(d.getDate()+n);
-  return d.toISOString().split('T')[0];
-}
-function firstOfMonth(offset=0){
-  const d=new Date();d.setDate(1);d.setMonth(d.getMonth()+offset);
-  return d.toISOString().split('T')[0];
-}
-function lastOfMonth(offset=0){
-  const d=new Date();d.setDate(1);d.setMonth(d.getMonth()+offset+1);d.setDate(0);
-  return d.toISOString().split('T')[0];
-}
+function today(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function addDays(str,n){const p=str.split('-');const d=new Date(+p[0],+p[1]-1,+p[2]+n);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function firstOfMonth(offset=0){const d=new Date();d.setDate(1);d.setMonth(d.getMonth()+offset);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function lastOfMonth(offset=0){const d=new Date();d.setDate(1);d.setMonth(d.getMonth()+offset+1);d.setDate(0);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 
 // ─── LOAD ─────────────────────────────────────────────────────────
 async function init(){
@@ -995,12 +986,7 @@ function applyRange(){
   renderReport(entries, from, to);
 }
 
-function toMonday(dateStr){
-  const d=new Date(dateStr+'T00:00:00');
-  const day=d.getDay();
-  d.setDate(d.getDate()-(day===0?6:day-1));
-  return d.toISOString().split('T')[0];
-}
+function toMonday(dateStr){const p=dateStr.split('-');const d=new Date(+p[0],+p[1]-1,+p[2]);const day=d.getDay();d.setDate(d.getDate()-(day===0?6:day-1));return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 function getHistoryInRange(from,to){
   return Object.entries(HIST)
     .filter(([d])=>{
