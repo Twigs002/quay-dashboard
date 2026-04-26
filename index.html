@@ -305,6 +305,7 @@ tbody td{padding:11px 14px;font-size:12px;white-space:nowrap}
       </div>
       <div class="exec-period">
         <button class="ep-btn active" onclick="setExecPeriod('week',this)">This Week</button>
+        <button class="ep-btn" onclick="setExecPeriod('lastweek',this)">Last Week</button>
         <button class="ep-btn" onclick="setExecPeriod('month',this)">This Month</button>
         <button class="ep-btn" onclick="setExecPeriod('quarter',this)">Last 90 Days</button>
         <button class="ep-btn" onclick="setExecPeriod('all',this)">All Time</button>
@@ -445,6 +446,28 @@ tbody td{padding:11px 14px;font-size:12px;white-space:nowrap}
 
   <!-- ═══ COMPARE TAB ═══ -->
   <div class="tab-panel" id="tab-compare">
+
+    <!-- Week vs Week -->
+    <div class="compare-controls" style="margin-bottom:10px">
+      <div class="cs-wrap">
+        <label>Week A</label>
+        <select id="wk-a" onchange="updateWeekCompare()"><option value="">— Select week —</option></select>
+      </div>
+      <div class="vs-badge">📅</div>
+      <div class="cs-wrap">
+        <label>Week B</label>
+        <select id="wk-b" onchange="updateWeekCompare()"><option value="">— Select week —</option></select>
+      </div>
+      <div style="display:flex;align-items:flex-end">
+        <button onclick="setQuickWeeks()" style="padding:10px 18px;background:var(--yellow);color:var(--brand-xdk);border:none;border-radius:9px;font-weight:800;font-size:11px;cursor:pointer;font-family:'Montserrat',Arial,sans-serif;">Last Week vs Week Before</button>
+      </div>
+    </div>
+    <div id="wk-cmp-result"><div class="no-data"><div class="ic">📅</div><p>Select two weeks above to compare full-team performance, or click "Last Week vs Week Before".</p></div></div>
+
+    <hr style="border:none;border-top:1.5px solid var(--border);margin:28px 0 22px"/>
+
+    <!-- Caller vs Caller -->
+    <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:12px">Caller vs Caller</div>
     <div class="compare-controls">
       <div class="cs-wrap">
         <label>Caller A</label>
@@ -457,21 +480,13 @@ tbody td{padding:11px 14px;font-size:12px;white-space:nowrap}
       </div>
       <div style="display:flex;flex-direction:column;gap:6px">
         <label style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--muted)">Date Range</label>
-        <select id="cmp-range" onchange="updateCompare()" style="border:2px solid var(--border);border-radius:9px;padding:10px 13px;font-size:11px;font-weight:700;background:var(--light);font-family:'Montserrat',Arial,sans-serif;outline:none">
-          <option value="current">Current Week</option>
-          <option value="month">Last 30 Days</option>
-          <option value="quarter">Last 90 Days</option>
-          <option value="all">All Time</option>
-        </select>
+        <select id="cmp-range" onchange="updateCompare()" style="border:2px solid var(--border);border-radius:9px;padding:10px 13px;font-size:12px;font-weight:600;color:var(--text);background:var(--light);outline:none;cursor:pointer;font-family:'Montserrat',Arial,sans-serif;"><option value="current">Current Week</option><option value="lastweek">Last Week</option><option value="month">Last 30 Days</option><option value="quarter">Last 90 Days</option><option value="all">All Time</option></select>
       </div>
     </div>
-    <div id="compare-content">
-      <div class="no-data"><div class="ic">⚖️</div><p>Select two callers above to compare their performance.</p></div>
-    </div>
+    <div id="compare-content"><div class="no-data"><div class="ic">⚖️</div><p>Select two callers above to compare their performance.</p></div></div>
   </div>
 
-  <!-- ═══ WORK TIME TAB ═══ -->
-  <div class="tab-panel" id="tab-wt">
+<div class="tab-panel" id="tab-wt">
     <div class="bench">
       <div class="bp blue">📊 DialFire Hours = active dialler time</div>
       <div class="bp gold">⏱ ConnectTeams = total clocked-in time</div>
@@ -580,6 +595,7 @@ async function init(){
 
   buildPresets();
   populateCompareSelects();
+  populateWeekSelects();
   renderExec();
 }
 
@@ -653,6 +669,8 @@ function renderExec(){
   let from, to = t;
   if(execPeriod==='week'){
     const d=new Date(); from=addDays(t,-((d.getDay()+6)%7)); to=addDays(from,4);
+  } else if(execPeriod==='lastweek'){
+    const d=new Date(); const thisMonday=addDays(t,-((d.getDay()+6)%7)); from=addDays(thisMonday,-7); to=addDays(from,4);
   } else if(execPeriod==='month'){
     from=firstOfMonth(); to=t;
   } else if(execPeriod==='quarter'){
@@ -1108,6 +1126,80 @@ function populateCompareSelects(){
   });
 }
 
+// ── WEEK vs WEEK COMPARE ──────────────────────────────────────────────
+function fmtShortDate(d){
+  try{ const dt=new Date(d+'T00:00:00'); return dt.toLocaleDateString('en-ZA',{day:'numeric',month:'short'}); }catch{return d;}
+}
+
+function populateWeekSelects(){
+  const sortedWeeks=Object.keys(HIST).sort((a,b)=>b.localeCompare(a));
+  ['wk-a','wk-b'].forEach(id=>{
+    const sel=document.getElementById(id);
+    if(!sel) return;
+    while(sel.options.length>1) sel.remove(1);
+    sortedWeeks.forEach(ws=>{
+      const h=HIST[ws]; const we=h.weekEnd||addDays(ws,4);
+      const label='Week of '+fmtShortDate(ws)+' – '+fmtShortDate(we);
+      sel.appendChild(new Option(label,ws));
+    });
+  });
+}
+
+function setQuickWeeks(){
+  const t=today(); const d=new Date();
+  const thisMonday=addDays(t,-((d.getDay()+6)%7));
+  const lastMonday=addDays(thisMonday,-7);
+  const weekBefore=addDays(thisMonday,-14);
+  const selA=document.getElementById('wk-a');
+  const selB=document.getElementById('wk-b');
+  if(selA&&selB){ selA.value=lastMonday; selB.value=weekBefore; updateWeekCompare(); }
+}
+
+function weekTeamStats(weekStart){
+  const h=HIST[weekStart]; if(!h) return null;
+  const agents=[...(h.rm||[]),...(h.fancy||[])];
+  const tCalls=agents.reduce((a,d)=>a+d.calls,0);
+  const tSuccess=agents.reduce((a,d)=>a+d.success,0);
+  const tSeller=agents.reduce((a,d)=>a+d.seller,0);
+  const tRental=agents.reduce((a,d)=>a+d.rental,0);
+  const tEmail=agents.reduce((a,d)=>a+d.email,0);
+  const tWorkH=agents.reduce((a,d)=>a+d.workTime,0);
+  const avgSR=tCalls>0?tSuccess/tCalls:0; const cph=tWorkH>0?tCalls/tWorkH:0;
+  return {weekStart,weekEnd:h.weekEnd||addDays(weekStart,4),
+    callers:agents.length,rmCount:(h.rm||[]).length,fancyCount:(h.fancy||[]).length,
+    calls:tCalls,success:tSuccess,seller:tSeller,rental:tRental,email:tEmail,
+    workH:tWorkH,successRate:avgSR,cph};
+}
+
+function updateWeekCompare(){
+  const wsA=document.getElementById('wk-a').value;
+  const wsB=document.getElementById('wk-b').value;
+  const el=document.getElementById('wk-cmp-result');
+  if(!el) return;
+  if(!wsA||!wsB){ el.innerHTML='<div class="no-data"><div class="ic">📅</div><p>Select two weeks above to compare full-team performance.</p></div>'; return; }
+  if(wsA===wsB){ el.innerHTML='<div class="no-data"><div class="ic">📅</div><p>Please select two different weeks.</p></div>'; return; }
+  const sA=weekTeamStats(wsA); const sB=weekTeamStats(wsB);
+  if(!sA||!sB){ el.innerHTML='<div class="no-data"><div class="ic">🔍</div><p>No data found for one or both selected weeks.</p></div>'; return; }
+  const weekLabel=s=>'Week of '+fmtShortDate(s.weekStart)+' – '+fmtShortDate(s.weekEnd);
+  const diffNum=(a,b)=>{ const d=a-b; const col=d>0?'var(--green)':d<0?'var(--qred)':'var(--muted)'; return '<span style="color:'+col+';font-weight:700">'+(d>=0?'+':'')+d+'</span>'; };
+  const diffPctFn=(a,b)=>{ const d=a-b; const col=d>0?'var(--green)':d<0?'var(--qred)':'var(--muted)'; return '<span style="color:'+col+';font-weight:700">'+(d>=0?'+':'')+d.toFixed(1)+'%</span>'; };
+  const row=(lbl,vA,vB,dH)=>'<tr><td style="font-weight:700;color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.5px;padding:8px 12px">'+lbl+'</td><td style="padding:8px 12px;font-weight:800;font-size:14px;color:var(--brand)">'+vA+'</td><td style="padding:8px 12px;font-weight:800;font-size:14px;color:#b8860b">'+vB+'</td><td style="padding:8px 12px">'+dH+'</td></tr>';
+  const tbody=[
+    row('Active Callers',sA.callers,sB.callers,diffNum(sA.callers,sB.callers)),
+    row('RM Callers',sA.rmCount,sB.rmCount,diffNum(sA.rmCount,sB.rmCount)),
+    row('Fancy Callers',sA.fancyCount,sB.fancyCount,diffNum(sA.fancyCount,sB.fancyCount)),
+    row('Total Calls',sA.calls.toLocaleString(),sB.calls.toLocaleString(),diffNum(sA.calls,sB.calls)),
+    row('Avg Success Rate',pct(sA.successRate),pct(sB.successRate),diffPctFn(sA.successRate*100,sB.successRate*100)),
+    row('Avg Calls/Hr',f1(sA.cph),f1(sB.cph),diffPctFn(sA.cph,sB.cph)),
+    row('Seller Leads',sA.seller,sB.seller,diffNum(sA.seller,sB.seller)),
+    row('Rental Leads',sA.rental,sB.rental,diffNum(sA.rental,sB.rental)),
+    row('Emails Collected',sA.email,sB.email,diffNum(sA.email,sB.email)),
+    row('Dialler Hours',f2(sA.workH)+'h',f2(sB.workH)+'h',diffPctFn(sA.workH,sB.workH)),
+  ].join('');
+  const thead='<tr style="background:var(--brand)"><th style="padding:12px;text-align:left;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,.7)">Metric</th><th style="padding:12px;text-align:left;font-size:11px;font-weight:900;color:var(--yellow)">'+weekLabel(sA)+'</th><th style="padding:12px;text-align:left;font-size:11px;font-weight:900;color:rgba(255,255,255,.85)">'+weekLabel(sB)+'</th><th style="padding:12px;text-align:left;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,.7)">Change</th></tr>';
+  el.innerHTML='<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;background:var(--card);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh)"><thead>'+thead+'</thead><tbody>'+tbody+'</tbody></table></div>';
+}
+
 function updateCompare(){
   const nameA=document.getElementById('cmp-a').value;
   const nameB=document.getElementById('cmp-b').value;
@@ -1118,6 +1210,7 @@ function updateCompare(){
   const t=today();
   let from, to=t;
   if(rangeVal==='current'){ const d=new Date();from=addDays(t,-((d.getDay()+6)%7)); to=addDays(from,4); }
+  else if(rangeVal==='lastweek'){ const d=new Date(); const thisMonday=addDays(t,-((d.getDay()+6)%7)); from=addDays(thisMonday,-7); to=addDays(from,4); }
   else if(rangeVal==='month'){ from=addDays(t,-30); }
   else if(rangeVal==='quarter'){ from=addDays(t,-90); }
   else { from='2020-01-01'; }
