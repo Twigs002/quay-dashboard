@@ -11,6 +11,10 @@ on:
         description: End date YYYY-MM-DD leave blank for yesterday
         required: false
         default: ''
+      force_refetch:
+        description: Force re-fetch weeks that already have data (true/false)
+        required: false
+        default: 'false'
 
 jobs:
   backfill:
@@ -35,6 +39,7 @@ jobs:
           CAMPAIGN_2_TOKEN: ${{ secrets.CAMPAIGN_2_TOKEN }}
           DIALFIRE_CAMPAIGNS: ${{ secrets.DIALFIRE_CAMPAIGNS }}
           DIALFIRE_TENANT_ID: ${{ secrets.DIALFIRE_TENANT_ID }}
+          FORCE_REFETCH: ${{ github.event.inputs.force_refetch }}
           START_DATE: ${{ github.event.inputs.start_date }}
           END_DATE: ${{ github.event.inputs.end_date }}
         run: python scripts/backfill_dialfire.py
