@@ -182,242 +182,249 @@ def extract_rows(data, label):
 def fetch_lead_counts(cid, token, ts, label):
     """
     Fetch Lead_Status counts per agent.
-    Approach 1: contacts/filter POST with Bearer token (returns contact records with Lead_Status per agent).
-    Approach 2: editsDef_v2 group0=Lead_Status, group1=user.
-    Approach 3: editsDef_v2 group0=user, group1=Lead_Status.
+    Tries contacts/filter POST (various field-selector params) with pagination,
+    then falls back to editsDef_v2 grouped reports.
     Returns: {agent_name: {"seller": N, "rental": N, "email": N}, ...}
     """
     result = {}
-    base_url = f"{API_BASE}/api/campaigns/{cid}/reports/editsDef_v2/report/{LOCALE}"
+    base_url     = f"{API_BASE}/api/campaigns/{cid}/reports/editsDef_v2/report/{LOCALE}"
     contacts_url = f"{API_BASE}/api/campaigns/{cid}/contacts/filter"
-    headers_bearer = {"Authorization": f"Bearer {token}"}
+    bearer_hdr   = {"Authorization": f"Bearer {token}"}
+    ct_hdr       = {"Content-Type": "application/json"}
 
-    # --- Approach 1: contacts/filter POST - get all contacts and count by Lead_Status per agent ---
-    try:
-        r_cf = requests.post(contacts_url, headers=headers_bearer,
-                             json={"fields": ["Lead_Status", "hs_lead_status", "assigned_user",
-                                              "$Lead_Status", "$hs_lead_status", "$assigned_user",
-                                              "last_edit_user", "last_edit_time"]},
-                             timeout=30)
-        print(f"  [{label}] contacts/filter: HTTP {r_cf.status_code}")
-        if r_cf.status_code == 200:
-            contacts = r_cf.json() if r_cf.text else []
-            if isinstance(contacts, list) and len(contacts) > 0:
-                sample = contacts[0] if isinstance(contacts[0], dict) else {}
-                sample_keys = list(sample.keys())[:20]
-                print(f"  [{label}] contacts sample keys: {sample_keys}")
-                # Try to find Lead_Status and agent fields
-                lead_field = None
-                agent_field = None
-                for fld in ["Lead_Status", "hs_lead_status", "$Lead_Status", "$hs_lead_status"]:
-                    if fld in sample:
-                        lead_field = fld
-                        break
-                for fld in ["assigned_user", "$assigned_user", "last_edit_user", "$last_edit_user"]:
-                    if fld in sample:
-                        agent_field = fld
-                        break
-                print(f"  [{label}] contacts lead_field={lead_field} agent_field={agent_field} total={len(contacts)}")
-                if lead_field and agent_field:
-                    for contact in contacts:
-                        if not isinstance(contact, dict):
-                            continue
-                        status_val = str(contact.get(lead_field, "")).strip().upper()
-                        agent_name = str(contact.get(agent_field, "")).strip()
-                        if not agent_name or agent_name in ("-", "None", ""):
-                            continue
-                        bucket = None
-                        if status_val in {s.upper() for s in SELLER_STATUSES}:
-                            bucket = "seller"
-                        elif status_val in {s.upper() for s in RENTAL_STATUSES}:
-                            bucket = "rental"
-                        elif status_val in {s.upper() for s in EMAIL_STATUSES}:
-                            bucket = "email"
-                        if bucket:
-                            if agent_name not in result:
-                                result[agent_name] = {"seller": 0, "rental": 0, "email": 0}
-                            result[agent_name][bucket] += 1
-                    if result:
-                        print(f"  [{label}] contacts leads SUCCESS: {result}")
-                        return result
-                    else:
-                        # Show sample values for debugging
-                        sample_leads = [str(c.get(lead_field, ""))[:30] for c in contacts[:5] if isinstance(c, dict)]
-                        sample_agents = [str(c.get(agent_field, ""))[:20] for c in contacts[:5] if isinstance(c, dict)]
-                        print(f"  [{label}] contacts: no matching statuses. Sample leads={sample_leads} agents={sample_agents}")
-            elif isinstance(contacts, dict):
-                print(f"  [{label}] contacts returned dict with keys: {list(contacts.keys())[:10]}")
-                # contacts/filter returns {cursor, hits, _count_, _checked_} - extract hits list
-                hits = contacts.get("hits", [])
-                if isinstance(hits, list) and len(hits) > 0:
-                    contacts = hits  # reuse list-processing logic below
-                    sample = contacts[0] if isinstance(contacts[0], dict) else {}
-                    sample_keys = list(sample.keys())[:20]
-                    print(f"  [{label}] contacts hits sample keys: {sample_keys}")
-                    lead_field = None
-                    agent_field = None
-                    for fld in ["Lead_Status", "hs_lead_status", "$Lead_Status", "$hs_lead_status"]:
-                        if fld in sample:
-                            lead_field = fld
-                            break
-                    for fld in ["assigned_user", "$assigned_user", "last_edit_user", "$last_edit_user"]:
-                        if fld in sample:
-                            agent_field = fld
-                            break
-                    print(f"  [{label}] hits: lead_field={lead_field} agent_field={agent_field}")
-                    if lead_field and agent_field:
-                        for c in contacts:
-                            if not isinstance(c, dict):
-                                continue
-                            status_val = str(c.get(lead_field, "") or "").strip().upper()
-                            agent_name = str(c.get(agent_field, "") or "").strip()
-                            if not agent_name:
-                                continue
-                            bucket = None
-                            if status_val in {s.upper() for s in SELLER_STATUSES}:
-                                bucket = "seller"
-                            elif status_val in {s.upper() for s in RENTAL_STATUSES}:
-                                bucket = "rental"
-                            elif status_val in {s.upper() for s in EMAIL_STATUSES}:
-                                bucket = "email"
-                            if bucket:
-                                if agent_name not in result:
-                                    result[agent_name] = {"seller": 0, "rental": 0, "email": 0}
-                                result[agent_name][bucket] += 1
-                        if result:
-                            print(f"  [{label}] contacts hits leads SUCCESS: {result}")
-                            return result
-                        else:
-                            sample_leads = [str(c.get(lead_field, ""))[:30] for c in contacts[:5] if isinstance(c, dict)]
-                            sample_agents = [str(c.get(agent_field, ""))[:20] for c in contacts[:5] if isinstance(c, dict)]
-                            print(f"  [{label}] contacts hits: no matching statuses. Sample leads={sample_leads} agents={sample_agents}")
-                    else:
-                        all_keys = list(contacts[0].keys()) if contacts else []
-                        print(f"  [{label}] contacts hits: cannot find lead/agent fields. All keys={all_keys}")
-                else:
-                    print(f"  [{label}] contacts hits: empty or not a list. hits type={type(hits).__name__} len={len(hits) if isinstance(hits,list) else 'N/A'}")
-        elif r_cf.status_code == 401 or r_cf.status_code == 403:
-            print(f"  [{label}] contacts/filter: auth failed ({r_cf.status_code}), trying access_token...")
-            # Try with access_token instead of Bearer
-            r_cf2 = requests.post(contacts_url,
-                                  json={"fields": ["Lead_Status", "hs_lead_status", "assigned_user"]},
+    # ---- Helper: extract all contacts from a contacts/filter response ----
+    def _process_contacts_response(contacts_data, page_label):
+        local_result = {}
+        all_c = []
+        cursor = None
+        if isinstance(contacts_data, list):
+            all_c = contacts_data
+        elif isinstance(contacts_data, dict):
+            hits = contacts_data.get("hits", [])
+            all_c = hits if isinstance(hits, list) else []
+            cursor = contacts_data.get("cursor")
+            cnt = contacts_data.get("_count_", "?")
+            print(f"  [{label}] {page_label}: hits={len(all_c)} cursor={bool(cursor)} _count_={cnt}")
+        if not all_c:
+            return local_result, cursor
+        sample = all_c[0] if isinstance(all_c[0], dict) else {}
+        s_keys = list(sample.keys())[:15]
+        print(f"  [{label}] {page_label} sample keys: {s_keys}")
+        # Find field names
+        lead_f = next((k for k in ["Lead_Status","$Lead_Status","hs_lead_status"] if k in sample), None)
+        agent_f = next((k for k in ["assigned_user","$assigned_user","last_edit_user","$last_edit_user"] if k in sample), None)
+        if not lead_f or not agent_f:
+            for c in all_c[:100]:
+                if isinstance(c, dict):
+                    if not lead_f: lead_f = next((k for k in ["Lead_Status","$Lead_Status","hs_lead_status"] if k in c), None)
+                    if not agent_f: agent_f = next((k for k in ["assigned_user","$assigned_user","last_edit_user"] if k in c), None)
+                if lead_f and agent_f: break
+        if not lead_f or not agent_f:
+            return local_result, cursor
+        for c in all_c:
+            if not isinstance(c, dict): continue
+            sv = str(c.get(lead_f, "") or "").strip().upper()
+            ag = str(c.get(agent_f, "") or "").strip()
+            if not ag or ag in ("-","None",""): continue
+            bucket = None
+            if sv in {s.upper() for s in SELLER_STATUSES}: bucket = "seller"
+            elif sv in {s.upper() for s in RENTAL_STATUSES}: bucket = "rental"
+            elif sv in {s.upper() for s in EMAIL_STATUSES}: bucket = "email"
+            if bucket:
+                if ag not in local_result: local_result[ag] = {"seller":0,"rental":0,"email":0}
+                local_result[ag][bucket] += 1
+        return local_result, cursor
+
+    # ---- Try contacts/filter with multiple field-selector strategies ----
+    # Dialfire may use "select", "columns", or "fields" to return contact field data
+    contact_bodies = [
+        {"select": ["Lead_Status", "assigned_user", "last_edit_user"]},
+        {"columns": ["Lead_Status", "assigned_user", "last_edit_user"]},
+        {"fields": ["Lead_Status", "assigned_user", "last_edit_user",
+                    "$Lead_Status", "$assigned_user", "last_edit_user", "last_edit_time"]},
+        {},
+    ]
+    for body_attempt in contact_bodies:
+        strategy_name = list(body_attempt.keys())[0] if body_attempt else "empty_body"
+        try:
+            r = requests.post(contacts_url, headers={**bearer_hdr, **ct_hdr},
+                              json=body_attempt, timeout=30)
+            if r.status_code in (401, 403):
+                r = requests.post(contacts_url, json=body_attempt,
                                   params={"access_token": token},
-                                  headers={"Content-Type": "application/json"},
-                                  timeout=30)
-            print(f"  [{label}] contacts/filter (access_token): HTTP {r_cf2.status_code}")
-            if r_cf2.status_code == 200:
-                contacts2 = r_cf2.json() if r_cf2.text else []
-                print(f"  [{label}] contacts (access_token): {len(contacts2) if isinstance(contacts2, list) else type(contacts2).__name__} items")
-    except Exception as e:
-        print(f"  [{label}] contacts/filter exception: {e}")
+                                  headers=ct_hdr, timeout=30)
+            print(f"  [{label}] contacts/filter [{strategy_name}]: HTTP {r.status_code}")
+            if r.status_code != 200:
+                continue
+            data = r.json() if r.text else {}
+            page_result, cursor = _process_contacts_response(data, f"p1[{strategy_name}]")
+            # Paginate
+            page = 0
+            while cursor and page < 100:
+                page += 1
+                r2 = requests.post(contacts_url,
+                                   headers={**bearer_hdr, **ct_hdr},
+                                   json={**body_attempt, "cursor": cursor},
+                                   timeout=30)
+                if r2.status_code != 200: break
+                d2 = r2.json() if r2.text else {}
+                pr2, cursor = _process_contacts_response(d2, f"p{page+1}[{strategy_name}]")
+                for ag, cnts in pr2.items():
+                    if ag not in page_result: page_result[ag] = {"seller":0,"rental":0,"email":0}
+                    for k in ("seller","rental","email"): page_result[ag][k] += cnts[k]
+                if not pr2: break
+            if page_result:
+                print(f"  [{label}] contacts [{strategy_name}] SUCCESS after {page} extra pages: {page_result}")
+                return page_result
+            # If hits only had $id (no useful fields), break out of strategy loop and try individual fetch
+            sample0 = {}
+            if isinstance(data, dict):
+                hits0 = data.get("hits", [])
+                if hits0 and isinstance(hits0[0], dict):
+                    sample0 = hits0[0]
+            if list(sample0.keys()) == ["$id"]:
+                # All strategies will return same thing; try individual contact GET
+                print(f"  [{label}] hits only $id, trying individual contact GET...")
+                ids_raw = []
+                resp_d = data if isinstance(data, dict) else {}
+                hits0 = resp_d.get("hits", [])
+                ids_raw = [c["$id"] for c in hits0 if isinstance(c, dict) and "$id" in c]
+                cur2 = resp_d.get("cursor")
+                fetch_page = 0
+                while cur2 and len(ids_raw) < 2000 and fetch_page < 20:
+                    fetch_page += 1
+                    rp = requests.post(contacts_url, headers={**bearer_hdr, **ct_hdr},
+                                       json={"cursor": cur2}, timeout=30)
+                    if rp.status_code != 200: break
+                    dp = rp.json() if rp.text else {}
+                    hp = dp.get("hits", []) if isinstance(dp, dict) else []
+                    ids_raw.extend([c["$id"] for c in hp if isinstance(c, dict) and "$id" in c])
+                    cur2 = dp.get("cursor") if isinstance(dp, dict) else None
+                    if not hp: break
+                print(f"  [{label}] fetching {len(ids_raw)} individual contacts...")
+                import time as _time
+                for cid_c in ids_raw:
+                    try:
+                        rc = requests.get(f"{API_BASE}/api/campaigns/{cid}/contacts/{cid_c}",
+                                          headers=bearer_hdr, timeout=10)
+                        if rc.status_code in (401, 403):
+                            rc = requests.get(f"{API_BASE}/api/campaigns/{cid}/contacts/{cid_c}",
+                                              params={"access_token": token}, timeout=10)
+                        if rc.status_code == 200:
+                            cd = rc.json()
+                            if isinstance(cd, dict):
+                                ls = str(cd.get("Lead_Status", cd.get("$Lead_Status","")) or "").strip().upper()
+                                ag = str(cd.get("assigned_user", cd.get("last_edit_user","")) or "").strip()
+                                if ag and ag not in ("-","None"):
+                                    bucket = None
+                                    if ls in {s.upper() for s in SELLER_STATUSES}: bucket="seller"
+                                    elif ls in {s.upper() for s in RENTAL_STATUSES}: bucket="rental"
+                                    elif ls in {s.upper() for s in EMAIL_STATUSES}: bucket="email"
+                                    if bucket:
+                                        if ag not in result: result[ag]={"seller":0,"rental":0,"email":0}
+                                        result[ag][bucket] += 1
+                    except Exception: pass
+                if result:
+                    print(f"  [{label}] individual GET SUCCESS: {result}")
+                    return result
+                print(f"  [{label}] individual GET: no results")
+                break  # No point retrying other strategies
+        except Exception as e:
+            print(f"  [{label}] contacts/filter [{strategy_name}] error: {e}")
 
     # --- Approach 2: editsDef_v2 group0=Lead_Status, group1=user ---
-    params1 = {
-        "access_token": token,
-        "asTree": "true",
-        "timespan": ts,
-        "group0": "Lead_Status",
-        "group1": "user",
-        "column0": "completed",
-    }
-    data1 = fetch_json(base_url, params1, label,
-                       "leads ap2: Lead_Status>user",
-                       timeout=30, max_polls=30)
-    if data1 is not None and isinstance(data1, dict):
-        groups1 = data1.get("groups", [])
-        print(f"  [{label}] leads ap2: groups={len(groups1) if isinstance(groups1,list) else type(groups1).__name__}")
-        if isinstance(groups1, list) and len(groups1) > 0:
-            first = groups1[0]
-            if isinstance(first, dict):
-                inner = first.get("groups", first.get("children", None))
-                print(f"  [{label}] leads ap2 first: value={repr(str(first.get('value',''))[:40])} inner={type(inner).__name__ if inner is not None else 'NONE'}")
-                if isinstance(inner, list) and len(inner) > 0:
-                    for grp in groups1:
-                        status_val = str(grp.get("value", "")).strip().upper()
-                        bucket = None
-                        if status_val in {s.upper() for s in SELLER_STATUSES}:
-                            bucket = "seller"
-                        elif status_val in {s.upper() for s in RENTAL_STATUSES}:
-                            bucket = "rental"
-                        elif status_val in {s.upper() for s in EMAIL_STATUSES}:
-                            bucket = "email"
-                        if bucket:
-                            inner_grps = grp.get("groups", grp.get("children", []))
+    try:
+        params1 = {
+            "access_token": token,
+            "asTree": "true",
+            "timespan": ts,
+            "group0": "Lead_Status",
+            "group1": "user",
+            "column0": "completed",
+        }
+        data1 = fetch_json(base_url, params1, label,
+                           "leads ap2: Lead_Status>user",
+                           timeout=30, max_polls=30)
+        if data1 is not None and isinstance(data1, dict):
+            groups1 = data1.get("groups", [])
+            print(f"  [{label}] leads ap2: groups={len(groups1) if isinstance(groups1,list) else type(groups1).__name__}")
+            if isinstance(groups1, list) and len(groups1) > 0:
+                first = groups1[0]
+                if isinstance(first, dict):
+                    inner = first.get("groups", first.get("children", None))
+                    if isinstance(inner, list):
+                        for sgrp in groups1:
+                            if not isinstance(sgrp, dict): continue
+                            status_val = str(sgrp.get("value", "")).strip().upper()
+                            bucket = None
+                            if status_val in {s.upper() for s in SELLER_STATUSES}: bucket = "seller"
+                            elif status_val in {s.upper() for s in RENTAL_STATUSES}: bucket = "rental"
+                            elif status_val in {s.upper() for s in EMAIL_STATUSES}: bucket = "email"
+                            if bucket is None: continue
+                            inner_grps = sgrp.get("groups", sgrp.get("children", []))
                             for u in (inner_grps if isinstance(inner_grps, list) else []):
                                 if isinstance(u, dict):
                                     agent_name = str(u.get("value", ""))
                                     ucols = u.get("columns", [])
                                     count = 0
                                     if isinstance(ucols, list) and len(ucols) > 0:
-                                        try:
-                                            count = int(ucols[0]) if ucols[0] not in (None, "", "-") else 0
-                                        except (ValueError, TypeError):
-                                            pass
+                                        try: count = int(ucols[0]) if ucols[0] not in (None,"","-") else 0
+                                        except (ValueError, TypeError): pass
                                     if agent_name and agent_name != "-":
-                                        if agent_name not in result:
-                                            result[agent_name] = {"seller": 0, "rental": 0, "email": 0}
+                                        if agent_name not in result: result[agent_name]={"seller":0,"rental":0,"email":0}
                                         result[agent_name][bucket] += count
-                    if result:
-                        print(f"  [{label}] leads ap2 SUCCESS: {result}")
-                        return result
+        if result:
+            print(f"  [{label}] leads ap2 SUCCESS: {result}")
+            return result
+    except Exception as e:
+        print(f"  [{label}] leads ap2 error: {e}")
 
     # --- Approach 3: editsDef_v2 group0=user, group1=Lead_Status ---
-    params2 = {
-        "access_token": token,
-        "asTree": "true",
-        "timespan": ts,
-        "group0": "user",
-        "group1": "Lead_Status",
-        "column0": "completed",
-    }
-    data2 = fetch_json(base_url, params2, label,
-                       "leads ap3: user>Lead_Status",
-                       timeout=30, max_polls=30)
-    if data2 is not None and isinstance(data2, dict):
-        groups2 = data2.get("groups", [])
-        print(f"  [{label}] leads ap3: groups={len(groups2) if isinstance(groups2,list) else type(groups2).__name__}")
-        if isinstance(groups2, list) and len(groups2) > 0:
-            first2 = groups2[0]
-            if isinstance(first2, dict):
-                inner2 = first2.get("groups", first2.get("children", None))
-                print(f"  [{label}] leads ap3 first: value={repr(str(first2.get('value',''))[:30])} inner={type(inner2).__name__ if inner2 is not None else 'NONE'}")
-                if isinstance(inner2, list) and len(inner2) > 0:
-                    for ugrp in groups2:
-                        agent_name = str(ugrp.get("value", ""))
-                        inner_grps = ugrp.get("groups", ugrp.get("children", []))
-                        if not isinstance(inner_grps, list):
-                            continue
-                        for sgrp in inner_grps:
-                            if not isinstance(sgrp, dict):
-                                continue
-                            status_val = str(sgrp.get("value", "")).strip().upper()
+    try:
+        params2 = {
+            "access_token": token,
+            "asTree": "true",
+            "timespan": ts,
+            "group0": "user",
+            "group1": "Lead_Status",
+            "column0": "completed",
+        }
+        data2 = fetch_json(base_url, params2, label,
+                           "leads ap3: user>Lead_Status",
+                           timeout=30, max_polls=30)
+        if data2 is not None and isinstance(data2, dict):
+            groups2 = data2.get("groups", [])
+            print(f"  [{label}] leads ap3: groups={len(groups2) if isinstance(groups2,list) else type(groups2).__name__}")
+            if isinstance(groups2, list) and len(groups2) > 0:
+                for ugrp in groups2:
+                    if not isinstance(ugrp, dict): continue
+                    agent_name = str(ugrp.get("value", "")).strip()
+                    if not agent_name or agent_name in ("-",""): continue
+                    inner_grps = ugrp.get("groups", ugrp.get("children", []))
+                    for sgrp in (inner_grps if isinstance(inner_grps, list) else []):
+                        if not isinstance(sgrp, dict): continue
+                        status_val = str(sgrp.get("value", "")).strip().upper()
+                        scols = sgrp.get("columns", [])
+                        count = 0
+                        if isinstance(scols, list) and len(scols) > 0:
+                            try: count = int(scols[0]) if scols[0] not in (None,"","-") else 0
+                            except (ValueError, TypeError): pass
+                        if agent_name and agent_name != "-":
                             bucket = None
-                            if status_val in {s.upper() for s in SELLER_STATUSES}:
-                                bucket = "seller"
-                            elif status_val in {s.upper() for s in RENTAL_STATUSES}:
-                                bucket = "rental"
-                            elif status_val in {s.upper() for s in EMAIL_STATUSES}:
-                                bucket = "email"
+                            if status_val in {s.upper() for s in SELLER_STATUSES}: bucket="seller"
+                            elif status_val in {s.upper() for s in RENTAL_STATUSES}: bucket="rental"
+                            elif status_val in {s.upper() for s in EMAIL_STATUSES}: bucket="email"
                             if bucket:
-                                scols = sgrp.get("columns", [])
-                                count = 0
-                                if isinstance(scols, list) and len(scols) > 0:
-                                    try:
-                                        count = int(scols[0]) if scols[0] not in (None, "", "-") else 0
-                                    except (ValueError, TypeError):
-                                        pass
-                                if agent_name and agent_name != "-":
-                                    if agent_name not in result:
-                                        result[agent_name] = {"seller": 0, "rental": 0, "email": 0}
-                                    result[agent_name][bucket] += count
-                    if result:
-                        print(f"  [{label}] leads ap3 SUCCESS: {result}")
-                        return result
+                                if agent_name not in result: result[agent_name]={"seller":0,"rental":0,"email":0}
+                                result[agent_name][bucket] += count
+        if result:
+            print(f"  [{label}] leads ap3 SUCCESS: {result}")
+            return result
+    except Exception as e:
+        print(f"  [{label}] leads ap3 error: {e}")
 
-    print(f"  [{label}] leads: all approaches failed - leads will be 0")
+    print(f"  [{label}] fetch_lead_counts: all approaches failed, returning {{}}")
     return result
-
-
 def parse_row(row):
     if not isinstance(row, dict):
         return None
