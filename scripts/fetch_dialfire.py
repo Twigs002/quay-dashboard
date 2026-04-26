@@ -28,10 +28,8 @@ BENCHMARKS = {
     "fc_success_rate": 20,
 }
 
-RM_NAMES = {
-    "Gio", "NaomiCiza", "Kay-LeeOrphan", "BrandonNtini",
-    "SadiqaCarelse", "DeclanT", "CameronPaulse",
-}
+# RM classification is now campaign-based:
+# agents calling campaign_clienthub are RM; all others are Fancy.
 
 SELLER_STATUSES = {"LEAD"}
 RENTAL_STATUSES = {"RENTAL_LEAD"}
@@ -461,8 +459,8 @@ def parse_row(row):
     email  = _int(row.get("email", 0))
 
     cph_val = round(calls / work_h, 1) if work_h > 0 else 0.0
-    is_rm   = name in RM_NAMES
-    bench   = BENCHMARKS["rm_success_rate"] if is_rm else BENCHMARKS["fc_success_rate"]
+    # is_rm is determined by campaign in main(); default False here
+    bench   = BENCHMARKS["rm_success_rate"]  # will be re-evaluated in main()
     meets   = cph_val >= BENCHMARKS["cph"] and sr >= bench
 
     return {
@@ -480,7 +478,7 @@ def parse_row(row):
 
 
 
-def fetch_campaign(cid, token, index, total, period_start, period_end, ts):
+def fetch_campaign(cid, token, index, total, period_start, period_end, ts, campaign_label=""):
     label = f"{index + 1}/{total} {cid}"
     base = f"{API_BASE}/api/campaigns/{cid}"
 
@@ -521,6 +519,8 @@ def fetch_campaign(cid, token, index, total, period_start, period_end, ts):
                             row["seller"] = lead_counts[name]["seller"]
                             row["rental"] = lead_counts[name]["rental"]
                             row["email"]  = lead_counts[name]["email"]
+                    for row in rows:
+                        row["campaign_label"] = campaign_label
                     return rows
         else:
             print(f"  [{label}] ts={cur_ts} got non-dict: {type(data).__name__}")
@@ -581,7 +581,7 @@ def main():
     all_rows = []
     for idx, c in enumerate(campaigns):
         rows = fetch_campaign(c["id"], c["token"], idx, len(campaigns),
-                              period_start, period_end, ts)
+                              period_start, period_end, ts, campaign_label=c.get("label", ""))
         all_rows.extend(rows)
 
     print()
@@ -593,6 +593,9 @@ def main():
         if agent is None:
             continue
         name = agent["name"]
+        # Mark as RM if they appear in the CLIENTHUB campaign
+        if row.get("campaign_label", "") == "CLIENTHUB":
+            agent["is_rm"] = True
         if name in merged:
             ex = merged[name]
             ex["calls"]    += agent["calls"]
@@ -601,18 +604,21 @@ def main():
             ex["rental"]   += agent["rental"]
             ex["email"]    += agent["email"]
             ex["workTime"]  = round(ex["workTime"] + agent["workTime"], 2)
+            # Once flagged as RM (CLIENTHUB), keep that flag
+            if agent.get("is_rm"):
+                ex["is_rm"] = True
         else:
             merged[name] = agent
 
     agents = list(merged.values())
     for a in agents:
         a["cph"] = round(a["calls"] / a["workTime"], 1) if a["workTime"] > 0 else 0.0
-        is_rm    = a["name"] in RM_NAMES
+        is_rm    = a.get("is_rm", False)
         bench    = BENCHMARKS["rm_success_rate"] if is_rm else BENCHMARKS["fc_success_rate"]
         a["meetsTarget"] = a["cph"] >= BENCHMARKS["cph"] and a["successRate"] >= bench
 
-    rm_agents    = sorted([a for a in agents if a["name"] in RM_NAMES],     key=lambda x: -x["calls"])
-    fancy_agents = sorted([a for a in agents if a["name"] not in RM_NAMES], key=lambda x: -x["calls"])
+    rm_agents    = sorted([a for a in agents if a.get("is_rm", False)],      key=lambda x: -x["calls"])
+    fancy_agents = sorted([a for a in agents if not a.get("is_rm", False)],   key=lambda x: -x["calls"])
 
     print(f"Unique agents: {len(agents)}")
     print(f"RM: {len(rm_agents)} | Fancy: {len(fancy_agents)}")
