@@ -1,5 +1,5 @@
 {
-  "generated": "2026-04-26T12:09:13.394419+00:00",
+  "generated": "2026-04-26T12:30:34.657258+00:00",
   "week": "2026-04-20",
   "periodStart": "2026-04-20",
   "periodEnd": "2026-04-24",
@@ -15,7 +15,10 @@
       "successRate": 19.0,
       "workTime": 22.23,
       "meetsTarget": true,
-      "is_rm": true
+      "is_rm": true,
+      "campaigns": [
+        "Clienthub Master"
+      ]
     },
     {
       "name": "NaomiCiza",
@@ -28,7 +31,10 @@
       "successRate": 22.0,
       "workTime": 18.12,
       "meetsTarget": false,
-      "is_rm": true
+      "is_rm": true,
+      "campaigns": [
+        "Clienthub Master"
+      ]
     },
     {
       "name": "SadiqaCarelse",
@@ -41,7 +47,10 @@
       "successRate": 18.1,
       "workTime": 8.14,
       "meetsTarget": true,
-      "is_rm": true
+      "is_rm": true,
+      "campaigns": [
+        "Clienthub Master"
+      ]
     },
     {
       "name": "WhitneyMalgas",
@@ -54,7 +63,10 @@
       "successRate": 22.5,
       "workTime": 4.72,
       "meetsTarget": true,
-      "is_rm": true
+      "is_rm": true,
+      "campaigns": [
+        "Clienthub Master"
+      ]
     },
     {
       "name": "BrandonNtini",
@@ -67,7 +79,10 @@
       "successRate": 30.7,
       "workTime": 6.43,
       "meetsTarget": false,
-      "is_rm": true
+      "is_rm": true,
+      "campaigns": [
+        "Clienthub Master"
+      ]
     },
     {
       "name": "NeelamJameel",
@@ -80,7 +95,10 @@
       "successRate": 9.3,
       "workTime": 1.97,
       "meetsTarget": false,
-      "is_rm": true
+      "is_rm": true,
+      "campaigns": [
+        "Clienthub Master"
+      ]
     },
     {
       "name": "DeclanT",
@@ -93,7 +111,10 @@
       "successRate": 17.3,
       "workTime": 2.1,
       "meetsTarget": false,
-      "is_rm": true
+      "is_rm": true,
+      "campaigns": [
+        "Clienthub Master"
+      ]
     },
     {
       "name": "CameronPaulse",
@@ -106,7 +127,10 @@
       "successRate": 50.0,
       "workTime": 0.03,
       "meetsTarget": true,
-      "is_rm": true
+      "is_rm": true,
+      "campaigns": [
+        "Clienthub Master"
+      ]
     }
   ],
   "fancy": [
@@ -120,7 +144,10 @@
       "cph": 37.6,
       "successRate": 13.7,
       "workTime": 7.56,
-      "meetsTarget": false
+      "meetsTarget": false,
+      "campaigns": [
+        "Goal Diggers - CM"
+      ]
     }
   ]
 }
