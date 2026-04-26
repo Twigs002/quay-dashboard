@@ -182,157 +182,62 @@ def extract_rows(data, label):
 def fetch_lead_counts(cid, token, ts, label):
     """
     Fetch Lead_Status counts per agent.
-    Tries contacts/filter POST (various field-selector params) with pagination,
-    then falls back to editsDef_v2 grouped reports.
+    Approach 1: contacts/filter POST - if hits contain full fields, parse them.
+    Approach 2: editsDef_v2 group0=Lead_Status, group1=user (fastest, works in practice).
+    Approach 3: editsDef_v2 group0=user, group1=Lead_Status.
     Returns: {agent_name: {"seller": N, "rental": N, "email": N}, ...}
     """
     result = {}
     base_url     = f"{API_BASE}/api/campaigns/{cid}/reports/editsDef_v2/report/{LOCALE}"
     contacts_url = f"{API_BASE}/api/campaigns/{cid}/contacts/filter"
     bearer_hdr   = {"Authorization": f"Bearer {token}"}
-    ct_hdr       = {"Content-Type": "application/json"}
 
-    # ---- Helper: extract all contacts from a contacts/filter response ----
-    def _process_contacts_response(contacts_data, page_label):
-        local_result = {}
-        all_c = []
-        cursor = None
-        if isinstance(contacts_data, list):
-            all_c = contacts_data
-        elif isinstance(contacts_data, dict):
-            hits = contacts_data.get("hits", [])
-            all_c = hits if isinstance(hits, list) else []
-            cursor = contacts_data.get("cursor")
-            cnt = contacts_data.get("_count_", "?")
-            print(f"  [{label}] {page_label}: hits={len(all_c)} cursor={bool(cursor)} _count_={cnt}")
-        if not all_c:
-            return local_result, cursor
-        sample = all_c[0] if isinstance(all_c[0], dict) else {}
-        s_keys = list(sample.keys())[:15]
-        print(f"  [{label}] {page_label} sample keys: {s_keys}")
-        # Find field names
-        lead_f = next((k for k in ["Lead_Status","$Lead_Status","hs_lead_status"] if k in sample), None)
-        agent_f = next((k for k in ["assigned_user","$assigned_user","last_edit_user","$last_edit_user"] if k in sample), None)
-        if not lead_f or not agent_f:
-            for c in all_c[:100]:
-                if isinstance(c, dict):
-                    if not lead_f: lead_f = next((k for k in ["Lead_Status","$Lead_Status","hs_lead_status"] if k in c), None)
-                    if not agent_f: agent_f = next((k for k in ["assigned_user","$assigned_user","last_edit_user"] if k in c), None)
-                if lead_f and agent_f: break
-        if not lead_f or not agent_f:
-            return local_result, cursor
-        for c in all_c:
-            if not isinstance(c, dict): continue
-            sv = str(c.get(lead_f, "") or "").strip().upper()
-            ag = str(c.get(agent_f, "") or "").strip()
-            if not ag or ag in ("-","None",""): continue
-            bucket = None
-            if sv in {s.upper() for s in SELLER_STATUSES}: bucket = "seller"
-            elif sv in {s.upper() for s in RENTAL_STATUSES}: bucket = "rental"
-            elif sv in {s.upper() for s in EMAIL_STATUSES}: bucket = "email"
-            if bucket:
-                if ag not in local_result: local_result[ag] = {"seller":0,"rental":0,"email":0}
-                local_result[ag][bucket] += 1
-        return local_result, cursor
+    # --- Approach 1: contacts/filter - only proceed if hits have full field data ---
+    try:
+        r_cf = requests.post(contacts_url,
+                             headers={**bearer_hdr, "Content-Type": "application/json"},
+                             json={},
+                             timeout=15)
+        if r_cf.status_code in (401, 403):
+            r_cf = requests.post(contacts_url,
+                                 params={"access_token": token},
+                                 headers={"Content-Type": "application/json"},
+                                 json={},
+                                 timeout=15)
+        print(f"  [{label}] contacts/filter: HTTP {r_cf.status_code}")
+        if r_cf.status_code == 200:
+            resp = r_cf.json() if r_cf.text else {}
+            hits = resp.get("hits", []) if isinstance(resp, dict) else (resp if isinstance(resp, list) else [])
+            if hits and isinstance(hits[0], dict):
+                sample_keys = list(hits[0].keys())[:15]
+                print(f"  [{label}] contacts hits sample keys: {sample_keys}")
+                # Only proceed if hits have actual field data (not just $id)
+                has_fields = any(k for k in sample_keys if k != "$id")
+                if has_fields:
+                    lead_f = next((k for k in ["Lead_Status","$Lead_Status","hs_lead_status"] if k in hits[0]), None)
+                    agent_f = next((k for k in ["assigned_user","$assigned_user","last_edit_user"] if k in hits[0]), None)
+                    if lead_f and agent_f:
+                        for c in hits:
+                            if not isinstance(c, dict): continue
+                            sv = str(c.get(lead_f,"") or "").strip().upper()
+                            ag = str(c.get(agent_f,"") or "").strip()
+                            if not ag or ag in ("-","None",""): continue
+                            bucket = None
+                            if sv in {s.upper() for s in SELLER_STATUSES}: bucket = "seller"
+                            elif sv in {s.upper() for s in RENTAL_STATUSES}: bucket = "rental"
+                            elif sv in {s.upper() for s in EMAIL_STATUSES}: bucket = "email"
+                            if bucket:
+                                if ag not in result: result[ag] = {"seller":0,"rental":0,"email":0}
+                                result[ag][bucket] += 1
+                        if result:
+                            print(f"  [{label}] contacts SUCCESS: {result}")
+                            return result
+                else:
+                    print(f"  [{label}] contacts: hits only have $id, skipping to editsDef_v2")
+    except Exception as e:
+        print(f"  [{label}] contacts/filter error: {e}")
 
-    # ---- Try contacts/filter with multiple field-selector strategies ----
-    # Dialfire may use "select", "columns", or "fields" to return contact field data
-    contact_bodies = [
-        {"select": ["Lead_Status", "assigned_user", "last_edit_user"]},
-        {"columns": ["Lead_Status", "assigned_user", "last_edit_user"]},
-        {"fields": ["Lead_Status", "assigned_user", "last_edit_user",
-                    "$Lead_Status", "$assigned_user", "last_edit_user", "last_edit_time"]},
-        {},
-    ]
-    for body_attempt in contact_bodies:
-        strategy_name = list(body_attempt.keys())[0] if body_attempt else "empty_body"
-        try:
-            r = requests.post(contacts_url, headers={**bearer_hdr, **ct_hdr},
-                              json=body_attempt, timeout=30)
-            if r.status_code in (401, 403):
-                r = requests.post(contacts_url, json=body_attempt,
-                                  params={"access_token": token},
-                                  headers=ct_hdr, timeout=30)
-            print(f"  [{label}] contacts/filter [{strategy_name}]: HTTP {r.status_code}")
-            if r.status_code != 200:
-                continue
-            data = r.json() if r.text else {}
-            page_result, cursor = _process_contacts_response(data, f"p1[{strategy_name}]")
-            # Paginate
-            page = 0
-            while cursor and page < 100:
-                page += 1
-                r2 = requests.post(contacts_url,
-                                   headers={**bearer_hdr, **ct_hdr},
-                                   json={**body_attempt, "cursor": cursor},
-                                   timeout=30)
-                if r2.status_code != 200: break
-                d2 = r2.json() if r2.text else {}
-                pr2, cursor = _process_contacts_response(d2, f"p{page+1}[{strategy_name}]")
-                for ag, cnts in pr2.items():
-                    if ag not in page_result: page_result[ag] = {"seller":0,"rental":0,"email":0}
-                    for k in ("seller","rental","email"): page_result[ag][k] += cnts[k]
-                if not pr2: break
-            if page_result:
-                print(f"  [{label}] contacts [{strategy_name}] SUCCESS after {page} extra pages: {page_result}")
-                return page_result
-            # If hits only had $id (no useful fields), break out of strategy loop and try individual fetch
-            sample0 = {}
-            if isinstance(data, dict):
-                hits0 = data.get("hits", [])
-                if hits0 and isinstance(hits0[0], dict):
-                    sample0 = hits0[0]
-            if list(sample0.keys()) == ["$id"]:
-                # All strategies will return same thing; try individual contact GET
-                print(f"  [{label}] hits only $id, trying individual contact GET...")
-                ids_raw = []
-                resp_d = data if isinstance(data, dict) else {}
-                hits0 = resp_d.get("hits", [])
-                ids_raw = [c["$id"] for c in hits0 if isinstance(c, dict) and "$id" in c]
-                cur2 = resp_d.get("cursor")
-                fetch_page = 0
-                while cur2 and len(ids_raw) < 2000 and fetch_page < 20:
-                    fetch_page += 1
-                    rp = requests.post(contacts_url, headers={**bearer_hdr, **ct_hdr},
-                                       json={"cursor": cur2}, timeout=30)
-                    if rp.status_code != 200: break
-                    dp = rp.json() if rp.text else {}
-                    hp = dp.get("hits", []) if isinstance(dp, dict) else []
-                    ids_raw.extend([c["$id"] for c in hp if isinstance(c, dict) and "$id" in c])
-                    cur2 = dp.get("cursor") if isinstance(dp, dict) else None
-                    if not hp: break
-                print(f"  [{label}] fetching {len(ids_raw)} individual contacts...")
-                import time as _time
-                for cid_c in ids_raw:
-                    try:
-                        rc = requests.get(f"{API_BASE}/api/campaigns/{cid}/contacts/{cid_c}",
-                                          headers=bearer_hdr, timeout=10)
-                        if rc.status_code in (401, 403):
-                            rc = requests.get(f"{API_BASE}/api/campaigns/{cid}/contacts/{cid_c}",
-                                              params={"access_token": token}, timeout=10)
-                        if rc.status_code == 200:
-                            cd = rc.json()
-                            if isinstance(cd, dict):
-                                ls = str(cd.get("Lead_Status", cd.get("$Lead_Status","")) or "").strip().upper()
-                                ag = str(cd.get("assigned_user", cd.get("last_edit_user","")) or "").strip()
-                                if ag and ag not in ("-","None"):
-                                    bucket = None
-                                    if ls in {s.upper() for s in SELLER_STATUSES}: bucket="seller"
-                                    elif ls in {s.upper() for s in RENTAL_STATUSES}: bucket="rental"
-                                    elif ls in {s.upper() for s in EMAIL_STATUSES}: bucket="email"
-                                    if bucket:
-                                        if ag not in result: result[ag]={"seller":0,"rental":0,"email":0}
-                                        result[ag][bucket] += 1
-                    except Exception: pass
-                if result:
-                    print(f"  [{label}] individual GET SUCCESS: {result}")
-                    return result
-                print(f"  [{label}] individual GET: no results")
-                break  # No point retrying other strategies
-        except Exception as e:
-            print(f"  [{label}] contacts/filter [{strategy_name}] error: {e}")
-
-    # --- Approach 2: editsDef_v2 group0=Lead_Status, group1=user ---
+    # --- Approach 2: editsDef_v2 group0=Lead_Status, group1=user (primary, proven to work) ---
     try:
         params1 = {
             "access_token": token,
