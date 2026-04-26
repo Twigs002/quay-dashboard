@@ -55,6 +55,8 @@ while True:
     CAMPAIGNS.append({"id": cid, "token": tok, "name": f"CAMP{i}"})
     i += 1
 
+FORCE_REFETCH = os.environ.get("FORCE_REFETCH", "").strip().lower() in ("true", "1", "yes")
+
 if not CAMPAIGNS:
     raw = os.environ.get("DIALFIRE_CAMPAIGNS", "")
     if raw:
@@ -289,9 +291,12 @@ def main():
         key = str(date_from)
         print(f"\n***{week_idx+1}/{total_weeks}*** Week {date_from} -> {date_to}")
 
-        if key in weeks_with_data:
+        if key in weeks_with_data and not FORCE_REFETCH:
             print(f"  Already has data -- skipping")
             continue
+        elif key in weeks_with_data and FORCE_REFETCH:
+            print(f"  Force-refetching (FORCE_REFETCH=true)...")
+            history = [e for e in history if e["week"] != key]
 
         agents = {}
         for campaign in CAMPAIGNS:
