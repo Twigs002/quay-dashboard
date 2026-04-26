@@ -41,6 +41,11 @@ ch_tok = os.environ.get("CAMPAIGN_CLIENTHUB_TOKEN", "").strip()
 if ch_id and ch_tok:
     CAMPAIGNS.append({"id": ch_id, "token": ch_tok, "name": "CLIENTHUB"})
 
+ch_new_id  = os.environ.get("CAMPAIGN_CLIENTHUB_NEW_ID", "").strip()
+ch_new_tok = os.environ.get("CAMPAIGN_CLIENTHUB_NEW_TOKEN", "").strip()
+if ch_new_id and ch_new_tok:
+    CAMPAIGNS.append({"id": ch_new_id, "token": ch_new_tok, "name": "CLIENTHUB"})
+
 i = 1
 while True:
     cid = os.environ.get(f"CAMPAIGN_{i}_ID", "").strip()
