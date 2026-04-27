@@ -23,11 +23,6 @@ from datetime import datetime, timedelta, timezone, date as date_type
 LOCALE = "en_US"
 API_BASE = "https://api.dialfire.com"
 
-RM_NAMES = {
-    "Gio", "NaomiCiza", "Kay-LeeOrphan", "BrandonNtini",
-    "SadiqaCarelse", "DeclanT", "CameronPaulse",
-}
-
 BENCHMARKS = {"cph": 45, "daily_calls": 315, "rm_success_rate": 17, "fc_success_rate": 20}
 
 SELLER_STATUSES = {"LEAD"}
@@ -54,6 +49,16 @@ while True:
         break
     CAMPAIGNS.append({"id": cid, "token": tok, "name": f"CAMP{i}"})
     i += 1
+
+ass_cm_id  = os.environ.get("ASSASSINS_CM_ID", "").strip()
+ass_cm_tok = os.environ.get("ASSASSINS_CM_TOKEN", "").strip()
+if ass_cm_id and ass_cm_tok:
+    CAMPAIGNS.append({"id": ass_cm_id, "token": ass_cm_tok, "name": "ASSASSINS_CM"})
+
+ass_na_id  = os.environ.get("ASSASSINS_NA_ID", "").strip()
+ass_na_tok = os.environ.get("ASSASSINS_NA_TOKEN", "").strip()
+if ass_na_id and ass_na_tok:
+    CAMPAIGNS.append({"id": ass_na_id, "token": ass_na_tok, "name": "ASSASSINS_NA"})
 
 FORCE_REFETCH = os.environ.get("FORCE_REFETCH", "").strip().lower() in ("true", "1", "yes")
 
@@ -220,6 +225,15 @@ def fetch_campaign_week(campaign, date_from, date_to):
     return []
 
 
+RM_CAMPAIGNS  = {"Clienthub Master", "New Contacts", "No Answer / Not contacted"}
+FANCY_TRIGGER = {"New Contacts", "Goal Diggers"}
+
+
+def _norm_camp(n):
+    import re
+    return re.sub(r"\s*[-\s]*(CM|NA)\s*$", "", n, flags=re.IGNORECASE).strip()
+
+
 def parse_row(row):
     name = str(row.get("value") or row.get("name") or row.get("user") or row.get("username") or row.get("agent_name") or "Unknown").strip()
 
@@ -232,9 +246,6 @@ def parse_row(row):
     cph = round(calls / work_hrs, 1) if work_hrs > 0 else 0.0
     sr  = round(success / calls * 100, 1) if calls > 0 else 0.0
 
-    is_rm     = name in RM_NAMES
-    bench_sr  = BENCHMARKS["rm_success_rate"] if is_rm else BENCHMARKS["fc_success_rate"]
-    meets_tgt = (cph >= BENCHMARKS["cph"] and sr >= bench_sr) if calls > 0 else False
 
     return {
         "name":        name,
@@ -247,6 +258,9 @@ def parse_row(row):
         "successRate": sr,
         "workTime":    round(work_hrs, 4),
         "meetsTarget": meets_tgt,
+        "is_rm":       False,
+        "meetsTarget": False,
+        "campaigns":   [],
     }
 
 
@@ -308,6 +322,9 @@ def main():
                     continue
                 if n not in agents:
                     agents[n] = parsed.copy()
+                cname = _norm_camp(campaign.get("name", ""))
+                if cname and cname not in agents[n]["campaigns"]:
+                    agents[n]["campaigns"].append(cname)
                 else:
                     a = agents[n]
                     a["calls"]   += parsed["calls"]
@@ -319,12 +336,19 @@ def main():
                     a["workTime"] = round(total_wt, 4)
                     a["cph"] = round(a["calls"] / total_wt, 1) if total_wt > 0 else 0.0
                     a["successRate"] = round(a["success"] / a["calls"] * 100, 1) if a["calls"] > 0 else 0.0
-                    is_rm = n in RM_NAMES
-                    bench_sr = BENCHMARKS["rm_success_rate"] if is_rm else BENCHMARKS["fc_success_rate"]
-                    a["meetsTarget"] = (a["cph"] >= BENCHMARKS["cph"] and a["successRate"] >= bench_sr) if a["calls"] > 0 else False
+                    cname2 = _norm_camp(campaign.get("name", ""))
+                    if cname2 and cname2 not in a["campaigns"]:
+                        a["campaigns"].append(cname2)
 
-        rm    = [v for v in agents.values() if v["name"] in RM_NAMES]
-        fancy = [v for v in agents.values() if v["name"] not in RM_NAMES]
+        for agent in agents.values():
+            camps = set(agent.get("campaigns", []))
+            if FANCY_TRIGGER.issubset(camps): agent["is_rm"] = False
+            elif camps and camps.issubset(RM_CAMPAIGNS): agent["is_rm"] = True
+            else: agent["is_rm"] = False
+            b = BENCHMARKS["rm_success_rate"] if agent["is_rm"] else BENCHMARKS["fc_success_rate"]
+            agent["meetsTarget"] = (agent["cph"] >= BENCHMARKS["cph"] and agent["successRate"] >= b) if agent["calls"] > 0 else False
+        rm    = [v for v in agents.values() if v["is_rm"]]
+        fancy = [v for v in agents.values() if not v["is_rm"]]
 
         print(f"  {len(agents)} agents, {sum(v['calls'] for v in agents.values())} calls, {len(rm)} RM, {len(fancy)} Fancy")
 
