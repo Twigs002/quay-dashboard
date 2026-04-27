@@ -510,6 +510,20 @@ def main():
             print(f"  Campaign {i}: {cid} (NO TOKEN)")
         i += 1
 
+    ass_cm_id  = os.environ.get("ASSASSINS_CM_ID", "").strip()
+    ass_cm_tok = os.environ.get("ASSASSINS_CM_TOKEN", "").strip()
+    if ass_cm_id and ass_cm_tok:
+        ass_cm_name = fetch_campaign_name(ass_cm_id, ass_cm_tok)
+        campaigns.append({"id": ass_cm_id, "token": ass_cm_tok, "label": "ASSASSINS_CM", "name": ass_cm_name})
+        print(f"  Assassins CM campaign: {ass_cm_id} ({ass_cm_name})")
+
+    ass_na_id  = os.environ.get("ASSASSINS_NA_ID", "").strip()
+    ass_na_tok = os.environ.get("ASSASSINS_NA_TOKEN", "").strip()
+    if ass_na_id and ass_na_tok:
+        ass_na_name = fetch_campaign_name(ass_na_id, ass_na_tok)
+        campaigns.append({"id": ass_na_id, "token": ass_na_tok, "label": "ASSASSINS_NA", "name": ass_na_name})
+        print(f"  Assassins NA campaign: {ass_na_id} ({ass_na_name})")
+
     leg_id  = os.environ.get("DIALFIRE_CAMPAIGN_ID", "").strip()
     leg_tok = os.environ.get("DIALFIRE_CAMPAIGN_TOKEN", "").strip()
     if leg_id and leg_tok:
@@ -537,13 +551,18 @@ def main():
     print(f"Raw rows collected: {len(all_rows)}")
 
     merged = {}
+    def _norm_camp(n):
+        """Strip CM/NA suffixes: Goal Diggers - CM -> Goal Diggers"""
+        import re
+        return re.sub(r"\s*[-\s]*(CM|NA)\s*$", "", n, flags=re.IGNORECASE).strip()
+
     agent_campaigns = {}  # name -> list of campaign names this agent appeared in
     for row in all_rows:
         agent = parse_row(row)
         if agent is None:
             continue
         name = agent["name"]
-        cname = row.get("campaign_name", row.get("campaign_label", ""))
+        cname = _norm_camp(row.get("campaign_name", row.get("campaign_label", "")))
         # Track which campaigns this agent appeared in
         if name not in agent_campaigns:
             agent_campaigns[name] = []
@@ -572,9 +591,9 @@ def main():
 
     # Re-classify agents based on campaigns:
     # RM   = ONLY worked on: Clienthub Master, New Contacts, No Answer / Not contacted
-    # Fancy = has worked on New Contacts AND Goal Diggers - CM
+    # Fancy = has worked on New Contacts AND Goal Diggers (any sub-campaign)
     _RM_CAMPS    = {"Clienthub Master", "New Contacts", "No Answer / Not contacted"}
-    _FANCY_TRIGGER = {"New Contacts", "Goal Diggers - CM"}
+    _FANCY_TRIGGER = {"New Contacts", "Goal Diggers"}  # normalised names
     for _name, _agent in merged.items():
         _camps = set(_agent.get("campaigns", []))
         if _FANCY_TRIGGER.issubset(_camps):
