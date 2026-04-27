@@ -570,6 +570,19 @@ def main():
     for name, agent in merged.items():
         agent["campaigns"] = agent_campaigns.get(name, [])
 
+    # Re-classify agents based on campaigns:
+    # RM   = ONLY worked on: Clienthub Master, New Contacts, No Answer / Not contacted
+    # Fancy = has worked on New Contacts AND Goal Diggers - CM
+    _RM_CAMPS    = {"Clienthub Master", "New Contacts", "No Answer / Not contacted"}
+    _FANCY_TRIGGER = {"New Contacts", "Goal Diggers - CM"}
+    for _name, _agent in merged.items():
+        _camps = set(_agent.get("campaigns", []))
+        if _FANCY_TRIGGER.issubset(_camps):
+            _agent["is_rm"] = False  # fancy caller
+        elif _camps and _camps.issubset(_RM_CAMPS):
+            _agent["is_rm"] = True   # RM
+        else:
+            _agent["is_rm"] = False  # default to fancy
     agents = list(merged.values())
     for a in agents:
         a["cph"] = round(a["calls"] / a["workTime"], 1) if a["workTime"] > 0 else 0.0
@@ -577,8 +590,8 @@ def main():
         bench    = BENCHMARKS["rm_success_rate"] if is_rm else BENCHMARKS["fc_success_rate"]
         a["meetsTarget"] = a["cph"] >= BENCHMARKS["cph"] and a["successRate"] >= bench
 
-    rm_agents    = sorted([a for a in agents if a.get("is_rm", False)],      key=lambda x: -x["calls"])
-    fancy_agents = sorted([a for a in agents if not a.get("is_rm", False)],   key=lambda x: -x["calls"])
+    rm_agents    = sorted([a for a in agents if a.get("is_rm", False)],     key=lambda x: -x["calls"])
+    fancy_agents = sorted([a for a in agents if not a.get("is_rm", False)],  key=lambda x: -x["calls"])
 
     print(f"Unique agents: {len(agents)}")
     print(f"RM: {len(rm_agents)} | Fancy: {len(fancy_agents)}")
