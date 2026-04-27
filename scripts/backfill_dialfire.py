@@ -257,7 +257,6 @@ def parse_row(row):
         "cph":         cph,
         "successRate": sr,
         "workTime":    round(work_hrs, 4),
-        "meetsTarget": meets_tgt,
         "is_rm":       False,
         "meetsTarget": False,
         "campaigns":   [],
