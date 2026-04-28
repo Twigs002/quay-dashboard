@@ -1,6 +1,6 @@
 [
   {
-    "generated": "2026-04-28T07:48:29Z",
+    "generated": "2026-04-28T19:53:21Z",
     "week": "2026-04-27",
     "weekStart": "2026-04-27",
     "weekEnd": "2026-04-27",
@@ -8,29 +8,13 @@
     "fancy": [
       {
         "name": "Gio",
-        "calls": 0,
-        "success": 0,
-        "seller": 2,
+        "calls": 216,
+        "success": 41,
+        "seller": 11,
         "rental": 0,
-        "email": 10,
+        "email": 30,
         "cph": 0.0,
-        "successRate": 0.0,
-        "workTime": 0.0,
-        "is_rm": false,
-        "meetsTarget": false,
-        "campaigns": [
-          "CLIENTHUB"
-        ]
-      },
-      {
-        "name": "\u2014",
-        "calls": 0,
-        "success": 0,
-        "seller": 2,
-        "rental": 0,
-        "email": 10,
-        "cph": 0.0,
-        "successRate": 0.0,
+        "successRate": 19.0,
         "workTime": 0.0,
         "is_rm": false,
         "meetsTarget": false,
@@ -41,69 +25,21 @@
     ]
   },
   {
-    "generated": "2026-04-28T07:47:56Z",
+    "generated": "2026-04-28T19:53:18Z",
     "week": "2026-04-20",
     "weekStart": "2026-04-20",
     "weekEnd": "2026-04-26",
     "rm": [],
     "fancy": [
       {
-        "name": "BrandonNtini",
-        "calls": 0,
-        "success": 0,
-        "seller": 7,
-        "rental": 1,
-        "email": 63,
-        "cph": 0.0,
-        "successRate": 0.0,
-        "workTime": 0.0,
-        "is_rm": false,
-        "meetsTarget": false,
-        "campaigns": [
-          "CLIENTHUB"
-        ]
-      },
-      {
-        "name": "CameronPaulse",
-        "calls": 0,
-        "success": 0,
-        "seller": 0,
-        "rental": 0,
-        "email": 1,
-        "cph": 0.0,
-        "successRate": 0.0,
-        "workTime": 0.0,
-        "is_rm": false,
-        "meetsTarget": false,
-        "campaigns": [
-          "CLIENTHUB"
-        ]
-      },
-      {
-        "name": "DeclanT",
-        "calls": 0,
-        "success": 0,
-        "seller": 4,
-        "rental": 0,
-        "email": 12,
-        "cph": 0.0,
-        "successRate": 0.0,
-        "workTime": 0.0,
-        "is_rm": false,
-        "meetsTarget": false,
-        "campaigns": [
-          "CLIENTHUB"
-        ]
-      },
-      {
         "name": "Gio",
-        "calls": 0,
-        "success": 0,
+        "calls": 1087,
+        "success": 205,
         "seller": 53,
         "rental": 0,
         "email": 149,
         "cph": 0.0,
-        "successRate": 0.0,
+        "successRate": 18.9,
         "workTime": 0.0,
         "is_rm": false,
         "meetsTarget": false,
@@ -113,29 +49,13 @@
       },
       {
         "name": "NaomiCiza",
-        "calls": 0,
-        "success": 0,
+        "calls": 751,
+        "success": 163,
         "seller": 10,
         "rental": 0,
         "email": 151,
         "cph": 0.0,
-        "successRate": 0.0,
-        "workTime": 0.0,
-        "is_rm": false,
-        "meetsTarget": false,
-        "campaigns": [
-          "CLIENTHUB"
-        ]
-      },
-      {
-        "name": "NeelamJameel",
-        "calls": 0,
-        "success": 0,
-        "seller": 2,
-        "rental": 0,
-        "email": 8,
-        "cph": 0.0,
-        "successRate": 0.0,
+        "successRate": 21.7,
         "workTime": 0.0,
         "is_rm": false,
         "meetsTarget": false,
@@ -145,13 +65,13 @@
       },
       {
         "name": "SadiqaCarelse",
-        "calls": 0,
-        "success": 0,
+        "calls": 567,
+        "success": 87,
         "seller": 13,
         "rental": 1,
         "email": 71,
         "cph": 0.0,
-        "successRate": 0.0,
+        "successRate": 15.3,
         "workTime": 0.0,
         "is_rm": false,
         "meetsTarget": false,
@@ -161,13 +81,13 @@
       },
       {
         "name": "WhitneyMalgas",
-        "calls": 0,
-        "success": 0,
+        "calls": 308,
+        "success": 65,
         "seller": 9,
         "rental": 0,
         "email": 54,
         "cph": 0.0,
-        "successRate": 0.0,
+        "successRate": 21.1,
         "workTime": 0.0,
         "is_rm": false,
         "meetsTarget": false,
@@ -176,32 +96,78 @@
         ]
       },
       {
-        "name": "\u2014",
-        "calls": 0,
-        "success": 0,
-        "seller": 101,
-        "rental": 2,
-        "email": 510,
+        "name": "BrandonNtini",
+        "calls": 254,
+        "success": 78,
+        "seller": 7,
+        "rental": 1,
+        "email": 63,
         "cph": 0.0,
-        "successRate": 0.0,
+        "successRate": 30.7,
         "workTime": 0.0,
         "is_rm": false,
         "meetsTarget": false,
         "campaigns": [
-          "CLIENTHUB",
-          "CAMP2",
+          "CLIENTHUB"
+        ]
+      },
+      {
+        "name": "QhayiyaDayimani",
+        "calls": 169,
+        "success": 9,
+        "seller": 5,
+        "rental": 0,
+        "email": 4,
+        "cph": 0.0,
+        "successRate": 5.3,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
           "ASSASSINS"
         ]
       },
       {
+        "name": "NeelamJameel",
+        "calls": 107,
+        "success": 10,
+        "seller": 2,
+        "rental": 0,
+        "email": 8,
+        "cph": 0.0,
+        "successRate": 9.3,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      },
+      {
+        "name": "DeclanT",
+        "calls": 93,
+        "success": 16,
+        "seller": 4,
+        "rental": 0,
+        "email": 12,
+        "cph": 0.0,
+        "successRate": 17.2,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      },
+      {
         "name": "CraigCarroll",
-        "calls": 0,
-        "success": 0,
+        "calls": 9,
+        "success": 1,
         "seller": 1,
         "rental": 0,
         "email": 0,
         "cph": 0.0,
-        "successRate": 0.0,
+        "successRate": 11.1,
         "workTime": 0.0,
         "is_rm": false,
         "meetsTarget": false,
@@ -211,103 +177,39 @@
         ]
       },
       {
-        "name": "QhayiyaDayimani",
-        "calls": 0,
-        "success": 0,
-        "seller": 5,
+        "name": "CameronPaulse",
+        "calls": 2,
+        "success": 1,
+        "seller": 0,
         "rental": 0,
-        "email": 4,
+        "email": 1,
         "cph": 0.0,
-        "successRate": 0.0,
+        "successRate": 50.0,
         "workTime": 0.0,
         "is_rm": false,
         "meetsTarget": false,
         "campaigns": [
-          "ASSASSINS"
+          "CLIENTHUB"
         ]
       }
     ]
   },
   {
-    "generated": "2026-04-28T07:47:50Z",
+    "generated": "2026-04-28T19:53:13Z",
     "week": "2026-04-13",
     "weekStart": "2026-04-13",
     "weekEnd": "2026-04-19",
     "rm": [],
     "fancy": [
       {
-        "name": "BrandonNtini",
-        "calls": 0,
-        "success": 0,
-        "seller": 4,
-        "rental": 1,
-        "email": 153,
-        "cph": 0.0,
-        "successRate": 0.0,
-        "workTime": 0.0,
-        "is_rm": false,
-        "meetsTarget": false,
-        "campaigns": [
-          "CLIENTHUB"
-        ]
-      },
-      {
-        "name": "CameronPaulse",
-        "calls": 0,
-        "success": 0,
-        "seller": 0,
-        "rental": 0,
-        "email": 4,
-        "cph": 0.0,
-        "successRate": 0.0,
-        "workTime": 0.0,
-        "is_rm": false,
-        "meetsTarget": false,
-        "campaigns": [
-          "CLIENTHUB"
-        ]
-      },
-      {
         "name": "Gio",
-        "calls": 0,
-        "success": 0,
+        "calls": 1051,
+        "success": 198,
         "seller": 56,
         "rental": 1,
         "email": 135,
         "cph": 0.0,
-        "successRate": 0.0,
-        "workTime": 0.0,
-        "is_rm": false,
-        "meetsTarget": false,
-        "campaigns": [
-          "CLIENTHUB"
-        ]
-      },
-      {
-        "name": "Kay-LeeOrphan",
-        "calls": 0,
-        "success": 0,
-        "seller": 4,
-        "rental": 0,
-        "email": 34,
-        "cph": 0.0,
-        "successRate": 0.0,
-        "workTime": 0.0,
-        "is_rm": false,
-        "meetsTarget": false,
-        "campaigns": [
-          "CLIENTHUB"
-        ]
-      },
-      {
-        "name": "NaomiCiza",
-        "calls": 0,
-        "success": 0,
-        "seller": 9,
-        "rental": 1,
-        "email": 133,
-        "cph": 0.0,
-        "successRate": 0.0,
+        "successRate": 18.8,
         "workTime": 0.0,
         "is_rm": false,
         "meetsTarget": false,
@@ -317,13 +219,45 @@
       },
       {
         "name": "SadiqaCarelse",
-        "calls": 0,
-        "success": 0,
+        "calls": 890,
+        "success": 206,
         "seller": 22,
         "rental": 0,
         "email": 170,
         "cph": 0.0,
-        "successRate": 0.0,
+        "successRate": 23.1,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      },
+      {
+        "name": "BrandonNtini",
+        "calls": 647,
+        "success": 165,
+        "seller": 4,
+        "rental": 1,
+        "email": 153,
+        "cph": 0.0,
+        "successRate": 25.5,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      },
+      {
+        "name": "NaomiCiza",
+        "calls": 617,
+        "success": 145,
+        "seller": 9,
+        "rental": 1,
+        "email": 133,
+        "cph": 0.0,
+        "successRate": 23.5,
         "workTime": 0.0,
         "is_rm": false,
         "meetsTarget": false,
@@ -333,13 +267,13 @@
       },
       {
         "name": "WhitneyMalgas",
-        "calls": 0,
-        "success": 0,
+        "calls": 394,
+        "success": 101,
         "seller": 8,
         "rental": 0,
         "email": 89,
         "cph": 0.0,
-        "successRate": 0.0,
+        "successRate": 25.6,
         "workTime": 0.0,
         "is_rm": false,
         "meetsTarget": false,
@@ -348,32 +282,46 @@
         ]
       },
       {
-        "name": "\u2014",
-        "calls": 0,
-        "success": 0,
-        "seller": 104,
-        "rental": 3,
-        "email": 733,
+        "name": "QhayiyaDayimani",
+        "calls": 338,
+        "success": 18,
+        "seller": 1,
+        "rental": 0,
+        "email": 17,
         "cph": 0.0,
-        "successRate": 0.0,
+        "successRate": 5.3,
         "workTime": 0.0,
         "is_rm": false,
         "meetsTarget": false,
         "campaigns": [
-          "CLIENTHUB",
-          "CAMP2",
           "ASSASSINS"
         ]
       },
       {
+        "name": "Kay-LeeOrphan",
+        "calls": 290,
+        "success": 39,
+        "seller": 4,
+        "rental": 0,
+        "email": 34,
+        "cph": 0.0,
+        "successRate": 13.4,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      },
+      {
         "name": "CraigCarroll",
-        "calls": 0,
-        "success": 0,
+        "calls": 137,
+        "success": 19,
         "seller": 7,
         "rental": 0,
         "email": 12,
         "cph": 0.0,
-        "successRate": 0.0,
+        "successRate": 13.9,
         "workTime": 0.0,
         "is_rm": false,
         "meetsTarget": false,
@@ -382,39 +330,135 @@
         ]
       },
       {
-        "name": "QhayiyaDayimani",
-        "calls": 0,
-        "success": 0,
-        "seller": 1,
+        "name": "CameronPaulse",
+        "calls": 46,
+        "success": 6,
+        "seller": 0,
         "rental": 0,
-        "email": 17,
+        "email": 4,
         "cph": 0.0,
-        "successRate": 0.0,
+        "successRate": 13.0,
         "workTime": 0.0,
         "is_rm": false,
         "meetsTarget": false,
         "campaigns": [
-          "ASSASSINS"
+          "CLIENTHUB"
         ]
       }
     ]
   },
   {
-    "generated": "2026-04-28T07:47:45Z",
+    "generated": "2026-04-28T19:53:09Z",
     "week": "2026-04-06",
     "weekStart": "2026-04-06",
     "weekEnd": "2026-04-12",
     "rm": [],
     "fancy": [
       {
+        "name": "Gio",
+        "calls": 1244,
+        "success": 262,
+        "seller": 74,
+        "rental": 1,
+        "email": 176,
+        "cph": 0.0,
+        "successRate": 21.1,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      },
+      {
+        "name": "NaomiCiza",
+        "calls": 841,
+        "success": 161,
+        "seller": 7,
+        "rental": 3,
+        "email": 149,
+        "cph": 0.0,
+        "successRate": 19.1,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      },
+      {
+        "name": "Kay-LeeOrphan",
+        "calls": 826,
+        "success": 130,
+        "seller": 15,
+        "rental": 1,
+        "email": 109,
+        "cph": 0.0,
+        "successRate": 15.7,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      },
+      {
         "name": "BrandonNtini",
-        "calls": 0,
-        "success": 0,
+        "calls": 813,
+        "success": 239,
         "seller": 5,
         "rental": 7,
         "email": 214,
         "cph": 0.0,
-        "successRate": 0.0,
+        "successRate": 29.4,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      },
+      {
+        "name": "SadiqaCarelse",
+        "calls": 703,
+        "success": 168,
+        "seller": 16,
+        "rental": 0,
+        "email": 136,
+        "cph": 0.0,
+        "successRate": 23.9,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      },
+      {
+        "name": "QhayiyaDayimani",
+        "calls": 251,
+        "success": 11,
+        "seller": 2,
+        "rental": 0,
+        "email": 9,
+        "cph": 0.0,
+        "successRate": 4.4,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "ASSASSINS"
+        ]
+      },
+      {
+        "name": "WhitneyMalgas",
+        "calls": 185,
+        "success": 35,
+        "seller": 5,
+        "rental": 0,
+        "email": 27,
+        "cph": 0.0,
+        "successRate": 18.9,
         "workTime": 0.0,
         "is_rm": false,
         "meetsTarget": false,
@@ -424,13 +468,13 @@
       },
       {
         "name": "CameronPaulse",
-        "calls": 0,
-        "success": 0,
+        "calls": 75,
+        "success": 13,
         "seller": 0,
         "rental": 0,
         "email": 10,
         "cph": 0.0,
-        "successRate": 0.0,
+        "successRate": 17.3,
         "workTime": 0.0,
         "is_rm": false,
         "meetsTarget": false,
@@ -440,61 +484,38 @@
       },
       {
         "name": "DeclanT",
-        "calls": 0,
-        "success": 0,
+        "calls": 51,
+        "success": 8,
         "seller": 0,
         "rental": 0,
         "email": 7,
         "cph": 0.0,
-        "successRate": 0.0,
+        "successRate": 15.7,
         "workTime": 0.0,
         "is_rm": false,
         "meetsTarget": false,
         "campaigns": [
           "CLIENTHUB"
         ]
-      },
+      }
+    ]
+  },
+  {
+    "generated": "2026-04-28T19:53:02Z",
+    "week": "2026-03-30",
+    "weekStart": "2026-03-30",
+    "weekEnd": "2026-04-05",
+    "rm": [],
+    "fancy": [
       {
         "name": "Gio",
-        "calls": 0,
-        "success": 0,
-        "seller": 74,
-        "rental": 1,
-        "email": 176,
+        "calls": 683,
+        "success": 89,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
         "cph": 0.0,
-        "successRate": 0.0,
-        "workTime": 0.0,
-        "is_rm": false,
-        "meetsTarget": false,
-        "campaigns": [
-          "CLIENTHUB"
-        ]
-      },
-      {
-        "name": "Kay-LeeOrphan",
-        "calls": 0,
-        "success": 0,
-        "seller": 15,
-        "rental": 1,
-        "email": 109,
-        "cph": 0.0,
-        "successRate": 0.0,
-        "workTime": 0.0,
-        "is_rm": false,
-        "meetsTarget": false,
-        "campaigns": [
-          "CLIENTHUB"
-        ]
-      },
-      {
-        "name": "NaomiCiza",
-        "calls": 0,
-        "success": 0,
-        "seller": 7,
-        "rental": 3,
-        "email": 149,
-        "cph": 0.0,
-        "successRate": 0.0,
+        "successRate": 13.0,
         "workTime": 0.0,
         "is_rm": false,
         "meetsTarget": false,
@@ -504,13 +525,109 @@
       },
       {
         "name": "SadiqaCarelse",
-        "calls": 0,
-        "success": 0,
-        "seller": 16,
+        "calls": 602,
+        "success": 121,
+        "seller": 0,
         "rental": 0,
-        "email": 136,
+        "email": 0,
         "cph": 0.0,
-        "successRate": 0.0,
+        "successRate": 20.1,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      },
+      {
+        "name": "BrandonNtini",
+        "calls": 564,
+        "success": 146,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 0.0,
+        "successRate": 25.9,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      },
+      {
+        "name": "Kay-LeeOrphan",
+        "calls": 378,
+        "success": 48,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 0.0,
+        "successRate": 12.7,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      },
+      {
+        "name": "NaomiCiza",
+        "calls": 282,
+        "success": 33,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 0.0,
+        "successRate": 11.7,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      },
+      {
+        "name": "Test",
+        "calls": 91,
+        "success": 12,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 0.0,
+        "successRate": 13.2,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      },
+      {
+        "name": "StaddyMalonga",
+        "calls": 37,
+        "success": 8,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 0.0,
+        "successRate": 21.6,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      },
+      {
+        "name": "DeclanT",
+        "calls": 18,
+        "success": 1,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 0.0,
+        "successRate": 5.6,
         "workTime": 0.0,
         "is_rm": false,
         "meetsTarget": false,
@@ -520,13 +637,38 @@
       },
       {
         "name": "WhitneyMalgas",
-        "calls": 0,
-        "success": 0,
-        "seller": 5,
+        "calls": 7,
+        "success": 4,
+        "seller": 0,
         "rental": 0,
-        "email": 27,
+        "email": 0,
         "cph": 0.0,
-        "successRate": 0.0,
+        "successRate": 57.1,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      }
+    ]
+  },
+  {
+    "generated": "2026-04-28T19:51:00Z",
+    "week": "2026-03-23",
+    "weekStart": "2026-03-23",
+    "weekEnd": "2026-03-29",
+    "rm": [],
+    "fancy": [
+      {
+        "name": "Kay-LeeOrphan",
+        "calls": 959,
+        "success": 113,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 0.0,
+        "successRate": 11.8,
         "workTime": 0.0,
         "is_rm": false,
         "meetsTarget": false,
@@ -535,37 +677,1003 @@
         ]
       },
       {
-        "name": "\u2014",
-        "calls": 0,
-        "success": 0,
-        "seller": 123,
-        "rental": 12,
-        "email": 834,
+        "name": "SadiqaCarelse",
+        "calls": 954,
+        "success": 145,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
         "cph": 0.0,
-        "successRate": 0.0,
+        "successRate": 15.2,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      },
+      {
+        "name": "Gio",
+        "calls": 914,
+        "success": 119,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 0.0,
+        "successRate": 13.0,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      },
+      {
+        "name": "TamzinJacobs",
+        "calls": 456,
+        "success": 81,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 0.0,
+        "successRate": 17.8,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      },
+      {
+        "name": "Test",
+        "calls": 440,
+        "success": 127,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 0.0,
+        "successRate": 28.9,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      },
+      {
+        "name": "ZukhanyeSigwela",
+        "calls": 410,
+        "success": 36,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 0.0,
+        "successRate": 8.8,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      },
+      {
+        "name": "DeclanT",
+        "calls": 403,
+        "success": 71,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 0.0,
+        "successRate": 17.6,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      },
+      {
+        "name": "NaomiCiza",
+        "calls": 400,
+        "success": 50,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 0.0,
+        "successRate": 12.5,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      },
+      {
+        "name": "CraigCarroll",
+        "calls": 297,
+        "success": 44,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 0.0,
+        "successRate": 14.8,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      },
+      {
+        "name": "BrandonNtini",
+        "calls": 187,
+        "success": 57,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 0.0,
+        "successRate": 30.5,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      },
+      {
+        "name": "HlomphoMonkhe",
+        "calls": 56,
+        "success": 10,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 0.0,
+        "successRate": 17.9,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      }
+    ]
+  },
+  {
+    "generated": "2026-04-28T19:48:26Z",
+    "week": "2026-03-16",
+    "weekStart": "2026-03-16",
+    "weekEnd": "2026-03-22",
+    "rm": [],
+    "fancy": [
+      {
+        "name": "DeclanT",
+        "calls": 1070,
+        "success": 205,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 0.0,
+        "successRate": 19.2,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      },
+      {
+        "name": "ZukhanyeSigwela",
+        "calls": 1065,
+        "success": 112,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 0.0,
+        "successRate": 10.5,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      },
+      {
+        "name": "Kay-LeeOrphan",
+        "calls": 1051,
+        "success": 112,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 0.0,
+        "successRate": 10.7,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      },
+      {
+        "name": "Gio",
+        "calls": 1033,
+        "success": 152,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 0.0,
+        "successRate": 14.7,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      },
+      {
+        "name": "NaomiCiza",
+        "calls": 817,
+        "success": 137,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 0.0,
+        "successRate": 16.8,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      },
+      {
+        "name": "TamzinJacobs",
+        "calls": 775,
+        "success": 118,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 0.0,
+        "successRate": 15.2,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      },
+      {
+        "name": "SadiqaCarelse",
+        "calls": 647,
+        "success": 129,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 0.0,
+        "successRate": 19.9,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      },
+      {
+        "name": "TiffanyHarvey",
+        "calls": 544,
+        "success": 48,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 0.0,
+        "successRate": 8.8,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      },
+      {
+        "name": "CraigCarroll",
+        "calls": 221,
+        "success": 23,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 0.0,
+        "successRate": 10.4,
         "workTime": 0.0,
         "is_rm": false,
         "meetsTarget": false,
         "campaigns": [
           "CLIENTHUB",
-          "CAMP2",
-          "ASSASSINS"
+          "CAMP2"
         ]
       },
       {
-        "name": "QhayiyaDayimani",
-        "calls": 0,
-        "success": 0,
-        "seller": 2,
+        "name": "HlomphoMonkhe",
+        "calls": 212,
+        "success": 40,
+        "seller": 0,
         "rental": 0,
-        "email": 9,
+        "email": 0,
         "cph": 0.0,
-        "successRate": 0.0,
+        "successRate": 18.9,
         "workTime": 0.0,
         "is_rm": false,
         "meetsTarget": false,
         "campaigns": [
-          "ASSASSINS"
+          "CLIENTHUB"
+        ]
+      },
+      {
+        "name": "AngeliqueBotes",
+        "calls": 35,
+        "success": 1,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 0.0,
+        "successRate": 2.9,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      },
+      {
+        "name": "AnneeqaWilliams",
+        "calls": 22,
+        "success": 4,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 0.0,
+        "successRate": 18.2,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      },
+      {
+        "name": "CameronPaulse",
+        "calls": 19,
+        "success": 3,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 0.0,
+        "successRate": 15.8,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      }
+    ]
+  },
+  {
+    "generated": "2026-04-28T19:45:52Z",
+    "week": "2026-03-09",
+    "weekStart": "2026-03-09",
+    "weekEnd": "2026-03-15",
+    "rm": [],
+    "fancy": [
+      {
+        "name": "Gio",
+        "calls": 1872,
+        "success": 382,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 0.0,
+        "successRate": 20.4,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      },
+      {
+        "name": "ZukhanyeSigwela",
+        "calls": 1610,
+        "success": 196,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 0.0,
+        "successRate": 12.2,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      },
+      {
+        "name": "DeclanT",
+        "calls": 1593,
+        "success": 382,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 0.0,
+        "successRate": 24.0,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      },
+      {
+        "name": "NaomiCiza",
+        "calls": 1332,
+        "success": 295,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 0.0,
+        "successRate": 22.1,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      },
+      {
+        "name": "Kay-LeeOrphan",
+        "calls": 1148,
+        "success": 148,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 0.0,
+        "successRate": 12.9,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      },
+      {
+        "name": "SadiqaCarelse",
+        "calls": 706,
+        "success": 150,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 0.0,
+        "successRate": 21.2,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      },
+      {
+        "name": "TiffanyHarvey",
+        "calls": 478,
+        "success": 45,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 0.0,
+        "successRate": 9.4,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      },
+      {
+        "name": "CraigCarroll",
+        "calls": 246,
+        "success": 40,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 0.0,
+        "successRate": 16.3,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB",
+          "CAMP2"
+        ]
+      },
+      {
+        "name": "Test",
+        "calls": 217,
+        "success": 60,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 0.0,
+        "successRate": 27.6,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      },
+      {
+        "name": "AngeliqueBotes",
+        "calls": 62,
+        "success": 1,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 0.0,
+        "successRate": 1.6,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      },
+      {
+        "name": "StaddyMalonga",
+        "calls": 53,
+        "success": 13,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 0.0,
+        "successRate": 24.5,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      },
+      {
+        "name": "BasilTambwe",
+        "calls": 50,
+        "success": 5,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 0.0,
+        "successRate": 10.0,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      },
+      {
+        "name": "HlomphoMonkhe",
+        "calls": 17,
+        "success": 1,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 0.0,
+        "successRate": 5.9,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      }
+    ]
+  },
+  {
+    "generated": "2026-04-28T19:43:18Z",
+    "week": "2026-03-02",
+    "weekStart": "2026-03-02",
+    "weekEnd": "2026-03-08",
+    "rm": [],
+    "fancy": [
+      {
+        "name": "Kay-LeeOrphan",
+        "calls": 1110,
+        "success": 112,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 0.0,
+        "successRate": 10.1,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      },
+      {
+        "name": "Gio",
+        "calls": 1062,
+        "success": 186,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 0.0,
+        "successRate": 17.5,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      },
+      {
+        "name": "ZukhanyeSigwela",
+        "calls": 1024,
+        "success": 93,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 0.0,
+        "successRate": 9.1,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      },
+      {
+        "name": "SadiqaCarelse",
+        "calls": 982,
+        "success": 127,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 0.0,
+        "successRate": 12.9,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      },
+      {
+        "name": "NaomiCiza",
+        "calls": 937,
+        "success": 160,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 0.0,
+        "successRate": 17.1,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      },
+      {
+        "name": "TiffanyHarvey",
+        "calls": 872,
+        "success": 77,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 0.0,
+        "successRate": 8.8,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      },
+      {
+        "name": "DeclanT",
+        "calls": 800,
+        "success": 151,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 0.0,
+        "successRate": 18.9,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      },
+      {
+        "name": "CameronPaulse",
+        "calls": 620,
+        "success": 87,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 0.0,
+        "successRate": 14.0,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      },
+      {
+        "name": "CraigCarroll",
+        "calls": 606,
+        "success": 76,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 0.0,
+        "successRate": 12.5,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB",
+          "CAMP2"
+        ]
+      },
+      {
+        "name": "Test",
+        "calls": 577,
+        "success": 141,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 0.0,
+        "successRate": 24.4,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      },
+      {
+        "name": "BasetsanaMabusela",
+        "calls": 483,
+        "success": 90,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 0.0,
+        "successRate": 18.6,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      },
+      {
+        "name": "BasilTambwe",
+        "calls": 205,
+        "success": 21,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 0.0,
+        "successRate": 10.2,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      },
+      {
+        "name": "HlomphoMonkhe",
+        "calls": 17,
+        "success": 1,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 0.0,
+        "successRate": 5.9,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      }
+    ]
+  },
+  {
+    "generated": "2026-04-28T19:40:45Z",
+    "week": "2026-02-23",
+    "weekStart": "2026-02-23",
+    "weekEnd": "2026-03-01",
+    "rm": [],
+    "fancy": [
+      {
+        "name": "DeclanT",
+        "calls": 1600,
+        "success": 288,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 0.0,
+        "successRate": 18.0,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      },
+      {
+        "name": "Kay-LeeOrphan",
+        "calls": 1249,
+        "success": 172,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 0.0,
+        "successRate": 13.8,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      },
+      {
+        "name": "BasetsanaMabusela",
+        "calls": 992,
+        "success": 217,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 0.0,
+        "successRate": 21.9,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      },
+      {
+        "name": "SadiqaCarelse",
+        "calls": 960,
+        "success": 179,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 0.0,
+        "successRate": 18.6,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      },
+      {
+        "name": "TiffanyHarvey",
+        "calls": 910,
+        "success": 122,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 0.0,
+        "successRate": 13.4,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      },
+      {
+        "name": "NaomiCiza",
+        "calls": 755,
+        "success": 160,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 0.0,
+        "successRate": 21.2,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      },
+      {
+        "name": "ZukhanyeSigwela",
+        "calls": 548,
+        "success": 33,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 0.0,
+        "successRate": 6.0,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      },
+      {
+        "name": "Test",
+        "calls": 463,
+        "success": 131,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 0.0,
+        "successRate": 28.3,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      },
+      {
+        "name": "CameronPaulse",
+        "calls": 449,
+        "success": 66,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 0.0,
+        "successRate": 14.7,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      },
+      {
+        "name": "CraigCarroll",
+        "calls": 429,
+        "success": 63,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 0.0,
+        "successRate": 14.7,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB",
+          "CAMP2"
+        ]
+      },
+      {
+        "name": "JoshAdonis",
+        "calls": 41,
+        "success": 6,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 0.0,
+        "successRate": 14.6,
+        "workTime": 0.0,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
         ]
       }
     ]
