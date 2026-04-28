@@ -1,10 +1,27 @@
 [
   {
-    "generated": "2026-04-28T07:25:37Z",
+    "generated": "2026-04-28T07:31:31.604333+00:00",
     "week": "2026-04-27",
     "weekStart": "2026-04-27",
-    "weekEnd": "2026-04-27",
-    "rm": [],
+    "weekEnd": "2026-05-01",
+    "rm": [
+      {
+        "name": "Gio",
+        "calls": 55,
+        "success": 9,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 45.8,
+        "successRate": 16.4,
+        "workTime": 1.2,
+        "meetsTarget": false,
+        "is_rm": true,
+        "campaigns": [
+          "Clienthub Master"
+        ]
+      }
+    ],
     "fancy": []
   },
   {
