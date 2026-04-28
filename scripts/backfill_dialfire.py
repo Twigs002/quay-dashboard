@@ -231,7 +231,7 @@ FANCY_TRIGGER = {"New Contacts", "Goal Diggers"}
 
 def _norm_camp(n):
     import re
-    return re.sub(r"\s*[-\s]*(CM|NA)\s*$", "", n, flags=re.IGNORECASE).strip()
+    return re.sub(r"\s*[_\-\s]*(CM|NA)\s*$", "", n, flags=re.IGNORECASE).strip()
 
 
 def parse_row(row):
