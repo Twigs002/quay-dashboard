@@ -1607,7 +1607,7 @@ function exportDailyCSV(){
 // ─── MANAGER REPORTS ──────────────────────────────────────────────
 let _mgrSortKey='calls', _mgrSortAsc=false;
 
-function _normCamp(n){return n.replace(/\s*[-\s]*(CM|NA)\s*$/i,"").trim();}
+function _normCamp(n){return n.replace(/\s*[_\-\s]*(CM|NA)\s*$/i,"").trim();}
 
 function initMgrFilters(){
   const t=today(), d=new Date();
