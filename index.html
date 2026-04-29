@@ -8,43 +8,17 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Permanent+Marker&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
-/* ── QUAY 1 BRAND ────────────────────────────────────────────────── */
 :root{
-  --brand:    #3D5BA6;   /* Quay 1 primary blue */
-  --brand-dk: #2E4480;   /* darker shade */
-  --brand-xdk:#1E2E5C;   /* header gradient end */
-  --yellow:   #FDC503;   /* Quay 1 yellow */
-  --yellow-l: #FFF8D6;
-  --sky:      #98C5ED;   /* Quay 1 light blue */
-  --sky-l:    #EAF4FD;
-  --qred:     #D20A03;   /* Quay 1 red */
-  --qred-l:   #FDDDDB;
-  --green:    #1A8A4A;
-  --green-l:  #D3F0E2;
-  --amber:    #C07010;
-  --amber-l:  #FEF0CC;
-  --light:    #F2F5FB;
-  --card:     #FFFFFF;
-  --text:     #1A1F36;
-  --muted:    #6B7A99;
-  --border:   #DDE3F0;
-  --r:        12px;
-  --sh:       0 2px 20px rgba(61,91,166,.10);
+  --brand:#3D5BA6;--brand-dk:#2E4480;--brand-xdk:#1E2E5C;--yellow:#FDC503;--yellow-l:#FFF8D6;
+  --sky:#98C5ED;--sky-l:#EAF4FD;--qred:#D20A03;--qred-l:#FDDDDB;--green:#1A8A4A;--green-l:#D3F0E2;
+  --amber:#C07010;--amber-l:#FEF0CC;--light:#F2F5FB;--card:#FFFFFF;--text:#1A1F36;
+  --muted:#6B7A99;--border:#DDE3F0;--r:12px;--sh:0 2px 20px rgba(61,91,166,.10);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Montserrat',Arial,sans-serif;background:var(--light);color:var(--text);min-height:100vh}
-
-/* ── HEADER ─────────────────────────────────────────────────────── */
-header{
-  background:linear-gradient(135deg,var(--brand) 0%,var(--brand-xdk) 100%);
-  padding:0 28px;display:flex;align-items:center;justify-content:space-between;
-  height:70px;box-shadow:0 3px 18px rgba(0,0,0,.28);position:sticky;top:0;z-index:200;
-}
+header{background:linear-gradient(135deg,var(--brand) 0%,var(--brand-xdk) 100%);padding:0 28px;display:flex;align-items:center;justify-content:space-between;height:70px;box-shadow:0 3px 18px rgba(0,0,0,.28);position:sticky;top:0;z-index:200;}
 .logo{display:flex;align-items:center;gap:14px}
-.logo-text h1{
-  color:#fff;font-size:13px;font-weight:800;letter-spacing:2px;
-  text-transform:uppercase;line-height:1.1
-}
+.logo-text h1{color:#fff;font-size:13px;font-weight:800;letter-spacing:2px;text-transform:uppercase;line-height:1.1}
 .logo-text p{color:rgba(255,255,255,.55);font-size:8px;letter-spacing:2.5px;text-transform:uppercase;margin-top:2px}
 .logo-text em{font-family:'Permanent Marker',cursive;font-style:normal;color:var(--yellow);font-size:9px;letter-spacing:0}
 .hdr-r{display:flex;gap:8px;align-items:center}
@@ -55,149 +29,68 @@ header{
 .btn-yellow{background:var(--yellow);color:var(--brand-xdk)}.btn-yellow:hover{filter:brightness(1.08)}
 .btn-outline{background:transparent;border:1.5px solid rgba(255,255,255,.3);color:#fff}
 .btn-outline:hover{background:rgba(255,255,255,.1)}
-
-/* ── LAYOUT ──────────────────────────────────────────────────────── */
 main{max-width:1440px;margin:0 auto;padding:22px 20px 60px}
-
-/* ── TAB BAR ─────────────────────────────────────────────────────── */
-.tab-bar{
-  display:flex;gap:3px;margin-bottom:22px;background:var(--card);
-  padding:5px;border-radius:11px;box-shadow:var(--sh);width:fit-content;flex-wrap:wrap;
-}
-.tab{
-  padding:9px 20px;border-radius:8px;border:none;cursor:pointer;
-  font-size:11px;font-weight:700;color:var(--muted);background:transparent;
-  transition:.18s;letter-spacing:.3px;text-transform:uppercase;
-}
+.tab-bar{display:flex;gap:3px;margin-bottom:22px;background:var(--card);padding:5px;border-radius:11px;box-shadow:var(--sh);width:fit-content;flex-wrap:wrap;}
+.tab{padding:9px 20px;border-radius:8px;border:none;cursor:pointer;font-size:11px;font-weight:700;color:var(--muted);background:transparent;transition:.18s;letter-spacing:.3px;text-transform:uppercase;}
 .tab.active{background:var(--brand);color:#fff;box-shadow:0 2px 10px rgba(61,91,166,.35)}
 .tab-panel{display:none}.tab-panel.active{display:block}
-
-/* ── SUMMARY CARDS ───────────────────────────────────────────────── */
-.srow{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:18px}
-@media(max-width:900px){.srow{grid-template-columns:repeat(3,1fr)}}
+.srow{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:18px}
+@media(max-width:1100px){.srow{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:560px){.srow{grid-template-columns:repeat(2,1fr)}}
-.sc{
-  background:var(--card);border-radius:var(--r);padding:18px 18px;
-  box-shadow:var(--sh);border-left:4px solid var(--brand);
-}
+.sc{background:var(--card);border-radius:var(--r);padding:18px;box-shadow:var(--sh);border-left:4px solid var(--brand);}
 .sc.blue{border-color:var(--brand)}.sc.sky{border-color:var(--sky)}
 .sc.green{border-color:var(--green)}.sc.red{border-color:var(--qred)}
-.sc.yellow{border-color:var(--yellow)}
+.sc.yellow{border-color:var(--yellow)}.sc.purple{border-color:#7C5CF6}
 .sc-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:5px}
 .sc-val{font-size:26px;font-weight:900;color:var(--brand);line-height:1}
 .sc-sub{font-size:10px;color:var(--muted);margin-top:4px}
-
-/* ── BENCH BANNER ────────────────────────────────────────────────── */
 .bench{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center}
 .bp{padding:5px 14px;border-radius:20px;font-size:11px;font-weight:700;display:flex;align-items:center;gap:5px}
-.bp.blue{background:var(--sky-l);color:var(--brand)}
-.bp.green{background:var(--green-l);color:var(--green)}
-.bp.gold{background:var(--yellow-l);color:#9A7800}
-.auto-tag{margin-left:auto;font-size:10px;color:var(--muted);font-style:italic}
-
-/* ── TABLE ───────────────────────────────────────────────────────── */
+.bp.blue{background:var(--sky-l);color:var(--brand)}.bp.green{background:var(--green-l);color:var(--green)}.bp.gold{background:var(--yellow-l);color:#9A7800}
 .tw{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);overflow-x:auto;margin-bottom:18px}
 .th{padding:14px 18px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border)}
 .th h2{font-size:12px;font-weight:800;color:var(--brand);text-transform:uppercase;letter-spacing:.5px}
 table{width:100%;border-collapse:collapse;min-width:680px}
-thead th{
-  background:var(--brand);color:#fff;padding:10px 14px;
-  font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;
-  text-align:left;white-space:nowrap;
-}
-thead th:first-child{border-radius:0}
-thead th.sort{cursor:pointer;user-select:none}
-thead th.sort:hover{background:var(--brand-dk)}
+thead th{background:var(--brand);color:#fff;padding:10px 14px;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;text-align:left;white-space:nowrap;}
+thead th.sort{cursor:pointer;user-select:none}thead th.sort:hover{background:var(--brand-dk)}
 tbody tr{border-bottom:1px solid var(--border);transition:background .1s}
 tbody tr:hover{background:var(--sky-l)}
 tbody td{padding:11px 14px;font-size:12px;white-space:nowrap}
 .ag{font-weight:800;color:var(--brand)}
-
-/* ── BADGES ──────────────────────────────────────────────────────── */
 .status{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;font-size:10px;font-weight:700}
-.status.green{background:var(--green-l);color:var(--green)}
-.status.amber{background:var(--amber-l);color:var(--amber)}
-.status.red{background:var(--qred-l);color:var(--qred)}
+.status.green{background:var(--green-l);color:var(--green)}.status.amber{background:var(--amber-l);color:var(--amber)}.status.red{background:var(--qred-l);color:var(--qred)}
 .mx{display:inline-block;padding:3px 9px;border-radius:6px;font-size:10px;font-weight:800}
-.mx.good{background:var(--green-l);color:var(--green)}
-.mx.warn{background:var(--amber-l);color:var(--amber)}
-.mx.bad{background:var(--qred-l);color:var(--qred)}
-.mx.neu{background:var(--sky-l);color:var(--brand)}
-.mx.pur{background:#EDE9FF;color:#5B3FA6}
-
-/* ── LEGEND ──────────────────────────────────────────────────────── */
+.mx.good{background:var(--green-l);color:var(--green)}.mx.warn{background:var(--amber-l);color:var(--amber)}.mx.bad{background:var(--qred-l);color:var(--qred)}.mx.neu{background:var(--sky-l);color:var(--brand)}.mx.pur{background:#EDE9FF;color:#5B3FA6}
 .leg{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:12px}
 .li{display:flex;align-items:center;gap:5px;font-size:10px;font-weight:600;color:var(--muted)}
 .ld{width:9px;height:9px;border-radius:50%;flex-shrink:0}
-
-/* ── REPORTS TAB ─────────────────────────────────────────────────── */
 .range-card{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);padding:20px;margin-bottom:18px}
 .range-card h2{font-size:12px;font-weight:800;color:var(--brand);margin-bottom:12px;text-transform:uppercase;letter-spacing:.5px}
 .presets{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
-.preset-btn{
-  padding:6px 14px;border-radius:20px;border:1.5px solid var(--border);
-  background:var(--light);color:var(--text);font-size:10px;font-weight:700;
-  cursor:pointer;transition:.15s;letter-spacing:.3px;
-}
+.preset-btn{padding:6px 14px;border-radius:20px;border:1.5px solid var(--border);background:var(--light);color:var(--text);font-size:10px;font-weight:700;cursor:pointer;transition:.15s;}
 .preset-btn:hover,.preset-btn.active{background:var(--brand);color:#fff;border-color:var(--brand)}
 .range-inputs{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .range-inputs label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
-.range-inputs input[type=date]{
-  border:1.5px solid var(--border);border-radius:8px;
-  padding:8px 12px;font-size:12px;background:var(--light);color:var(--text);
-  outline:none;font-family:'Montserrat',Arial,sans-serif;
-}
+.range-inputs input[type=date]{border:1.5px solid var(--border);border-radius:8px;padding:8px 12px;font-size:12px;background:var(--light);color:var(--text);outline:none;font-family:'Montserrat',Arial,sans-serif;}
 .range-inputs input[type=date]:focus{border-color:var(--brand)}
 .view-toggle{display:flex;gap:4px;background:var(--light);padding:3px;border-radius:9px;width:fit-content;margin-bottom:16px}
 .vt-btn{padding:8px 20px;border-radius:7px;border:none;cursor:pointer;font-size:10px;font-weight:700;color:var(--muted);background:transparent;transition:.15s;text-transform:uppercase;letter-spacing:.5px}
 .vt-btn.active{background:var(--brand);color:#fff;box-shadow:0 2px 8px rgba(61,91,166,.3)}
 .no-data{text-align:center;padding:48px;color:var(--muted)}
 .no-data .ic{font-size:40px;margin-bottom:10px}
-
-/* ── COMPARE TAB ─────────────────────────────────────────────────── */
-.compare-controls{
-  background:var(--card);border-radius:var(--r);box-shadow:var(--sh);
-  padding:20px;margin-bottom:18px;display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap;
-}
+.compare-controls{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);padding:20px;margin-bottom:18px;display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap;}
 .cs-wrap{display:flex;flex-direction:column;gap:6px;flex:1;min-width:180px}
 .cs-wrap label{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--muted)}
-.cs-wrap select{
-  border:2px solid var(--border);border-radius:9px;padding:10px 13px;
-  font-size:12px;font-weight:600;color:var(--text);background:var(--light);
-  outline:none;cursor:pointer;font-family:'Montserrat',Arial,sans-serif;
-}
+.cs-wrap select{border:2px solid var(--border);border-radius:9px;padding:10px 13px;font-size:12px;font-weight:600;color:var(--text);background:var(--light);outline:none;cursor:pointer;font-family:'Montserrat',Arial,sans-serif;}
 .cs-wrap select:focus{border-color:var(--brand)}
 .vs-badge{font-size:20px;font-weight:900;color:var(--brand);padding-bottom:4px}
-
-.comp-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px}
-@media(max-width:700px){.comp-grid{grid-template-columns:1fr}}
-.comp-card{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);padding:22px;border-top:5px solid transparent}
-.comp-card.a{border-color:var(--brand)}
-.comp-card.b{border-color:var(--yellow)}
-.comp-name{font-size:17px;font-weight:900;color:var(--brand);margin-bottom:4px}
-.comp-group{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:16px}
-.comp-stat{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border)}
-.comp-stat:last-child{border:none}
-.cs-label{font-size:11px;color:var(--muted);font-weight:600}
-.cs-val{font-size:14px;font-weight:800;color:var(--text)}
-.cs-val.win{color:var(--green)}
-.cs-val.lose{color:var(--qred)}
-
-/* Fixed chart containers — key fix for "too big" issue */
-.charts-compare{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px}
-@media(max-width:800px){.charts-compare{grid-template-columns:1fr}}
 .cc{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);padding:20px}
 .cc-title{font-size:11px;font-weight:800;color:var(--brand);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px}
 .cc-sub{font-size:10px;color:var(--muted);margin-bottom:12px}
 .cc canvas{max-height:220px;width:100%!important}
-
-/* ── WORK TIME TAB ───────────────────────────────────────────────── */
 .wt-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px}
 @media(max-width:800px){.wt-grid{grid-template-columns:1fr}}
-.upload-zone{
-  background:var(--card);border-radius:var(--r);padding:28px;box-shadow:var(--sh);
-  text-align:center;border:2px dashed var(--border);cursor:pointer;transition:.18s;
-}
+.upload-zone{background:var(--card);border-radius:var(--r);padding:28px;box-shadow:var(--sh);text-align:center;border:2px dashed var(--border);cursor:pointer;transition:.18s;}
 .upload-zone:hover{border-color:var(--brand);background:var(--sky-l)}
 .upload-zone h3{font-size:13px;font-weight:800;color:var(--brand);margin-bottom:6px}
 .upload-zone p{font-size:11px;color:var(--muted);margin-bottom:14px;line-height:1.8}
@@ -206,74 +99,33 @@ tbody td{padding:11px 14px;font-size:12px;white-space:nowrap}
 .wt-bar-wrap{height:6px;background:var(--border);border-radius:3px;margin-top:4px;overflow:hidden}
 .wt-bar{height:100%;border-radius:3px;transition:width .5s ease}
 .wt-bar.good{background:var(--green)}.wt-bar.warn{background:var(--amber)}.wt-bar.bad{background:var(--qred)}
-
-/* ── EXECUTIVE TAB ───────────────────────────────────────────────── */
-.exec-header{
-  background:linear-gradient(135deg,var(--brand) 0%,var(--brand-xdk) 100%);
-  border-radius:var(--r);padding:28px 32px;margin-bottom:22px;
-  display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;
-}
+.exec-header{background:linear-gradient(135deg,var(--brand) 0%,var(--brand-xdk) 100%);border-radius:var(--r);padding:28px 32px;margin-bottom:22px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;}
 .exec-header h2{color:#fff;font-size:18px;font-weight:900;letter-spacing:-.3px}
 .exec-header p{color:rgba(255,255,255,.6);font-size:11px;margin-top:4px;font-weight:500}
 .exec-period{display:flex;gap:6px;flex-wrap:wrap}
-.ep-btn{
-  padding:7px 16px;border-radius:20px;border:1.5px solid rgba(255,255,255,.3);
-  background:transparent;color:rgba(255,255,255,.7);font-size:10px;font-weight:700;
-  cursor:pointer;transition:.18s;letter-spacing:.3px;font-family:'Montserrat',Arial,sans-serif;
-}
+.ep-btn{padding:7px 16px;border-radius:20px;border:1.5px solid rgba(255,255,255,.3);background:transparent;color:rgba(255,255,255,.7);font-size:10px;font-weight:700;cursor:pointer;transition:.18s;letter-spacing:.3px;font-family:'Montserrat',Arial,sans-serif;}
 .ep-btn.active,.ep-btn:hover{background:var(--yellow);color:var(--brand-xdk);border-color:var(--yellow)}
-
-.exec-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px}
-@media(max-width:900px){.exec-kpis{grid-template-columns:repeat(2,1fr)}}
-.ek{
-  background:var(--card);border-radius:var(--r);padding:22px 20px;box-shadow:var(--sh);
-  border-bottom:4px solid var(--brand);text-align:center;
-}
-.ek.yk{border-color:var(--yellow)}
-.ek.gk{border-color:var(--green)}
-.ek.rk{border-color:var(--sky)}
-.ek.sk{border-color:var(--brand)}
+.exec-kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin-bottom:22px}
+@media(max-width:1100px){.exec-kpis{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:600px){.exec-kpis{grid-template-columns:repeat(2,1fr)}}
+.ek{background:var(--card);border-radius:var(--r);padding:22px 20px;box-shadow:var(--sh);border-bottom:4px solid var(--brand);text-align:center;}
+.ek.yk{border-color:var(--yellow)}.ek.gk{border-color:var(--green)}.ek.rk{border-color:var(--sky)}.ek.sk{border-color:var(--brand)}.ek.pk{border-color:#7C5CF6}.ek.ok{border-color:var(--amber)}
 .ek-icon{font-size:28px;margin-bottom:8px}
 .ek-val{font-size:32px;font-weight:900;color:var(--brand);line-height:1}
-.ek.yk .ek-val{color:#9A7800}
-.ek.gk .ek-val{color:var(--green)}
-.ek.rk .ek-val{color:var(--brand)}
+.ek.yk .ek-val{color:#9A7800}.ek.gk .ek-val{color:var(--green)}.ek.rk .ek-val{color:var(--brand)}.ek.pk .ek-val{color:#7C5CF6}.ek.ok .ek-val{color:var(--amber)}
 .ek-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-top:6px}
 .ek-sub{font-size:10px;color:var(--muted);margin-top:4px}
-
 .exec-breakdown{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden;margin-bottom:18px}
-.exec-breakdown .th h2{color:var(--brand)}
-
-/* ── TOAST ───────────────────────────────────────────────────────── */
-.toast{
-  position:fixed;bottom:22px;right:22px;background:var(--brand);color:#fff;
-  padding:12px 20px;border-radius:10px;font-size:12px;font-weight:700;
-  transform:translateY(60px);opacity:0;transition:.28s;z-index:999;
-  box-shadow:0 4px 20px rgba(61,91,166,.4);
-}
+.toast{position:fixed;bottom:22px;right:22px;background:var(--brand);color:#fff;padding:12px 20px;border-radius:10px;font-size:12px;font-weight:700;transform:translateY(60px);opacity:0;transition:.28s;z-index:999;box-shadow:0 4px 20px rgba(61,91,166,.4);}
 .toast.show{transform:translateY(0);opacity:1}
-
-/* ── EXEC CHARTS GRID ───────────────────────────────────────────── */
-#exec-charts{ display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:18px }
-@media(max-width:800px){ #exec-charts{ grid-template-columns:1fr } }
-
-/* ── PRINT ───────────────────────────────────────────────────────── */
-@media print{
-  header{position:relative}.tab-bar,.btn,.bench .auto-tag,.upload-zone,.compare-controls,.exec-period,.ep-btn{display:none!important}
-  .tab-panel{display:block!important}.comp-grid{grid-template-columns:1fr 1fr}
-  .charts-compare{grid-template-columns:1fr 1fr}
-  .cc,.comp-card,.tw,.sc,.range-card,.ek,.exec-header{box-shadow:none;border:1px solid #ddd}
-  body{background:#fff}
-}
-
-/* ── DAILY STATS TAB ─────────────────────────────────────────────── */
+#exec-charts{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:18px}
+@media(max-width:800px){#exec-charts{grid-template-columns:1fr}}
 .daily-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:18px}
 @media(max-width:900px){.daily-grid{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:560px){.daily-grid{grid-template-columns:repeat(2,1fr)}}
 .daily-kpi{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);padding:16px;text-align:center}
 .daily-kpi .dkv{font-size:28px;font-weight:800;color:var(--brand)}
 .daily-kpi .dkl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-top:4px}
-/* ── MANAGER REPORTS TAB ─────────────────────────────────────────── */
 .mgr-filters{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);padding:20px;margin-bottom:18px}
 .mgr-filters h2{font-size:12px;font-weight:800;color:var(--brand);margin-bottom:14px;text-transform:uppercase;letter-spacing:.5px}
 .mgr-filter-row{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end}
@@ -291,17 +143,23 @@ tbody td{padding:11px 14px;font-size:12px;white-space:nowrap}
 .mgr-table-wrap tr:last-child td{border-bottom:none}
 .mgr-table-wrap tr:hover td{background:rgba(61,91,166,.03)}
 .mgr-sum-row td{background:rgba(61,91,166,.06)!important;font-weight:700;font-size:12px}
+.cmp-mode-bar{display:flex;gap:4px;margin-bottom:18px;background:var(--light);padding:4px;border-radius:10px;width:fit-content}
+.cmp-mode-btn{padding:8px 20px;border-radius:8px;border:none;cursor:pointer;font-size:11px;font-weight:700;color:var(--muted);background:transparent;transition:.15s;text-transform:uppercase;letter-spacing:.5px}
+.cmp-mode-btn.active{background:var(--brand);color:#fff;box-shadow:0 2px 8px rgba(61,91,166,.3)}
+@media print{
+  header{position:relative}.tab-bar,.btn,.upload-zone,.compare-controls,.exec-period,.ep-btn{display:none!important}
+  .tab-panel{display:block!important}
+  .cc,.tw,.sc,.range-card,.ek,.exec-header{box-shadow:none;border:1px solid #ddd}
+  body{background:#fff}
+}
 </style>
 </head>
 <body>
-
 <header>
-  <div class="logo">
-    <div class="logo-text">
-      <h1>Quay 1 International Realty</h1>
-      <p>Performance Dashboard &nbsp;·&nbsp; <em>Navigating Success</em></p>
-    </div>
-  </div>
+  <div class="logo"><div class="logo-text">
+    <h1>Quay 1 International Realty</h1>
+    <p>Performance Dashboard &nbsp;·&nbsp; <em>Navigating Success</em></p>
+  </div></div>
   <div class="hdr-r">
     <span class="pill pill-muted" id="genTime">Loading…</span>
     <span class="pill pill-yellow" id="weekLabel">—</span>
@@ -309,22 +167,18 @@ tbody td{padding:11px 14px;font-size:12px;white-space:nowrap}
     <button class="btn btn-yellow" onclick="exportCSV()">⬇ Export CSV</button>
   </div>
 </header>
-
 <main>
   <div id="errBanner" style="display:none;background:var(--qred-l);color:var(--qred);padding:12px 18px;border-radius:10px;margin-bottom:16px;font-size:12px;font-weight:700"></div>
-
   <div class="tab-bar">
     <button class="tab active" onclick="switchTab('exec',this)">🏆 Overview</button>
-    <button class="tab" onclick="switchTab('rm',this)">📋 RMs (<span id="rm-cnt">—</span>)</button>
-    <button class="tab" onclick="switchTab('fancy',this)">⚡ Fancy (<span id="fc-cnt">—</span>)</button>
-    <button class="tab" onclick="switchTab('reports',this)">📅 Reports</button>
+    <button class="tab" onclick="switchTab('reports',this)">📅 All Staff</button>
     <button class="tab" onclick="switchTab('compare',this)">⚖️ Compare</button>
     <button class="tab" onclick="switchTab('wt',this)">⏱ Work Time</button>
     <button class="tab" onclick="switchTab('daily',this)">📆 Daily Stats</button>
     <button class="tab" onclick="switchTab('mgr',this)">📊 Manager Reports</button>
   </div>
 
-  <!-- ═══ EXECUTIVE OVERVIEW TAB ═══ -->
+  <!-- ═══ OVERVIEW TAB ═══ -->
   <div class="tab-panel active" id="tab-exec">
     <div class="exec-header">
       <div>
@@ -341,180 +195,73 @@ tbody td{padding:11px 14px;font-size:12px;white-space:nowrap}
       </div>
     </div>
     <div class="exec-kpis" id="exec-kpis">
-      <div class="ek"><div class="ek-icon">👥</div><div class="ek-val">—</div><div class="ek-lbl">Active Callers</div><div class="ek-sub">RM + Fancy combined</div></div>
-      <div class="ek yk"><div class="ek-icon">📞</div><div class="ek-val">—</div><div class="ek-lbl">Total Calls Made</div><div class="ek-sub">across all callers</div></div>
-      <div class="ek gk"><div class="ek-icon">&#127968;</div>
-      <div class="ek-val">—</div>
-      <div class="ek-lbl">Seller Leads</div>
-      <div class="ek-sub">this week</div>
+      <div class="ek"><div class="ek-icon">👥</div><div class="ek-val" id="ek-callers">—</div><div class="ek-lbl">Active Callers</div><div class="ek-sub">all combined</div></div>
+      <div class="ek yk"><div class="ek-icon">📞</div><div class="ek-val" id="ek-calls">—</div><div class="ek-lbl">Total Calls Made</div><div class="ek-sub" id="ek-calls-sub">—</div></div>
+      <div class="ek gk"><div class="ek-icon">🏠</div><div class="ek-val" id="ek-seller">—</div><div class="ek-lbl">Seller Leads</div><div class="ek-sub">this period</div></div>
+      <div class="ek rk"><div class="ek-icon">🏘</div><div class="ek-val" id="ek-rental">—</div><div class="ek-lbl">Rental Leads</div><div class="ek-sub">this period</div></div>
+      <div class="ek sk"><div class="ek-icon">📧</div><div class="ek-val" id="ek-email">—</div><div class="ek-lbl">Emails Collected</div><div class="ek-sub">contact data captured</div></div>
+      <div class="ek pk"><div class="ek-icon">🎯</div><div class="ek-val" id="ek-success">—</div><div class="ek-lbl">Total Successes</div><div class="ek-sub">seller + rental + emails</div></div>
     </div>
-      <div class="ek sk"><div class="ek-icon">&#127968;</div>
-      <div class="ek-val">—</div>
-      <div class="ek-lbl">Rental Leads</div>
-      <div class="ek-sub">this week</div>
-    </div>
-      <div class="ek rk"><div class="ek-icon">📧</div><div class="ek-val">—</div><div class="ek-lbl">Emails Collected</div><div class="ek-sub">contact data captured</div></div>
-    </div>
-    <div id="exec-breakdown">
-      <div class="no-data"><div class="ic">📊</div><p>Loading data…</p></div>
-    </div>
-
-    <!-- Monthly comparison charts -->
-    <div id="exec-charts" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:18px">
-      <div class="cc">
-        <div class="cc-title">📞 Calls by Month</div>
-        <div class="cc-sub">Total calls made — month over month</div>
-        <canvas id="ch-calls" style="max-height:240px"></canvas>
-      </div>
-      <div class="cc">
-        <div class="cc-title">🏆 Leads by Month</div>
-        <div class="cc-sub">Total leads (seller + rental) — month over month</div>
-        <canvas id="ch-leads" style="max-height:240px"></canvas>
-      </div>
-      <div class="cc">
-        <div class="cc-title">📧 Emails by Month</div>
-        <div class="cc-sub">Emails collected — month over month</div>
-        <canvas id="ch-email" style="max-height:240px"></canvas>
-      </div>
-      <div class="cc">
-        <div class="cc-title">🏠 Rentals by Month</div>
-        <div class="cc-sub">Rental leads specifically — month over month</div>
-        <canvas id="ch-rental" style="max-height:240px"></canvas>
-      </div>
+    <div id="exec-breakdown"><div class="no-data"><div class="ic">📊</div><p>Loading data…</p></div></div>
+    <div id="exec-charts">
+      <div class="cc"><div class="cc-title">📞 Calls by Month</div><div class="cc-sub">Total calls made — month over month</div><canvas id="ch-calls" style="max-height:240px"></canvas></div>
+      <div class="cc"><div class="cc-title">🏆 Leads by Month</div><div class="cc-sub">Total seller + rental leads — month over month</div><canvas id="ch-leads" style="max-height:240px"></canvas></div>
+      <div class="cc"><div class="cc-title">📧 Emails by Month</div><div class="cc-sub">Emails collected — month over month</div><canvas id="ch-email" style="max-height:240px"></canvas></div>
+      <div class="cc"><div class="cc-title">🏠 Rentals by Month</div><div class="cc-sub">Rental leads specifically — month over month</div><canvas id="ch-rental" style="max-height:240px"></canvas></div>
+      <div class="cc"><div class="cc-title">⏱ DialFire Work Time %</div><div class="cc-sub">DF hours as % of total clocked time per month (needs ConnectTeams upload)</div><canvas id="ch-dfpct" style="max-height:240px"></canvas></div>
     </div>
   </div>
 
-  <!-- ═══ RM TAB ═══ -->
-  <div class="tab-panel" id="tab-rm">
-    <div class="bench">
-      <div class="bp blue">🎯 45 calls/hour target</div>
-      <div class="bp green">✅ ≥17% success rate</div>
-      <div class="bp gold">📞 315 calls/day target</div>
-      <span class="auto-tag">Current week · <a href="#" onclick="switchTabById('reports')" style="color:var(--brand);font-weight:700;text-decoration:none">📅 View history in Reports →</a></span>
-    </div>
-    <div class="srow" id="rm-summary"></div>
-    <div class="leg">
-      <div class="li"><div class="ld" style="background:var(--green)"></div>On Target — both KPIs met</div>
-      <div class="li"><div class="ld" style="background:var(--amber)"></div>Partial — one KPI met</div>
-      <div class="li"><div class="ld" style="background:var(--qred)"></div>Below — both KPIs missed</div>
-    </div>
-    <div class="tw">
-      <div class="th"><h2>Relationship Manager Performance</h2></div>
-      <table>
-        <thead><tr>
-          <th>#</th><th>Agent</th>
-          <th class="sort" onclick="sortT('rm','calls')">Calls ⇅</th>
-          <th>DF Hours</th>
-          <th class="sort" onclick="sortT('rm','cph')">Calls/Hr ⇅</th>
-          <th>Success</th>
-          <th class="sort" onclick="sortT('rm','sr')">Success % ⇅</th>
-          <th>Rental</th>
-          <th class="sort" onclick="sortT('rm','seller')">Seller ⇅</th>
-          <th>Email</th><th>Status</th>
-        </tr></thead>
-        <tbody id="rm-tbody"></tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- ═══ FANCY TAB ═══ -->
-  <div class="tab-panel" id="tab-fancy">
-    <div class="bench">
-      <div class="bp blue">🎯 45 calls/hour target</div>
-      <div class="bp green">✅ ≥20% success rate</div>
-      <div class="bp gold">📞 315 calls/day target</div>
-      <span class="auto-tag">Current week · <a href="#" onclick="switchTabById('reports')" style="color:var(--brand);font-weight:700;text-decoration:none">📅 View history in Reports →</a></span>
-    </div>
-    <div class="srow" id="fc-summary"></div>
-    <div class="leg">
-      <div class="li"><div class="ld" style="background:var(--green)"></div>On Target</div>
-      <div class="li"><div class="ld" style="background:var(--amber)"></div>Partial</div>
-      <div class="li"><div class="ld" style="background:var(--qred)"></div>Below</div>
-    </div>
-    <div class="tw">
-      <div class="th"><h2>Fancy Caller Performance</h2></div>
-      <table>
-        <thead><tr>
-          <th>#</th><th>Agent</th><th>Division(s)</th>
-          <th class="sort" onclick="sortT('fancy','calls')">Calls ⇅</th>
-          <th>DF Hours</th>
-          <th class="sort" onclick="sortT('fancy','cph')">Calls/Hr ⇅</th>
-          <th>Success</th>
-          <th class="sort" onclick="sortT('fancy','sr')">Success % ⇅</th>
-          <th>Rental</th>
-          <th class="sort" onclick="sortT('fancy','seller')">Seller ⇅</th>
-          <th>Email</th><th>Status</th>
-        </tr></thead>
-        <tbody id="fc-tbody"></tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- ═══ REPORTS TAB ═══ -->
+  <!-- ═══ ALL STAFF TAB ═══ -->
   <div class="tab-panel" id="tab-reports">
     <div class="range-card">
       <h2>📅 Select Date Range</h2>
       <div class="presets" id="presets"></div>
       <div class="range-inputs">
-        <label>From</label>
-        <input type="date" id="r-from"/>
-        <label>To</label>
-        <input type="date" id="r-to"/>
+        <label>From</label><input type="date" id="r-from"/>
+        <label>To</label><input type="date" id="r-to"/>
         <button class="btn btn-yellow" onclick="applyRange()">Apply</button>
       </div>
     </div>
     <div class="view-toggle">
       <button class="vt-btn active" id="vt-overall" onclick="setView('overall',this)">📊 Overall Report</button>
-      <button class="vt-btn" id="vt-caller"  onclick="setView('caller',this)">👤 Per Caller</button>
+      <button class="vt-btn" id="vt-caller" onclick="setView('caller',this)">👤 Per Caller</button>
     </div>
-    <div id="report-content">
-      <div class="no-data"><div class="ic">📅</div><p>Select a date range above and click <strong>Apply</strong>.</p></div>
-    </div>
+    <div id="report-content"><div class="no-data"><div class="ic">📅</div><p>Select a date range above and click <strong>Apply</strong>.</p></div></div>
   </div>
 
   <!-- ═══ COMPARE TAB ═══ -->
   <div class="tab-panel" id="tab-compare">
-
-    <!-- Week vs Week -->
-    <div class="compare-controls" style="margin-bottom:10px">
-      <div class="cs-wrap">
-        <label>Week A</label>
-        <select id="wk-a" onchange="updateWeekCompare()"><option value="">— Select week —</option></select>
-      </div>
-      <div class="vs-badge">📅</div>
-      <div class="cs-wrap">
-        <label>Week B</label>
-        <select id="wk-b" onchange="updateWeekCompare()"><option value="">— Select week —</option></select>
-      </div>
-      <div style="display:flex;align-items:flex-end">
-        <button onclick="setQuickWeeks()" style="padding:10px 18px;background:var(--yellow);color:var(--brand-xdk);border:none;border-radius:9px;font-weight:800;font-size:11px;cursor:pointer;font-family:'Montserrat',Arial,sans-serif;">Last Week vs Week Before</button>
-      </div>
+    <div class="cmp-mode-bar">
+      <button class="cmp-mode-btn active" id="cmp-mode-week" onclick="setCmpMode('week',this)">📅 Week vs Week</button>
+      <button class="cmp-mode-btn" id="cmp-mode-month" onclick="setCmpMode('month',this)">📆 Month vs Month</button>
     </div>
-    <div id="wk-cmp-result"><div class="no-data"><div class="ic">📅</div><p>Select two weeks above to compare full-team performance, or click "Last Week vs Week Before".</p></div></div>
-
-    <hr style="border:none;border-top:1.5px solid var(--border);margin:28px 0 22px"/>
-
-    <!-- Caller vs Caller -->
-    <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:12px">Caller vs Caller</div>
-    <div class="compare-controls">
-      <div class="cs-wrap">
-        <label>Caller A</label>
-        <select id="cmp-a" onchange="updateCompare()"><option value="">— Select caller —</option></select>
+    <div id="cmp-week-panel">
+      <div class="compare-controls">
+        <div class="cs-wrap"><label>Week A</label><select id="wk-a" onchange="updateWeekCompare()"><option value="">— Select week —</option></select></div>
+        <div class="vs-badge">📅</div>
+        <div class="cs-wrap"><label>Week B</label><select id="wk-b" onchange="updateWeekCompare()"><option value="">— Select week —</option></select></div>
+        <div style="display:flex;align-items:flex-end">
+          <button onclick="setQuickWeeks()" style="padding:10px 18px;background:var(--yellow);color:var(--brand-xdk);border:none;border-radius:9px;font-weight:800;font-size:11px;cursor:pointer;font-family:'Montserrat',Arial,sans-serif;">Last Week vs Week Before</button>
+        </div>
       </div>
-      <div class="vs-badge">⚖️</div>
-      <div class="cs-wrap">
-        <label>Caller B</label>
-        <select id="cmp-b" onchange="updateCompare()"><option value="">— Select caller —</option></select>
-      </div>
-      <div style="display:flex;flex-direction:column;gap:6px">
-        <label style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--muted)">Date Range</label>
-        <select id="cmp-range" onchange="updateCompare()" style="border:2px solid var(--border);border-radius:9px;padding:10px 13px;font-size:12px;font-weight:600;color:var(--text);background:var(--light);outline:none;cursor:pointer;font-family:'Montserrat',Arial,sans-serif;"><option value="current">Current Week</option><option value="lastweek">Last Week</option><option value="month">Last 30 Days</option><option value="quarter">Last 90 Days</option><option value="all">All Time</option></select>
-      </div>
+      <div id="wk-cmp-result"><div class="no-data"><div class="ic">📅</div><p>Select two weeks above to compare, or click "Last Week vs Week Before".</p></div></div>
     </div>
-    <div id="compare-content"><div class="no-data"><div class="ic">⚖️</div><p>Select two callers above to compare their performance.</p></div></div>
+    <div id="cmp-month-panel" style="display:none">
+      <div class="compare-controls">
+        <div class="cs-wrap"><label>Month A</label><select id="mo-a" onchange="updateMonthCompare()"><option value="">— Select month —</option></select></div>
+        <div class="vs-badge">📆</div>
+        <div class="cs-wrap"><label>Month B</label><select id="mo-b" onchange="updateMonthCompare()"><option value="">— Select month —</option></select></div>
+        <div style="display:flex;align-items:flex-end">
+          <button onclick="setQuickMonths()" style="padding:10px 18px;background:var(--yellow);color:var(--brand-xdk);border:none;border-radius:9px;font-weight:800;font-size:11px;cursor:pointer;font-family:'Montserrat',Arial,sans-serif;">This Month vs Last Month</button>
+        </div>
+      </div>
+      <div id="mo-cmp-result"><div class="no-data"><div class="ic">📆</div><p>Select two months above to compare.</p></div></div>
+    </div>
   </div>
 
-<div class="tab-panel" id="tab-wt">
+  <!-- ═══ WORK TIME TAB ═══ -->
+  <div class="tab-panel" id="tab-wt">
     <div class="bench">
       <div class="bp blue">📊 DialFire Hours = active dialler time</div>
       <div class="bp gold">⏱ ConnectTeams = total clocked-in time</div>
@@ -526,24 +273,24 @@ tbody td{padding:11px 14px;font-size:12px;white-space:nowrap}
         <h3>Upload ConnectTeams Export</h3>
         <p>Go to ConnectTeams → Reports → Time Tracking<br/>
         Select the matching week → Export as CSV<br/>
-        Expected columns: <strong>Name, Total Hours</strong></p>
+        Expected columns: <strong>Name, Total Hours</strong><br/>
+        <em style="color:var(--green)">✅ Uploads are saved in your browser session</em></p>
         <button class="btn-upload" onclick="event.stopPropagation();document.getElementById('ct-file').click()">Choose File</button>
         <input type="file" id="ct-file" class="file-input" accept=".csv" onchange="handleCT(event)"/>
       </div>
-      <div class="sc" style="justify-content:center;display:flex;flex-direction:column">
+      <div class="sc" style="display:flex;flex-direction:column;justify-content:center">
         <div class="sc-lbl">How it works</div>
         <div style="font-size:12px;line-height:2.4;margin-top:8px;color:var(--muted)">
           🔵 &nbsp;<strong>DialFire Hours</strong> = actual dialler time<br/>
           🟡 &nbsp;<strong>ConnectTeams Hours</strong> = clocked-in time<br/>
           📊 &nbsp;<strong>Efficiency</strong> = DF ÷ CT (target ≥70%)<br/>
-          ✅ &nbsp;Green = on track &nbsp; ⚠️ Amber = low
+          ✅ &nbsp;Green = on track &nbsp; ⚠️ Amber = low<br/>
+          📈 &nbsp;Upload daily — % trend shows in Overview graphs
         </div>
         <div id="ct-status" style="margin-top:14px;font-size:12px;color:var(--muted);font-weight:600">No file uploaded yet.</div>
       </div>
     </div>
-    <div id="wt-table-wrap">
-      <div class="no-data"><div class="ic">⏱</div><p>Upload a ConnectTeams CSV to see the DialFire vs clocked-time comparison.</p></div>
-    </div>
+    <div id="wt-table-wrap"><div class="no-data"><div class="ic">⏱</div><p>Upload a ConnectTeams CSV to see the DialFire vs clocked-time comparison.</p></div></div>
   </div>
 
   <!-- ═══ DAILY STATS TAB ═══ -->
@@ -560,9 +307,7 @@ tbody td{padding:11px 14px;font-size:12px;white-space:nowrap}
       </div>
     </div>
     <div id="daily-kpis" class="daily-grid" style="display:none"></div>
-    <div id="daily-table-wrap">
-      <div class="no-data"><div class="ic">📆</div><p>Select a date above and click <strong>Load</strong> to see daily caller stats.</p></div>
-    </div>
+    <div id="daily-table-wrap"><div class="no-data"><div class="ic">📆</div><p>Select a date above and click <strong>Load</strong> to see daily caller stats.</p></div></div>
   </div>
 
   <!-- ═══ MANAGER REPORTS TAB ═══ -->
@@ -570,19 +315,11 @@ tbody td{padding:11px 14px;font-size:12px;white-space:nowrap}
     <div class="mgr-filters">
       <h2>📊 Manager Reports — Filter by Date &amp; Campaign</h2>
       <div class="mgr-filter-row">
-        <div>
-          <label>From</label>
-          <input type="date" id="mgr-from">
-        </div>
-        <div>
-          <label>To</label>
-          <input type="date" id="mgr-to">
-        </div>
+        <div><label>From</label><input type="date" id="mgr-from"></div>
+        <div><label>To</label><input type="date" id="mgr-to"></div>
         <div style="flex:1;min-width:220px">
           <label>Campaigns (select one or more)</label>
-          <div class="camp-checkboxes" id="mgr-camp-list">
-            <em style="font-size:12px;color:var(--muted)">Loading campaigns...</em>
-          </div>
+          <div class="camp-checkboxes" id="mgr-camp-list"><em style="font-size:12px;color:var(--muted)">Loading campaigns...</em></div>
         </div>
         <div style="display:flex;gap:8px;align-items:flex-end">
           <button class="btn btn-yellow" onclick="renderMgrReport()">Run Report</button>
@@ -590,1130 +327,174 @@ tbody td{padding:11px 14px;font-size:12px;white-space:nowrap}
         </div>
       </div>
     </div>
-    <div id="mgr-report-wrap">
-      <div class="no-data"><div class="ic">📊</div><p>Select a date range and at least one campaign, then click <strong>Run Report</strong>.</p></div>
-    </div>
+    <div id="mgr-report-wrap"><div class="no-data"><div class="ic">📊</div><p>Select a date range and at least one campaign, then click <strong>Run Report</strong>.</p></div></div>
   </div>
-
-
 </main>
 <div class="toast" id="toast"></div>
-
 <script>
-// ─── CONFIG ──────────────────────────────────────────────────────
 const B = { rm:{cph:45,sr:.17}, fancy:{cph:45,sr:.20} };
 const WT_TARGET = .70;
+let CUR=null, HIST={}, reportView='overall', execCharts={}, ctData=[], ctMonthData={}, execPeriod='week', execAgents=[], cmpMode='week';
+let _mgrSortKey='calls', _mgrSortAsc=false;
 
-// ─── STATE ───────────────────────────────────────────────────────
-let CUR  = null;
-let HIST = {};
-let SORT = { rm:{k:'sr',asc:false}, fancy:{k:'sr',asc:false} };
-let reportView = 'overall';
-let cmpChart = null, cmpBarChart = null;
-let execCharts = {};   // monthly overview charts
-let ctData = [];
-let execPeriod = 'week';
-let execAgents = [];
-
-// ─── HELPERS ─────────────────────────────────────────────────────
-const cph = d => d.workTime > 0 ? d.calls / d.workTime : 0;
-const sr  = d => d.calls > 0 ? ((d.rental||0)+(d.email||0)+(d.seller||0)) / d.calls : 0;
+const cph = d => d.workTime>0 ? d.calls/d.workTime : 0;
+const sr  = d => d.calls>0 ? ((d.rental||0)+(d.email||0)+(d.seller||0))/d.calls : 0;
 const pct = (n,d=1) => (n*100).toFixed(d)+'%';
 const f2  = n => Number(n).toFixed(2);
 const f1  = n => Number(n).toFixed(1);
 
-function stOf(d, bench) {
-  const ok1=cph(d)>=bench.cph, ok2=sr(d)>=bench.sr;
-  return ok1&&ok2?'green':ok1||ok2?'amber':'red';
-}
+function stOf(d,bench){ const ok1=cph(d)>=bench.cph, ok2=sr(d)>=bench.sr; return ok1&&ok2?'green':ok1||ok2?'amber':'red'; }
 function mc(v,t){ return v>=t?'good':v>=t*.85?'warn':'bad'; }
-function stHTML(s){
-  if(s==='green') return '<span class="status green">✅ On Target</span>';
-  if(s==='amber') return '<span class="status amber">⚠️ Partial</span>';
-  return '<span class="status red">❌ Below</span>';
-}
-function fmtWeek(str){
-  try{
-    const d=new Date(str+'T00:00:00'),e=new Date(d);e.setDate(d.getDate()+4);
-    const f=x=>x.toLocaleDateString('en-ZA',{day:'numeric',month:'short'});
-    return `Week of ${f(d)} – ${f(e)}`;
-  }catch{return str}
-}
-function today(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
-function addDays(str,n){const p=str.split('-');const d=new Date(+p[0],+p[1]-1,+p[2]+n);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
-function firstOfMonth(offset=0){const d=new Date();d.setDate(1);d.setMonth(d.getMonth()+offset);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
-function lastOfMonth(offset=0){const d=new Date();d.setDate(1);d.setMonth(d.getMonth()+offset+1);d.setDate(0);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function stHTML(s){ if(s==='green') return '<span class="status green">✅ On Target</span>'; if(s==='amber') return '<span class="status amber">⚠️ Partial</span>'; return '<span class="status red">❌ Below</span>'; }
+function fmtWeek(str){ try{ const d=new Date(str+'T00:00:00'),e=new Date(d); e.setDate(d.getDate()+4); const f=x=>x.toLocaleDateString('en-ZA',{day:'numeric',month:'short'}); return `Week of ${f(d)} – ${f(e)}`; }catch{return str} }
+function fmtMonth(ym){ try{ const [y,m]=ym.split('-'); return new Date(+y,+m-1,1).toLocaleDateString('en-ZA',{month:'long',year:'numeric'}); }catch{return ym} }
+function today(){ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function addDays(str,n){ const p=str.split('-'); const d=new Date(+p[0],+p[1]-1,+p[2]+n); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function firstOfMonth(offset=0){ const d=new Date(); d.setDate(1); d.setMonth(d.getMonth()+offset); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-01'; }
+function lastOfMonth(offset=0){ const d=new Date(); d.setDate(1); d.setMonth(d.getMonth()+offset+1); d.setDate(0); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function toMonday(dateStr){ const p=dateStr.split('-'); const d=new Date(+p[0],+p[1]-1,+p[2]); const day=d.getDay(); d.setDate(d.getDate()-(day===0?6:day-1)); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function getHistoryInRange(from,to){ return Object.entries(HIST).filter(([d])=>{ const mon=toMonday(d); return mon>=from&&mon<=to; }).map(([,v])=>v); }
+function aggregateAgents(entries){ const map={}; entries.forEach(e=>{ const all=[...(e.rm||[]).map(a=>({...a,_grp:'RM'})),...(e.fancy||[]).map(a=>({...a,_grp:'Fancy'}))]; all.forEach(a=>{ const k=a.name.toLowerCase().trim(); if(!map[k]){ map[k]={...a,_weeks:1}; } else { map[k].calls+=(a.calls||0); map[k].success+=(a.success||0); map[k].rental+=(a.rental||0); map[k].seller+=(a.seller||0); map[k].email+=(a.email||0); map[k].workTime=+((map[k].workTime+(a.workTime||0)).toFixed(2)); map[k]._weeks++; } }); }); return Object.values(map).sort((a,b)=>b.calls-a.calls); }
+function err(msg){ const b=document.getElementById('errBanner'); b.style.display='block'; b.textContent='⚠ '+msg; }
+function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3200); }
+function switchTab(id,btn){ document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active')); document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active')); document.getElementById('tab-'+id).classList.add('active'); btn.classList.add('active'); }
 
-// ─── LOAD ─────────────────────────────────────────────────────────
 async function init(){
   try{
-    const [r1,r2] = await Promise.all([
-      fetch('./data/weekly_data.json?t='+Date.now()),
-      fetch('./data/history.json?t='+Date.now())
-    ]);
-    if(r1.ok) CUR  = await r1.json();
+    const [r1,r2]=await Promise.all([fetch('./data/weekly_data.json?t='+Date.now()),fetch('./data/history.json?t='+Date.now())]);
+    if(r1.ok) CUR=await r1.json();
     if(r2.ok){ const _raw=await r2.json(); if(Array.isArray(_raw)){ HIST={}; _raw.forEach(e=>{const k=e.week||e.weekStart||e.periodStart; if(k) HIST[k]=e;}); }else{ HIST=_raw; } }
-  }catch(e){
-    err('Could not load data files. Check GitHub Pages is enabled and the data/ folder exists.');
-  }
-
+  }catch(e){ err('Could not load data files.'); }
   if(CUR){
-    // Seed HIST with current week so date ranges always have something to show
-    const curKey=CUR.week||CUR.periodStart; if(curKey&&!HIST[curKey]) HIST[curKey] = CUR;
-
-    document.getElementById('weekLabel').textContent = fmtWeek(CUR.week||CUR.periodStart);
-    document.getElementById('genTime').textContent   = 'Updated: '+new Date(CUR.generated).toLocaleString('en-ZA',{dateStyle:'medium',timeStyle:'short'});
-    document.getElementById('rm-cnt').textContent  = CUR.rm.length;
-    document.getElementById('fc-cnt').textContent  = CUR.fancy.length;
-    buildSummary(CUR.rm,    B.rm,    'rm-summary');
-    buildSummary(CUR.fancy, B.fancy, 'fc-summary');
-    buildTable(CUR.rm,    B.rm,    'rm-tbody',    false);
-    buildTable(CUR.fancy, B.fancy, 'fc-tbody',    true);
+    const curKey=CUR.week||CUR.periodStart; if(curKey&&!HIST[curKey]) HIST[curKey]=CUR;
+    document.getElementById('weekLabel').textContent=fmtWeek(CUR.week||CUR.periodStart);
+    document.getElementById('genTime').textContent='Updated: '+new Date(CUR.generated).toLocaleString('en-ZA',{dateStyle:'medium',timeStyle:'short'});
   }
-
-  buildPresets();
-  populateCompareSelects();
-  populateWeekSelects();
-  initDailyDate();
-  initMgrFilters();
-  renderExec();
+  try{ const saved=localStorage.getItem('quay_ct_data'); if(saved){ ctData=JSON.parse(saved); const sm=localStorage.getItem('quay_ct_month_data'); if(sm) ctMonthData=JSON.parse(sm); if(ctData.length) document.getElementById('ct-status').innerHTML=`✅ Restored — ${ctData.length} agents`; } }catch(e){}
+  buildPresets(); populateWeekSelects(); populateMonthSelects(); initDailyDate(); initMgrFilters(); renderExec();
 }
 
-function err(msg){ const b=document.getElementById('errBanner'); b.style.display='block'; b.textContent='⚠ '+msg; }
-
-// ─── SUMMARY CARDS ────────────────────────────────────────────────
-function buildSummary(data, bench, id){
-  const tC=data.reduce((a,d)=>a+d.calls,0);
-  const tS=data.reduce((a,d)=>a+d.success,0);
-  const tSel=data.reduce((a,d)=>a+d.seller,0);
-  const tRen=data.reduce((a,d)=>a+d.rental,0);
-  const tLeads=data.reduce((a,d)=>a+(d.rental||0)+(d.email||0)+(d.seller||0),0);const avgSR=tC>0?tLeads/tC:0;
-  const on=data.filter(d=>stOf(d,bench)==='green').length;
-  document.getElementById(id).innerHTML=[
-    {l:'Total Calls',    v:tC.toLocaleString(), s:'team total',            c:'blue'},
-    {l:'Avg Success %',  v:pct(avgSR),          s:'target '+pct(bench.sr), c:avgSR>=bench.sr?'green':'red'},
-    {l:'Seller Leads',   v:tSel,                s:'combined',              c:'yellow'},
-    {l:'Rental Leads',   v:tRen,                s:'combined',              c:'sky'},
-    {l:'On Target',      v:on+'/'+data.length,  s:'both KPIs met',         c:on===data.length?'green':on>0?'':'red'},
-  ].map(x=>`<div class="sc ${x.c}"><div class="sc-lbl">${x.l}</div><div class="sc-val">${x.v}</div><div class="sc-sub">${x.s}</div></div>`).join('');
-}
-
-// ─── TABLE ────────────────────────────────────────────────────────
-function buildTable(data, bench, tbId, showDiv){
-  const s=SORT[showDiv?'fancy':'rm'];
-  const sorted=[...data].sort((a,b)=>{
-    const v={calls:[a.calls,b.calls],cph:[cph(a),cph(b)],sr:[sr(a),sr(b)],seller:[a.seller,b.seller]};
-    const [va,vb]=v[s.k]||[sr(a),sr(b)];
-    return s.asc?va-vb:vb-va;
-  });
-  const bg={green:'rgba(26,138,74,.04)',amber:'rgba(192,112,16,.04)',red:'rgba(210,10,3,.04)'};
-  document.getElementById(tbId).innerHTML=sorted.map((d,i)=>{
-    const c=cph(d),ss=sr(d),st=stOf(d,bench);
-    const dc=showDiv?`<td style="color:var(--muted);font-size:11px;white-space:normal;max-width:160px">${d.div||''}</td>`:'';
-    return `<tr style="background:${bg[st]}">
-      <td style="color:var(--muted);font-size:10px">${i+1}</td>
-      <td class="ag">${d.name}${d.campaigns&&d.campaigns.length?('<br><span style="font-size:9px;font-weight:400;color:var(--muted);letter-spacing:.3px">'+d.campaigns.join(', ')+'</span>'):''}</td>${dc}
-      <td><strong>${d.calls.toLocaleString()}</strong></td>
-      <td>${f2(d.workTime)}h</td>
-      <td><span class="mx ${mc(c,bench.cph)}">${f1(c)}/hr</span></td>
-      <td>${d.success}</td>
-      <td><span class="mx ${mc(ss,bench.sr)}">${pct(ss)}</span></td>
-      <td>${d.rental}</td><td>${d.seller}</td><td>${d.email}</td>
-      <td>${stHTML(st)}</td></tr>`;
-  }).join('');
-}
-
-function sortT(g,k){
-  const s=SORT[g]; s.asc=s.k===k?!s.asc:false; s.k=k;
-  if(g==='rm') buildTable(CUR.rm,B.rm,'rm-tbody',false);
-  else         buildTable(CUR.fancy,B.fancy,'fc-tbody',true);
-}
-
-// ─── EXECUTIVE OVERVIEW ───────────────────────────────────────────
-function setExecPeriod(p, btn){
-  execPeriod = p;
-  document.querySelectorAll('.ep-btn').forEach(b=>b.classList.remove('active'));
-  if(btn) btn.classList.add('active');
-  renderExec();
-}
-
-function fmtMonth(ym){ // "2025-04" → "April 2025"
-  try{
-    const [y,m]=ym.split('-');
-    return new Date(+y,+m-1,1).toLocaleDateString('en-ZA',{month:'long',year:'numeric'});
-  }catch{return ym}
-}
+function setExecPeriod(p,btn){ execPeriod=p; document.querySelectorAll('.ep-btn').forEach(b=>b.classList.remove('active')); if(btn) btn.classList.add('active'); renderExec(); }
 
 function renderExec(){
-  const t = today();
-  let from, to = t;
-  if(execPeriod==='week'){
-    const d=new Date(); from=addDays(t,-((d.getDay()+6)%7)); to=addDays(from,4);
-  } else if(execPeriod==='lastweek'){
-    const d=new Date(); const thisMonday=addDays(t,-((d.getDay()+6)%7)); from=addDays(thisMonday,-7); to=addDays(from,4);
-  } else if(execPeriod==='month'){
-    from=firstOfMonth(); to=t;
-  } else if(execPeriod==='quarter'){
-    from=addDays(t,-90);
-  } else {
-    from='2020-01-01';
-  }
+  const t=today(); let from,to=t;
+  if(execPeriod==='week'){ const d=new Date(); from=addDays(t,-((d.getDay()+6)%7)); to=addDays(from,4); }
+  else if(execPeriod==='lastweek'){ const d=new Date(); const tm=addDays(t,-((d.getDay()+6)%7)); from=addDays(tm,-7); to=addDays(from,4); }
+  else if(execPeriod==='month'){ from=firstOfMonth(); to=t; }
+  else if(execPeriod==='quarter'){ from=addDays(t,-90); }
+  else{ from='2020-01-01'; }
+  const entries=getHistoryInRange(from,to);
+  if(!entries.length&&CUR) entries.push({...CUR});
+  execAgents=entries.length?aggregateAgents(entries):(CUR?[...(CUR.rm||[]).map(a=>({...a,_grp:'RM'})),...(CUR.fancy||[]).map(a=>({...a,_grp:'Fancy'}))]:[] );
+  const tCallers=execAgents.length;
+  const tCalls=execAgents.reduce((a,d)=>a+d.calls,0);
+  const tSeller=execAgents.reduce((a,d)=>a+(d.seller||0),0);
+  const tRental=execAgents.reduce((a,d)=>a+(d.rental||0),0);
+  const tEmails=execAgents.reduce((a,d)=>a+(d.email||0),0);
+  const tSuccess=tSeller+tRental+tEmails;
+  const avgSR=tCalls>0?execAgents.reduce((a,d)=>a+d.success,0)/tCalls:0;
+  document.getElementById('ek-callers').textContent=tCallers;
+  document.getElementById('ek-calls').textContent=tCalls.toLocaleString();
+  document.getElementById('ek-calls-sub').textContent='avg success: '+pct(avgSR);
+  document.getElementById('ek-seller').textContent=tSeller.toLocaleString();
+  document.getElementById('ek-rental').textContent=tRental.toLocaleString();
+  document.getElementById('ek-email').textContent=tEmails.toLocaleString();
+  document.getElementById('ek-success').textContent=tSuccess.toLocaleString();
 
-  const entries = getHistoryInRange(from, to);
-  if(!entries.length && CUR){ entries.push({...CUR}); }
-  execAgents = entries.length ? aggregateAgents(entries) : (CUR ? [...CUR.rm,...CUR.fancy] : []);
-
-  const tCallers = execAgents.length;
-  const tCalls   = execAgents.reduce((a,d)=>a+d.calls,0);
-  const tLeads   = execAgents.reduce((a,d)=>a+d.seller+d.rental,0);
-  const tSeller  = execAgents.reduce((a,d)=>a+d.seller,0);
-  const tRental  = execAgents.reduce((a,d)=>a+d.rental,0);
-  const tEmails  = execAgents.reduce((a,d)=>a+d.email,0);
-  const avgSR    = tCalls>0 ? execAgents.reduce((a,d)=>a+d.success,0)/tCalls : 0;
-
-  // Big KPI cards
-  document.getElementById('exec-kpis').innerHTML = `
-    <div class="ek"><div class="ek-icon">👥</div>
-      <div class="ek-val">${tCallers}</div>
-      <div class="ek-lbl">Active Callers</div>
-      <div class="ek-sub">RM + Fancy combined</div>
-    </div>
-    <div class="ek yk"><div class="ek-icon">📞</div>
-      <div class="ek-val">${tCalls.toLocaleString()}</div>
-      <div class="ek-lbl">Total Calls Made</div>
-      <div class="ek-sub">avg success: ${pct(avgSR)}</div>
-    </div>
-    <div class="ek gk"><div class="ek-icon">🏠</div>
-      <div class="ek-val">${tSeller.toLocaleString()}</div>
-      <div class="ek-lbl">Seller Leads</div>
-      <div class="ek-sub">this week</div>
-    </div>
-    <div class="ek sk"><div class="ek-icon">🏠</div>
-      <div class="ek-val">${tRental.toLocaleString()}</div>
-      <div class="ek-lbl">Rental Leads</div>
-      <div class="ek-sub">this week</div>
-    </div>
-    <div class="ek rk"><div class="ek-icon">📧</div>
-      <div class="ek-val">${tEmails.toLocaleString()}</div>
-      <div class="ek-lbl">Emails Collected</div>
-      <div class="ek-sub">contact data captured</div>
-    </div>`;
-
-  // ── WEEKLY BREAKDOWN ──────────────────────────────────────────
-  const histEntries = Object.entries(HIST)
-    .filter(([d])=>toMonday(d)>=from&&toMonday(d)<=to)
-    .sort(([a],[b])=>b.localeCompare(a));
-
-  let weeklyHTML = '';
+  const histEntries=Object.entries(HIST).filter(([d])=>toMonday(d)>=from&&toMonday(d)<=to).sort(([a],[b])=>b.localeCompare(a));
+  let weeklyHTML='';
   if(histEntries.length){
-    const rows = histEntries.map(([week, v])=>{
+    const rows=histEntries.map(([week,v])=>{
       const all=[...(v.rm||[]),...(v.fancy||[])];
-      const wC=all.reduce((a,d)=>a+d.calls,0);
-      const wS=all.reduce((a,d)=>a+d.success,0);
-      const wL=all.reduce((a,d)=>a+d.seller+d.rental,0);
-      const wE=all.reduce((a,d)=>a+d.email,0);
+      const wC=all.reduce((a,d)=>a+d.calls,0),wS=all.reduce((a,d)=>a+d.success,0);
+      const wSel=all.reduce((a,d)=>a+(d.seller||0),0),wRen=all.reduce((a,d)=>a+(d.rental||0),0),wE=all.reduce((a,d)=>a+(d.email||0),0);
       const wSR=wC>0?wS/wC:0;
-      return `<tr>
-        <td style="font-weight:700;color:var(--brand)">${fmtWeek(week)}</td>
-        <td><span class="mx neu">${(v.rm||[]).length} RMs</span> <span class="mx pur">${(v.fancy||[]).length} Fancy</span></td>
-        <td><strong>${wC.toLocaleString()}</strong></td>
-        <td><span class="mx ${mc(wSR,.17)}">${pct(wSR)}</span></td>
-        <td>${wL}</td><td>${wE}</td>
-      </tr>`;
+      return `<tr><td style="font-weight:700;color:var(--brand)">${fmtWeek(week)}</td><td><span class="mx neu">${(v.rm||[]).length} RMs</span> <span class="mx pur">${(v.fancy||[]).length} Fancy</span></td><td><strong>${wC.toLocaleString()}</strong></td><td><span class="mx ${mc(wSR,.17)}">${pct(wSR)}</span></td><td>${wSel}</td><td>${wRen}</td><td>${wE}</td></tr>`;
     }).join('');
-    weeklyHTML = `
-      <div class="exec-breakdown">
-        <div class="th"><h2>📅 Weekly Breakdown</h2></div>
-        <table>
-          <thead><tr><th>Week</th><th>Callers</th><th>Total Calls</th><th>Success Rate</th><th>Total Leads</th><th>Emails</th></tr></thead>
-          <tbody>${rows}</tbody>
-        </table>
-      </div>`;
+    weeklyHTML=`<div class="exec-breakdown"><div class="th"><h2>📅 Weekly Breakdown</h2></div><table><thead><tr><th>Week</th><th>Callers</th><th>Total Calls</th><th>Success Rate</th><th>Seller Leads</th><th>Rental Leads</th><th>Emails</th></tr></thead><tbody>${rows}</tbody></table></div>`;
   } else {
-    weeklyHTML = `<div style="text-align:center;padding:14px;color:var(--muted);font-size:11px;background:var(--card);border-radius:var(--r);margin-bottom:16px">
-      📌 Weekly history accumulates automatically as the data refresh runs each weekday.
-    </div>`;
+    weeklyHTML=`<div style="text-align:center;padding:14px;color:var(--muted);font-size:11px;background:var(--card);border-radius:var(--r);margin-bottom:16px">📌 Weekly history accumulates automatically as the data refresh runs each weekday.</div>`;
   }
 
-  // ── MONTHLY BREAKDOWN ─────────────────────────────────────────
-  // Group all HIST entries by month (not just those in range — show all months)
-  const allHist = Object.entries(HIST).sort(([a],[b])=>b.localeCompare(a));
-  const monthMap = {};
-  allHist.forEach(([week, v])=>{
-    // Normalise to the Monday of this week to avoid counting duplicates
-    const wDate = new Date(week+'T00:00:00');
-    const monday = new Date(wDate); monday.setDate(wDate.getDate() - wDate.getDay() + (wDate.getDay()===0?-6:1));
-    const monStr = monday.toISOString().split('T')[0];
-    const ym = monStr.substring(0,7);
-    if(!monthMap[ym]) monthMap[ym]={calls:0,success:0,leads:0,email:0,rm:new Set(),fancy:new Set(),weeks:new Set()};
-    const m = monthMap[ym];
-    const all=[...(v.rm||[]),...(v.fancy||[])];
-    m.calls  += all.reduce((a,d)=>a+d.calls,0);
-    m.success+= all.reduce((a,d)=>a+d.success,0);
-    m.leads  += all.reduce((a,d)=>a+d.seller+d.rental,0);
-    m.email  += all.reduce((a,d)=>a+d.email,0);
-    m.weeks.add(monStr);
-    (v.rm||[]).forEach(d=>m.rm.add(d.name));
-    (v.fancy||[]).forEach(d=>m.fancy.add(d.name));
+  const allHist=Object.entries(HIST).sort(([a],[b])=>b.localeCompare(a));
+  const monthMap={};
+  allHist.forEach(([week,v])=>{
+    const wDate=new Date(week+'T00:00:00'); const monday=new Date(wDate); monday.setDate(wDate.getDate()-wDate.getDay()+(wDate.getDay()===0?-6:1));
+    const monStr=monday.toISOString().split('T')[0]; const ym=monStr.substring(0,7);
+    if(!monthMap[ym]) monthMap[ym]={calls:0,success:0,seller:0,rental:0,email:0,rm:new Set(),fancy:new Set(),weeks:new Set()};
+    const m=monthMap[ym]; const all=[...(v.rm||[]),...(v.fancy||[])];
+    m.calls+=all.reduce((a,d)=>a+d.calls,0); m.success+=all.reduce((a,d)=>a+d.success,0);
+    m.seller+=all.reduce((a,d)=>a+(d.seller||0),0); m.rental+=all.reduce((a,d)=>a+(d.rental||0),0); m.email+=all.reduce((a,d)=>a+(d.email||0),0);
+    m.weeks.add(monStr); (v.rm||[]).forEach(d=>m.rm.add(d.name)); (v.fancy||[]).forEach(d=>m.fancy.add(d.name));
   });
-
-  let monthlyHTML = '';
-  const monthEntries = Object.entries(monthMap).sort(([a],[b])=>b.localeCompare(a));
+  let monthlyHTML='';
+  const monthEntries=Object.entries(monthMap).sort(([a],[b])=>b.localeCompare(a));
   if(monthEntries.length){
-    const rows = monthEntries.map(([ym,m])=>{
-      const mSR = m.calls>0?((m.rental||0)+(m.email||0)+(m.seller||0))/m.calls:0;
-      return `<tr>
-        <td style="font-weight:800;color:var(--brand)">${fmtMonth(ym)}</td>
-        <td style="color:var(--muted);font-size:11px">${m.weeks.size} week${m.weeks.size!==1?'s':''}</td>
-        <td><span class="mx neu">${m.rm.size} RMs</span> <span class="mx pur">${m.fancy.size} Fancy</span></td>
-        <td><strong>${m.calls.toLocaleString()}</strong></td>
-        <td><span class="mx ${mc(mSR,.17)}">${pct(mSR)}</span></td>
-        <td><strong>${m.leads.toLocaleString()}</strong></td>
-        <td>${m.email.toLocaleString()}</td>
-      </tr>`;
+    const rows=monthEntries.map(([ym,m])=>{
+      const mSR=m.calls>0?(m.seller+m.rental+m.email)/m.calls:0;
+      return `<tr><td style="font-weight:800;color:var(--brand)">${fmtMonth(ym)}</td><td style="color:var(--muted);font-size:11px">${m.weeks.size} week${m.weeks.size!==1?'s':''}</td><td><span class="mx neu">${m.rm.size} RMs</span> <span class="mx pur">${m.fancy.size} Fancy</span></td><td><strong>${m.calls.toLocaleString()}</strong></td><td><span class="mx ${mc(mSR,.17)}">${pct(mSR)}</span></td><td>${m.seller.toLocaleString()}</td><td>${m.rental.toLocaleString()}</td><td>${m.email.toLocaleString()}</td></tr>`;
     }).join('');
-    monthlyHTML = `
-      <div class="exec-breakdown" style="margin-top:16px">
-        <div class="th"><h2>📆 Monthly Breakdown — All Time</h2>
-          <button class="btn btn-yellow" onclick="exportMonthly()" style="font-size:10px;padding:5px 12px">⬇ Export</button>
-        </div>
-        <table>
-          <thead><tr><th>Month</th><th>Weeks of Data</th><th>Callers</th><th>Total Calls</th><th>Success Rate</th><th>Total Leads</th><th>Emails</th></tr></thead>
-          <tbody>${rows}</tbody>
-        </table>
-      </div>`;
+    monthlyHTML=`<div class="exec-breakdown" style="margin-top:16px"><div class="th"><h2>📆 Monthly Breakdown — All Time</h2><button class="btn btn-yellow" onclick="exportMonthly()" style="font-size:10px;padding:5px 12px">⬇ Export</button></div><table><thead><tr><th>Month</th><th>Weeks</th><th>Callers</th><th>Total Calls</th><th>Success Rate</th><th>Seller Leads</th><th>Rental Leads</th><th>Emails</th></tr></thead><tbody>${rows}</tbody></table></div>`;
   }
-
-  // ── TOP PERFORMERS ───────────────────────────────────────────
-  const sorted = [...execAgents].sort((a,b)=>b.calls-a.calls).slice(0,3);
-  const topHTML = sorted.length ? `
-    <div class="tw" style="margin-top:16px">
-      <div class="th"><h2>🏆 Top Performers</h2></div>
-      <table>
-        <thead><tr><th>Rank</th><th>Agent</th><th>Group</th><th>Calls</th><th>Success Rate</th><th>Leads</th><th>Emails</th><th>Status</th></tr></thead>
-        <tbody>${sorted.map((d,i)=>{
-          const bench=d._grp==='RM'?B.rm:B.fancy;
-          return `<tr>
-            <td style="font-size:18px">${['🥇','🥈','🥉'][i]}</td>
-            <td class="ag">${d.name}${d.campaigns&&d.campaigns.length?('<br><span style="font-size:9px;font-weight:400;color:var(--muted);letter-spacing:.3px">'+d.campaigns.join(', ')+'</span>'):''}</td>
-            <td><span class="mx ${d._grp==='RM'?'neu':'pur'}">${d._grp}</span></td>
-            <td><strong>${d.calls.toLocaleString()}</strong></td>
-            <td><span class="mx ${mc(sr(d),bench.sr)}">${pct(sr(d))}</span></td>
-            <td>${(d.seller||0)+(d.rental||0)}</td>
-            <td>${d.email||0}</td>
-            <td>${stHTML(stOf(d,bench))}</td>
-          </tr>`;
-        }).join('')}</tbody>
-      </table>
-    </div>` : '';
-
-  document.getElementById('exec-breakdown').innerHTML = weeklyHTML + monthlyHTML + topHTML;
-
-  // Render monthly comparison charts (slight delay so DOM is ready)
+  const sorted=[...execAgents].sort((a,b)=>b.calls-a.calls).slice(0,3);
+  const topHTML=sorted.length?`<div class="tw" style="margin-top:16px"><div class="th"><h2>🏆 Top Performers</h2></div><table><thead><tr><th>Rank</th><th>Agent</th><th>Group</th><th>Calls</th><th>Success Rate</th><th>Seller</th><th>Rental</th><th>Emails</th><th>Status</th></tr></thead><tbody>${sorted.map((d,i)=>{const bench=d._grp==='RM'?B.rm:B.fancy;return `<tr><td style="font-size:18px">${['🥇','🥈','🥉'][i]}</td><td class="ag">${d.name}</td><td><span class="mx ${d._grp==='RM'?'neu':'pur'}">${d._grp}</span></td><td><strong>${d.calls.toLocaleString()}</strong></td><td><span class="mx ${mc(sr(d),bench.sr)}">${pct(sr(d))}</span></td><td>${d.seller||0}</td><td>${d.rental||0}</td><td>${d.email||0}</td><td>${stHTML(stOf(d,bench))}</td></tr>`;}).join('')}</tbody></table></div>`:'';
+  document.getElementById('exec-breakdown').innerHTML=weeklyHTML+monthlyHTML+topHTML;
   requestAnimationFrame(renderMonthlyCharts);
 }
+function buildMonthlyData(){ const allHist=Object.entries(HIST).sort(([a],[b])=>a.localeCompare(b)); const monthMap={}; allHist.forEach(([week,v])=>{ const ym=week.substring(0,7); if(!monthMap[ym]) monthMap[ym]={calls:0,leads:0,email:0,rental:0,seller:0}; const m=monthMap[ym]; const all=[...(v.rm||[]),...(v.fancy||[])]; m.calls+=all.reduce((a,d)=>a+d.calls,0); m.leads+=all.reduce((a,d)=>a+(d.seller||0)+(d.rental||0),0); m.email+=all.reduce((a,d)=>a+(d.email||0),0); m.rental+=all.reduce((a,d)=>a+(d.rental||0),0); m.seller+=all.reduce((a,d)=>a+(d.seller||0),0); }); return monthMap; }
 
-function exportMonthly(){
-  const allHist = Object.entries(HIST).sort(([a],[b])=>b.localeCompare(a));
-  const monthMap = {};
-  allHist.forEach(([week, v])=>{
-    const wDate = new Date(week+'T00:00:00');
-    const monday = new Date(wDate); monday.setDate(wDate.getDate() - wDate.getDay() + (wDate.getDay()===0?-6:1));
-    const monStr = monday.toISOString().split('T')[0];
-    const ym = monStr.substring(0,7);
-    if(!monthMap[ym]) monthMap[ym]={calls:0,success:0,leads:0,email:0,rental:0,seller:0,rm:new Set(),fancy:new Set(),weeks:new Set()};
-    const m = monthMap[ym];
-    const all=[...(v.rm||[]),...(v.fancy||[])];
-    m.calls+=all.reduce((a,d)=>a+d.calls,0);
-    m.success+=all.reduce((a,d)=>a+d.success,0);
-    m.leads+=all.reduce((a,d)=>a+d.seller+d.rental,0);
-    m.email+=all.reduce((a,d)=>a+d.email,0);
-    m.rental+=all.reduce((a,d)=>a+d.rental,0);
-    m.seller+=all.reduce((a,d)=>a+d.seller,0);
-    m.weeks.add(monStr);
-    (v.rm||[]).forEach(d=>m.rm.add(d.name));
-    (v.fancy||[]).forEach(d=>m.fancy.add(d.name));
-  });
-  const hdr='Month,Weeks of Data,RM Callers,Fancy Callers,Total Calls,Success Rate,Total Leads,Seller Leads,Rental Leads,Emails\n';
-  const rows=Object.entries(monthMap).sort(([a],[b])=>b.localeCompare(a)).map(([ym,m])=>{
-    const sr=m.calls>0?((m.rental||0)+(m.email||0)+(m.seller||0))/m.calls:0;
-    return `${fmtMonth(ym)},${m.weeks.size},${m.rm.size},${m.fancy.size},${m.calls},${pct(sr)},${m.leads},${m.seller},${m.rental},${m.email}`;
-  }).join('\n');
-  const blob=new Blob([hdr+rows],{type:'text/csv'});
-  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
-  a.download=`quay1_monthly_${today()}.csv`;a.click();
-  toast('📥 Monthly report exported!');
-}
+function makeBarChart(canvasId,labels,values,color,borderColor,isPercent=false){ if(execCharts[canvasId]){ execCharts[canvasId].destroy(); delete execCharts[canvasId]; } const ctx=document.getElementById(canvasId); if(!ctx) return; execCharts[canvasId]=new Chart(ctx,{ type:'bar', data:{ labels, datasets:[{ data:values, backgroundColor:color, borderColor:borderColor, borderWidth:2, borderRadius:6, borderSkipped:false }] }, options:{ responsive:true, maintainAspectRatio:true, aspectRatio:1.8, plugins:{ legend:{display:false}, tooltip:{callbacks:{label:c=>' '+(isPercent?c.parsed.y.toFixed(1)+'%':c.parsed.y.toLocaleString())}} }, scales:{ x:{grid:{display:false},ticks:{font:{size:10,family:'Montserrat'},color:'#6B7A99'}}, y:{beginAtZero:true, max:isPercent?100:undefined, grid:{color:'rgba(0,0,0,.05)'}, ticks:{font:{size:9,family:'Montserrat'},color:'#6B7A99', callback:v=>isPercent?v+'%':(v>=1000?(v/1000).toFixed(1)+'k':v)}} } } }); }
 
-// ─── MONTHLY CHARTS ───────────────────────────────────────────────
-function buildMonthlyData(){
-  // Aggregate HIST by calendar month, sorted oldest→newest
-  const allHist = Object.entries(HIST).sort(([a],[b])=>a.localeCompare(b));
-  const monthMap = {};
-  allHist.forEach(([week, v])=>{
-    const ym = week.substring(0,7);
-    if(!monthMap[ym]) monthMap[ym]={calls:0,leads:0,email:0,rental:0,seller:0};
-    const m = monthMap[ym];
-    const all=[...(v.rm||[]),...(v.fancy||[])];
-    m.calls  += all.reduce((a,d)=>a+d.calls,0);
-    m.leads  += all.reduce((a,d)=>a+d.seller+d.rental,0);
-    m.email  += all.reduce((a,d)=>a+d.email,0);
-    m.rental += all.reduce((a,d)=>a+d.rental,0);
-    m.seller += all.reduce((a,d)=>a+d.seller,0);
-  });
-  return monthMap;
-}
+function renderMonthlyCharts(){ const monthMap=buildMonthlyData(); const entries=Object.entries(monthMap); if(!entries.length) return; const labels=entries.map(([ym])=>{ try{ const [y,m]=ym.split('-'); return new Date(+y,+m-1,1).toLocaleDateString('en-ZA',{month:'short',year:'2-digit'}); }catch{return ym;} }); makeBarChart('ch-calls',labels,entries.map(([,m])=>m.calls),'rgba(61,91,166,.75)','#3D5BA6'); makeBarChart('ch-leads',labels,entries.map(([,m])=>m.leads),'rgba(26,138,74,.75)','#1A8A4A'); makeBarChart('ch-email',labels,entries.map(([,m])=>m.email),'rgba(253,197,3,.85)','#C9A000'); makeBarChart('ch-rental',labels,entries.map(([,m])=>m.rental),'rgba(152,197,237,.9)','#5B9FD4'); if(Object.keys(ctMonthData).length){ const dfPct=entries.map(([ym])=>{ const ct=ctMonthData[ym]; if(!ct||!ct.ctH) return null; return ct.ctH>0?Math.min(100,(ct.dfH/ct.ctH)*100):null; }); const vl=labels.filter((_,i)=>dfPct[i]!==null); const vv=dfPct.filter(v=>v!==null); if(vv.length) makeBarChart('ch-dfpct',vl,vv,'rgba(192,112,16,.75)','#C07010',true); } }
 
-function makeBarChart(canvasId, labels, values, color, borderColor){
-  if(execCharts[canvasId]){ execCharts[canvasId].destroy(); delete execCharts[canvasId]; }
-  const ctx = document.getElementById(canvasId);
-  if(!ctx) return;
-  execCharts[canvasId] = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels,
-      datasets:[{
-        data: values,
-        backgroundColor: color,
-        borderColor: borderColor,
-        borderWidth: 2,
-        borderRadius: 6,
-        borderSkipped: false,
-      }]
-    },
-    options:{
-      responsive: true,
-      maintainAspectRatio: true,
-      aspectRatio: 1.8,
-      plugins:{
-        legend:{ display: false },
-        tooltip:{
-          callbacks:{
-            label: ctx => ' ' + ctx.parsed.y.toLocaleString()
-          }
-        }
-      },
-      scales:{
-        x:{
-          grid:{ display:false },
-          ticks:{ font:{size:10, family:'Montserrat'}, color:'#6B7A99' }
-        },
-        y:{
-          beginAtZero: true,
-          grid:{ color:'rgba(0,0,0,.05)' },
-          ticks:{ font:{size:9, family:'Montserrat'}, color:'#6B7A99',
-            callback: v => v >= 1000 ? (v/1000).toFixed(1)+'k' : v
-          }
-        }
-      }
-    }
-  });
-}
+function exportMonthly(){ const allHist=Object.entries(HIST).sort(([a],[b])=>b.localeCompare(a)); const monthMap={}; allHist.forEach(([week,v])=>{ const wDate=new Date(week+'T00:00:00'); const monday=new Date(wDate); monday.setDate(wDate.getDate()-wDate.getDay()+(wDate.getDay()===0?-6:1)); const monStr=monday.toISOString().split('T')[0]; const ym=monStr.substring(0,7); if(!monthMap[ym]) monthMap[ym]={calls:0,success:0,seller:0,rental:0,email:0,rm:new Set(),fancy:new Set(),weeks:new Set()}; const m=monthMap[ym]; const all=[...(v.rm||[]),...(v.fancy||[])]; m.calls+=all.reduce((a,d)=>a+d.calls,0); m.success+=all.reduce((a,d)=>a+d.success,0); m.seller+=all.reduce((a,d)=>a+(d.seller||0),0); m.rental+=all.reduce((a,d)=>a+(d.rental||0),0); m.email+=all.reduce((a,d)=>a+(d.email||0),0); m.weeks.add(monStr); (v.rm||[]).forEach(d=>m.rm.add(d.name)); (v.fancy||[]).forEach(d=>m.fancy.add(d.name)); }); const hdr='Month,Weeks,RM Callers,Fancy Callers,Total Calls,Success Rate,Seller Leads,Rental Leads,Emails\n'; const rows=Object.entries(monthMap).sort(([a],[b])=>b.localeCompare(a)).map(([ym,m])=>{ const sRate=m.calls>0?(m.seller+m.rental+m.email)/m.calls:0; return `${fmtMonth(ym)},${m.weeks.size},${m.rm.size},${m.fancy.size},${m.calls},${pct(sRate)},${m.seller},${m.rental},${m.email}`; }).join('\n'); const blob=new Blob([hdr+rows],{type:'text/csv'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`quay1_monthly_${today()}.csv`; a.click(); toast('📥 Monthly report exported!'); }
 
-function renderMonthlyCharts(){
-  const monthMap = buildMonthlyData();
-  const entries  = Object.entries(monthMap); // already sorted oldest→newest
-  if(!entries.length) return;
+function exportExec(){ if(!execAgents.length){ toast('No data to export.'); return; } const hdr='Agent,Group,Calls,Success,Success%,Seller Leads,Rental Leads,Total Leads,Emails\n'; const rows=execAgents.map(d=>`${d.name},${d._grp||'—'},${d.calls},${d.success},${pct(sr(d))},${d.seller||0},${d.rental||0},${(d.seller||0)+(d.rental||0)},${d.email||0}`).join('\n'); const blob=new Blob([hdr+rows],{type:'text/csv'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`quay1_exec_${execPeriod}_${today()}.csv`; a.click(); toast('📥 Executive report exported!'); }
 
-  // Abbreviate month labels: "Apr 25", "May 25" etc.
-  const labels = entries.map(([ym])=>{
-    try{
-      const [y,m]=ym.split('-');
-      const d=new Date(+y,+m-1,1);
-      return d.toLocaleDateString('en-ZA',{month:'short',year:'2-digit'});
-    }catch{ return ym; }
-  });
+function buildPresets(){ const t=today(); const presets=[{lbl:'This Week',from:addDays(t,-((new Date().getDay()+6)%7)),to:t},{lbl:'Last Week',from:addDays(t,-((new Date().getDay()+6)%7+7)),to:addDays(t,-((new Date().getDay()+6)%7+3))},{lbl:'This Month',from:firstOfMonth(),to:t},{lbl:'Last Month',from:firstOfMonth(-1),to:lastOfMonth(-1)},{lbl:'Last 30d',from:addDays(t,-30),to:t},{lbl:'Last 90d',from:addDays(t,-90),to:t},{lbl:'All Time',from:'2020-01-01',to:t}]; document.getElementById('presets').innerHTML=presets.map(p=>`<button class="preset-btn" onclick="setPreset('${p.from}','${p.to}',this)">${p.lbl}</button>`).join(''); }
+function setPreset(from,to,btn){ document.querySelectorAll('.preset-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); document.getElementById('r-from').value=from; document.getElementById('r-to').value=to; applyRange(); }
+function applyRange(){ const from=document.getElementById('r-from').value; const to=document.getElementById('r-to').value; if(!from||!to){ toast('Please select a date range.'); return; } const entries=getHistoryInRange(from,to); if(!entries.length){ document.getElementById('report-content').innerHTML=`<div class="no-data"><div class="ic">📭</div><p>No data found for <strong>${from}</strong> → <strong>${to}</strong>.</p></div>`; return; } renderReport(entries,from,to); }
+function setView(v,btn){ reportView=v; document.querySelectorAll('.vt-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); const from=document.getElementById('r-from').value; const to=document.getElementById('r-to').value; if(from&&to) applyRange(); }
 
-  const calls  = entries.map(([,m])=>m.calls);
-  const leads  = entries.map(([,m])=>m.leads);
-  const emails = entries.map(([,m])=>m.email);
-  const rental = entries.map(([,m])=>m.rental);
+function renderReport(entries,from,to){ const agents=aggregateAgents(entries); const weeks=entries.length; const tC=agents.reduce((a,d)=>a+d.calls,0),tS=agents.reduce((a,d)=>a+d.success,0),tSel=agents.reduce((a,d)=>a+(d.seller||0),0),tRen=agents.reduce((a,d)=>a+(d.rental||0),0),tEm=agents.reduce((a,d)=>a+(d.email||0),0),tHr=agents.reduce((a,d)=>a+d.workTime,0); const avgSR=tC>0?(tSel+tRen+tEm)/tC:0; const kpis=`<div class="srow" style="margin-bottom:16px"><div class="sc blue"><div class="sc-lbl">Total Calls</div><div class="sc-val">${tC.toLocaleString()}</div><div class="sc-sub">${weeks} week(s)</div></div><div class="sc ${avgSR>=.17?'green':'red'}"><div class="sc-lbl">Avg Success Rate</div><div class="sc-val">${pct(avgSR)}</div></div><div class="sc yellow"><div class="sc-lbl">Seller Leads</div><div class="sc-val">${tSel}</div></div><div class="sc sky"><div class="sc-lbl">Rental Leads</div><div class="sc-val">${tRen}</div></div><div class="sc"><div class="sc-lbl">Emails</div><div class="sc-val">${tEm}</div></div><div class="sc"><div class="sc-lbl">Total DF Hours</div><div class="sc-val">${f1(tHr)}h</div></div></div>`; if(reportView==='overall'){ document.getElementById('report-content').innerHTML=kpis+`<div class="tw"><div class="th"><h2>All Callers — ${from} to ${to}</h2></div><table><thead><tr><th>#</th><th>Agent</th><th>Group</th><th>Weeks</th><th>Calls</th><th>DF Hrs</th><th>Calls/Hr</th><th>Success</th><th>Success%</th><th>Seller</th><th>Rental</th><th>Email</th></tr></thead><tbody>${agents.map((d,i)=>`<tr><td style="color:var(--muted);font-size:10px">${i+1}</td><td class="ag">${d.name}</td><td><span class="mx ${d._grp==='RM'?'neu':'pur'}">${d._grp}</span></td><td style="color:var(--muted)">${d._weeks}</td><td><strong>${d.calls.toLocaleString()}</strong></td><td>${f2(d.workTime)}h</td><td><span class="mx ${mc(cph(d),45)}">${f1(cph(d))}/hr</span></td><td>${d.success}</td><td><span class="mx ${mc(sr(d),d._grp==='RM'?.17:.20)}">${pct(sr(d))}</span></td><td>${d.seller||0}</td><td>${d.rental||0}</td><td>${d.email||0}</td></tr>`).join('')}</tbody></table></div>`; } else { document.getElementById('report-content').innerHTML=kpis+`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">${agents.map(d=>`<div class="sc" style="border-left-color:${d._grp==='RM'?'var(--brand)':'#5B3FA6'}"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px"><div><div class="sc-val" style="font-size:15px">${d.name}</div><span class="mx ${d._grp==='RM'?'neu':'pur'}" style="margin-top:4px;display:inline-block">${d._grp}</span></div><span class="mx ${mc(sr(d),d._grp==='RM'?.17:.20)}">${pct(sr(d))}</span></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;font-size:11px"><div style="color:var(--muted)">Calls</div><div style="font-weight:700">${d.calls.toLocaleString()}</div><div style="color:var(--muted)">Calls/Hr</div><div style="font-weight:700">${f1(cph(d))}</div><div style="color:var(--muted)">DF Hours</div><div style="font-weight:700">${f2(d.workTime)}h</div><div style="color:var(--muted)">Seller</div><div style="font-weight:700">${d.seller||0}</div><div style="color:var(--muted)">Rental</div><div style="font-weight:700">${d.rental||0}</div><div style="color:var(--muted)">Email</div><div style="font-weight:700">${d.email||0}</div></div></div>`).join('')}</div>`; } }
 
-  // Brand colour palettes with opacity
-  makeBarChart('ch-calls',  labels, calls,  'rgba(61,91,166,.75)',  '#3D5BA6');
-  makeBarChart('ch-leads',  labels, leads,  'rgba(26,138,74,.75)',  '#1A8A4A');
-  makeBarChart('ch-email',  labels, emails, 'rgba(253,197,3,.85)',  '#C9A000');
-  makeBarChart('ch-rental', labels, rental, 'rgba(152,197,237,.9)', '#5B9FD4');
-}
+function exportCSV(){ if(!CUR){toast('No data loaded.');return;} const hdr='Group,Agent,Calls,DF Hours,Calls/Hr,Success,Success%,Seller,Rental,Email,Status\n'; const r=(d,b,g)=>`${g},${d.name},${d.calls},${f2(d.workTime)},${f1(cph(d))},${d.success},${pct(sr(d))},${d.seller||0},${d.rental||0},${d.email||0},${stOf(d,b)}`; const rows=[...(CUR.rm||[]).map(d=>r(d,B.rm,'RM')),...(CUR.fancy||[]).map(d=>r(d,B.fancy,'Fancy'))].join('\n'); const blob=new Blob([hdr+rows],{type:'text/csv'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`quay1_performance_${CUR.week||CUR.periodStart}.csv`; a.click(); toast('📥 Exported!'); }
+function setCmpMode(mode,btn){ cmpMode=mode; document.querySelectorAll('.cmp-mode-btn').forEach(b=>b.classList.remove('active')); if(btn) btn.classList.add('active'); document.getElementById('cmp-week-panel').style.display=mode==='week'?'':'none'; document.getElementById('cmp-month-panel').style.display=mode==='month'?'':'none'; }
+function fmtShortDate(d){ try{ return new Date(d+'T00:00:00').toLocaleDateString('en-ZA',{day:'numeric',month:'short'}); }catch{return d;} }
+function populateWeekSelects(){ const sw=Object.keys(HIST).sort((a,b)=>b.localeCompare(a)); ['wk-a','wk-b'].forEach(id=>{ const sel=document.getElementById(id); if(!sel) return; while(sel.options.length>1) sel.remove(1); sw.forEach(ws=>{ const h=HIST[ws]; const we=h.weekEnd||addDays(ws,4); sel.appendChild(new Option('Week of '+fmtShortDate(ws)+' – '+fmtShortDate(we),ws)); }); }); }
+function populateMonthSelects(){ const ms=new Set(); Object.keys(HIST).forEach(w=>ms.add(w.substring(0,7))); const sm=Array.from(ms).sort((a,b)=>b.localeCompare(a)); ['mo-a','mo-b'].forEach(id=>{ const sel=document.getElementById(id); if(!sel) return; while(sel.options.length>1) sel.remove(1); sm.forEach(ym=>{ sel.appendChild(new Option(fmtMonth(ym),ym)); }); }); }
+function setQuickWeeks(){ const t=today(); const d=new Date(); const tm=addDays(t,-((d.getDay()+6)%7)); const lm=addDays(tm,-7); const wb=addDays(tm,-14); const sA=document.getElementById('wk-a'); const sB=document.getElementById('wk-b'); if(sA&&sB){ sA.value=lm; sB.value=wb; updateWeekCompare(); } }
+function setQuickMonths(){ const now=new Date(); const thisYM=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0'); const last=new Date(now.getFullYear(),now.getMonth()-1,1); const lastYM=last.getFullYear()+'-'+String(last.getMonth()+1).padStart(2,'0'); const sA=document.getElementById('mo-a'); const sB=document.getElementById('mo-b'); if(sA&&sB){ sA.value=thisYM; sB.value=lastYM; updateMonthCompare(); } }
 
-function exportExec(){
-  if(!execAgents.length){ toast('No data to export.'); return; }
-  const hdr = 'Agent,Group,Calls,Success,Success%,Seller Leads,Rental Leads,Total Leads,Emails\n';
-  const rows = execAgents.map(d=>`${d.name},${d._grp||'—'},${d.calls},${d.success},${pct(sr(d))},${d.seller||0},${d.rental||0},${(d.seller||0)+(d.rental||0)},${d.email||0}`).join('\n');
-  const blob = new Blob([hdr+rows],{type:'text/csv'});
-  const a = document.createElement('a'); a.href=URL.createObjectURL(blob);
-  a.download=`quay1_executive_${execPeriod}_${today()}.csv`; a.click();
-  toast('📥 Executive report exported!');
-}
+function weekTeamStats(ws){ const h=HIST[ws]; if(!h) return null; const agents=[...(h.rm||[]),...(h.fancy||[])]; const tCalls=agents.reduce((a,d)=>a+d.calls,0),tSuccess=agents.reduce((a,d)=>a+d.success,0),tSeller=agents.reduce((a,d)=>a+(d.seller||0),0),tRental=agents.reduce((a,d)=>a+(d.rental||0),0),tEmail=agents.reduce((a,d)=>a+(d.email||0),0),tWorkH=agents.reduce((a,d)=>a+d.workTime,0); return {weekStart:ws,weekEnd:h.weekEnd||addDays(ws,4),callers:agents.length,rmCount:(h.rm||[]).length,fancyCount:(h.fancy||[]).length,calls:tCalls,success:tSuccess,seller:tSeller,rental:tRental,email:tEmail,workH:tWorkH,successRate:tCalls>0?tSuccess/tCalls:0,cph:tWorkH>0?tCalls/tWorkH:0}; }
+function monthTeamStats(ym){ const entries=Object.entries(HIST).filter(([w])=>w.substring(0,7)===ym).map(([,v])=>v); if(!entries.length) return null; const agents=aggregateAgents(entries); const tCalls=agents.reduce((a,d)=>a+d.calls,0),tSuccess=agents.reduce((a,d)=>a+d.success,0),tSeller=agents.reduce((a,d)=>a+(d.seller||0),0),tRental=agents.reduce((a,d)=>a+(d.rental||0),0),tEmail=agents.reduce((a,d)=>a+(d.email||0),0),tWorkH=agents.reduce((a,d)=>a+d.workTime,0); return {ym,callers:agents.length,calls:tCalls,success:tSuccess,seller:tSeller,rental:tRental,email:tEmail,workH:tWorkH,successRate:tCalls>0?tSuccess/tCalls:0,cph:tWorkH>0?tCalls/tWorkH:0,weeks:new Set(Object.keys(HIST).filter(w=>w.substring(0,7)===ym)).size}; }
 
-// ─── REPORTS ─────────────────────────────────────────────────────
-function buildPresets(){
-  const t=today();
-  const presets=[
-    {lbl:'This Week',  from:addDays(t,-((new Date().getDay()+6)%7)), to:t},
-    {lbl:'Last Week',  from:addDays(t,-((new Date().getDay()+6)%7+7)), to:addDays(t,-((new Date().getDay()+6)%7+3))},
-    {lbl:'This Month', from:firstOfMonth(), to:t},
-    {lbl:'Last Month', from:firstOfMonth(-1), to:lastOfMonth(-1)},
-    {lbl:'Last 30d',   from:addDays(t,-30), to:t},
-    {lbl:'Last 90d',   from:addDays(t,-90), to:t},
-    {lbl:'All Time',   from:'2020-01-01', to:t},
-  ];
-  document.getElementById('presets').innerHTML=presets.map(p=>
-    `<button class="preset-btn" onclick="setPreset('${p.from}','${p.to}',this)">${p.lbl}</button>`
-  ).join('');
-}
+function _cmpTable(hdrA,hdrB,rows){ const thead='<tr style="background:var(--brand)"><th style="padding:12px;text-align:left;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,.7)">Metric</th><th style="padding:12px;text-align:left;font-size:11px;font-weight:900;color:var(--yellow)">'+hdrA+'</th><th style="padding:12px;text-align:left;font-size:11px;font-weight:900;color:rgba(255,255,255,.85)">'+hdrB+'</th><th style="padding:12px;text-align:left;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,.7)">Change</th></tr>'; return '<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;background:var(--card);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh)"><thead>'+thead+'</thead><tbody>'+rows.join('')+'</tbody></table></div>'; }
+function _dn(a,b){ const d=a-b; const col=d>0?'var(--green)':d<0?'var(--qred)':'var(--muted)'; return '<span style="color:'+col+';font-weight:700">'+(d>=0?'+':'')+d+'</span>'; }
+function _dp(a,b){ const d=a-b; const col=d>0?'var(--green)':d<0?'var(--qred)':'var(--muted)'; return '<span style="color:'+col+';font-weight:700">'+(d>=0?'+':'')+d.toFixed(1)+'%</span>'; }
+function _row(lbl,vA,vB,dH){ return '<tr><td style="font-weight:700;color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.5px;padding:8px 12px">'+lbl+'</td><td style="padding:8px 12px;font-weight:800;font-size:14px;color:var(--brand)">'+vA+'</td><td style="padding:8px 12px;font-weight:800;font-size:14px;color:#b8860b">'+vB+'</td><td style="padding:8px 12px">'+dH+'</td></tr>'; }
 
-function setPreset(from,to,btn){
-  document.querySelectorAll('.preset-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById('r-from').value=from;
-  document.getElementById('r-to').value=to;
-  applyRange();
-}
+function updateWeekCompare(){ const wsA=document.getElementById('wk-a').value,wsB=document.getElementById('wk-b').value; const el=document.getElementById('wk-cmp-result'); if(!el) return; if(!wsA||!wsB){ el.innerHTML='<div class="no-data"><div class="ic">📅</div><p>Select two weeks to compare.</p></div>'; return; } if(wsA===wsB){ el.innerHTML='<div class="no-data"><div class="ic">📅</div><p>Please select two different weeks.</p></div>'; return; } const sA=weekTeamStats(wsA),sB=weekTeamStats(wsB); if(!sA||!sB){ el.innerHTML='<div class="no-data"><div class="ic">🔍</div><p>No data found.</p></div>'; return; } const wlA='Week of '+fmtShortDate(sA.weekStart)+' – '+fmtShortDate(sA.weekEnd); const wlB='Week of '+fmtShortDate(sB.weekStart)+' – '+fmtShortDate(sB.weekEnd); el.innerHTML=_cmpTable(wlA,wlB,[_row('Active Callers',sA.callers,sB.callers,_dn(sA.callers,sB.callers)),_row('RM Callers',sA.rmCount,sB.rmCount,_dn(sA.rmCount,sB.rmCount)),_row('Fancy Callers',sA.fancyCount,sB.fancyCount,_dn(sA.fancyCount,sB.fancyCount)),_row('Total Calls',sA.calls.toLocaleString(),sB.calls.toLocaleString(),_dn(sA.calls,sB.calls)),_row('Avg Success Rate',pct(sA.successRate),pct(sB.successRate),_dp(sA.successRate*100,sB.successRate*100)),_row('Avg Calls/Hr',f1(sA.cph),f1(sB.cph),_dp(sA.cph,sB.cph)),_row('Seller Leads',sA.seller,sB.seller,_dn(sA.seller,sB.seller)),_row('Rental Leads',sA.rental,sB.rental,_dn(sA.rental,sB.rental)),_row('Emails Collected',sA.email,sB.email,_dn(sA.email,sB.email)),_row('Dialler Hours',f2(sA.workH)+'h',f2(sB.workH)+'h',_dp(sA.workH,sB.workH))]); }
 
-function applyRange(){
-  const from=document.getElementById('r-from').value;
-  const to  =document.getElementById('r-to').value;
-  if(!from||!to){ toast('Please select a date range.'); return; }
-  const entries=getHistoryInRange(from,to);
-  if(!entries.length){
-    document.getElementById('report-content').innerHTML=
-      `<div class="no-data"><div class="ic">📭</div><p>No data found for <strong>${from}</strong> → <strong>${to}</strong>.<br/>Data accumulates as the GitHub Action runs each weekday.</p></div>`;
-    return;
-  }
-  renderReport(entries, from, to);
-}
+function updateMonthCompare(){ const ymA=document.getElementById('mo-a').value,ymB=document.getElementById('mo-b').value; const el=document.getElementById('mo-cmp-result'); if(!el) return; if(!ymA||!ymB){ el.innerHTML='<div class="no-data"><div class="ic">📆</div><p>Select two months to compare.</p></div>'; return; } if(ymA===ymB){ el.innerHTML='<div class="no-data"><div class="ic">📆</div><p>Please select two different months.</p></div>'; return; } const sA=monthTeamStats(ymA),sB=monthTeamStats(ymB); if(!sA||!sB){ el.innerHTML='<div class="no-data"><div class="ic">🔍</div><p>No data found.</p></div>'; return; } el.innerHTML=_cmpTable(fmtMonth(ymA),fmtMonth(ymB),[_row('Weeks of Data',sA.weeks,sB.weeks,_dn(sA.weeks,sB.weeks)),_row('Active Callers',sA.callers,sB.callers,_dn(sA.callers,sB.callers)),_row('Total Calls',sA.calls.toLocaleString(),sB.calls.toLocaleString(),_dn(sA.calls,sB.calls)),_row('Avg Success Rate',pct(sA.successRate),pct(sB.successRate),_dp(sA.successRate*100,sB.successRate*100)),_row('Avg Calls/Hr',f1(sA.cph),f1(sB.cph),_dp(sA.cph,sB.cph)),_row('Seller Leads',sA.seller,sB.seller,_dn(sA.seller,sB.seller)),_row('Rental Leads',sA.rental,sB.rental,_dn(sA.rental,sB.rental)),_row('Emails Collected',sA.email,sB.email,_dn(sA.email,sB.email)),_row('Dialler Hours',f2(sA.workH)+'h',f2(sB.workH)+'h',_dp(sA.workH,sB.workH))]); }
 
-function toMonday(dateStr){const p=dateStr.split('-');const d=new Date(+p[0],+p[1]-1,+p[2]);const day=d.getDay();d.setDate(d.getDate()-(day===0?6:day-1));return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
-function getHistoryInRange(from,to){
-  return Object.entries(HIST)
-    .filter(([d])=>{
-      const mon=toMonday(d);
-      return mon>=from&&mon<=to;
-    })
-    .map(([,v])=>v);
-}
+function handleCT(e){ const file=e.target.files[0]; if(!file) return; const reader=new FileReader(); reader.onload=ev=>{ try{ const lines=ev.target.result.trim().split('\n').filter(l=>l.trim()); if(lines.length<2) throw new Error('File too short'); const headers=lines[0].split(',').map(h=>h.replace(/"/g,'').trim().toLowerCase()); const ni=headers.findIndex(h=>h.includes('name')||h.includes('employee')||h.includes('user')); const hi=headers.findIndex(h=>h.includes('hour')||h.includes('total')||h.includes('duration')); if(ni<0||hi<0) throw new Error('Cannot find Name/Hours columns. Found: '+headers.join(', ')); const map={}; lines.slice(1).forEach(line=>{ const cols=line.split(',').map(c=>c.replace(/"/g,'').trim()); const n=cols[ni]; const h=parseFloat(cols[hi])||0; if(n) map[n]=(map[n]||0)+h; }); ctData=Object.entries(map).map(([name,hours])=>({name,hours})); try{ localStorage.setItem('quay_ct_data',JSON.stringify(ctData)); }catch(e){} document.getElementById('ct-status').innerHTML=`✅ <strong>${file.name}</strong> — ${ctData.length} agents loaded`; renderWT(); toast('✅ ConnectTeams data loaded — '+ctData.length+' agents'); }catch(err){ toast('❌ '+err.message); } }; reader.readAsText(file); }
+function renderWT(){ if(!CUR||!ctData.length) return; const all=[...(CUR.rm||[]),...(CUR.fancy||[])]; const rows=all.map(a=>{ const ct=ctData.find(c=>c.name.toLowerCase().includes(a.name.toLowerCase())||a.name.toLowerCase().includes(c.name.toLowerCase())); const ctH=ct?ct.hours:null; const eff=ctH&&ctH>0?a.workTime/ctH:null; const effCls=eff===null?'':eff>=WT_TARGET?'good':eff>=.5?'warn':'bad'; const diff=ctH!==null?+(a.workTime-ctH).toFixed(2):null; return {name:a.name,grp:(CUR.rm||[]).find(r=>r.name===a.name)?'RM':'Fancy',dfH:a.workTime,ctH,eff,effCls,diff}; }); const tbody=rows.map((r,i)=>`<tr><td style="color:var(--muted);font-size:10px">${i+1}</td><td class="ag">${r.name}</td><td><span class="mx ${r.grp==='RM'?'neu':'pur'}">${r.grp}</span></td><td><strong>${f2(r.dfH)}h</strong></td><td>${r.ctH!==null?f2(r.ctH)+'h':'<span style="color:var(--muted);font-size:11px">No match</span>'}</td><td style="font-weight:700;color:${r.diff===null?'var(--muted)':r.diff>0?'var(--green)':r.diff<-1?'var(--qred)':'var(--amber)'}">${r.diff!==null?(r.diff>=0?'+':'')+r.diff+'h':'—'}</td><td>${r.eff!==null?'<span class="mx '+r.effCls+'">'+pct(r.eff)+'</span><div class="wt-bar-wrap"><div class="wt-bar '+r.effCls+'" style="width:'+Math.min(100,Math.round(r.eff*100))+'%"></div></div>':'—'}</td><td>${r.eff===null?'<span style="color:var(--muted);font-size:11px">Unmatched</span>':r.eff>=WT_TARGET?'<span class="status green">✅ Efficient</span>':r.eff>=.5?'<span class="status amber">⚠️ Low</span>':'<span class="status red">❌ Very Low</span>'}</td></tr>`).join(''); document.getElementById('wt-table-wrap').innerHTML=`<div class="tw"><div class="th"><h2>DialFire Hours vs ConnectTeams Clocked Hours</h2></div><table><thead><tr><th>#</th><th>Agent</th><th>Group</th><th>DialFire Hrs</th><th>ConnectTeams Hrs</th><th>Difference</th><th>Efficiency</th><th>Status</th></tr></thead><tbody>${tbody}</tbody></table></div>`; }
 
-function aggregateAgents(entries){
-  const map={};
-  entries.forEach(e=>{
-    const all=[
-      ...(e.rm||[]).map(a=>({...a,_grp:'RM'})),
-      ...(e.fancy||[]).map(a=>({...a,_grp:'Fancy'})),
-    ];
-    all.forEach(a=>{
-      const k=a.name.toLowerCase().trim();
-      if(!map[k]){ map[k]={...a,_weeks:1}; }
-      else{
-        map[k].calls    +=a.calls;
-        map[k].success  +=a.success;
-        map[k].rental   +=a.rental;
-        map[k].seller   +=a.seller;
-        map[k].email    +=a.email;
-        map[k].workTime  =+((map[k].workTime+a.workTime).toFixed(2));
-        map[k]._weeks++;
-      }
-    });
-  });
-  return Object.values(map).sort((a,b)=>b.calls-a.calls);
-}
-
-function setView(v,btn){
-  reportView=v;
-  document.querySelectorAll('.vt-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  const from=document.getElementById('r-from').value;
-  const to  =document.getElementById('r-to').value;
-  if(from&&to) applyRange();
-}
-
-function renderReport(entries, from, to){
-  const agents=aggregateAgents(entries);
-  const weeks =entries.length;
-  const tC  =agents.reduce((a,d)=>a+d.calls,0);
-  const tS  =agents.reduce((a,d)=>a+d.success,0);
-  const tSel=agents.reduce((a,d)=>a+d.seller,0);
-  const tRen=agents.reduce((a,d)=>a+d.rental,0);
-  const tEm=agents.reduce((a,d)=>a+(d.email||0),0);const tHr =agents.reduce((a,d)=>a+d.workTime,0);
-  const avgSR=tC>0?(tSel+tRen+tEm)/tC:0;
-
-  const kpis=`<div class="srow" style="margin-bottom:16px">
-    <div class="sc blue"><div class="sc-lbl">Total Calls</div><div class="sc-val">${tC.toLocaleString()}</div><div class="sc-sub">${weeks} week(s) of data</div></div>
-    <div class="sc ${avgSR>=.17?'green':'red'}"><div class="sc-lbl">Avg Success Rate</div><div class="sc-val">${pct(avgSR)}</div><div class="sc-sub">across all callers</div></div>
-    <div class="sc yellow"><div class="sc-lbl">Seller Leads</div><div class="sc-val">${tSel}</div><div class="sc-sub">combined</div></div>
-    <div class="sc sky"><div class="sc-lbl">Rental Leads</div><div class="sc-val">${tRen}</div><div class="sc-sub">combined</div></div>
-    <div class="sc"><div class="sc-lbl">Total DF Hours</div><div class="sc-val">${f1(tHr)}h</div><div class="sc-sub">active dialler time</div></div>
-  </div>`;
-
-  if(reportView==='overall'){
-    document.getElementById('report-content').innerHTML=kpis+`
-    <div class="tw"><div class="th"><h2>All Callers — ${from} to ${to}</h2></div>
-    <table><thead><tr><th>#</th><th>Agent</th><th>Group</th><th>Weeks</th>
-      <th>Calls</th><th>DF Hrs</th><th>Calls/Hr</th><th>Success</th><th>Success%</th>
-      <th>Rental</th><th>Seller</th><th>Email</th></tr></thead>
-    <tbody>${agents.map((d,i)=>`<tr>
-      <td style="color:var(--muted);font-size:10px">${i+1}</td>
-      <td class="ag">${d.name}${d.campaigns&&d.campaigns.length?('<br><span style="font-size:9px;font-weight:400;color:var(--muted);letter-spacing:.3px">'+d.campaigns.join(', ')+'</span>'):''}</td>
-      <td><span class="mx ${d._grp==='RM'?'neu':'pur'}">${d._grp}</span></td>
-      <td style="color:var(--muted)">${d._weeks}</td>
-      <td><strong>${d.calls.toLocaleString()}</strong></td>
-      <td>${f2(d.workTime)}h</td>
-      <td><span class="mx ${mc(cph(d),45)}">${f1(cph(d))}/hr</span></td>
-      <td>${d.success}</td>
-      <td><span class="mx ${mc(sr(d),d._grp==='RM'?.17:.20)}">${pct(sr(d))}</span></td>
-      <td>${d.rental}</td><td>${d.seller}</td><td>${d.email}</td>
-    </tr>`).join('')}</tbody></table></div>`;
-  } else {
-    document.getElementById('report-content').innerHTML=kpis+
-      `<div class="sc-lbl" style="margin-bottom:10px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--muted)">Individual Caller Breakdown — ${from} to ${to}</div>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
-      ${agents.map(d=>`<div class="sc" style="border-left-color:${d._grp==='RM'?'var(--brand)':'#5B3FA6'}">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
-          <div><div class="sc-val" style="font-size:15px">${d.name}${d.campaigns&&d.campaigns.length?('<div style="font-size:9px;font-weight:400;color:var(--muted);margin-top:2px">'+d.campaigns.join(', ')+'</div>'):''}</div>
-          <span class="mx ${d._grp==='RM'?'neu':'pur'}" style="margin-top:4px;display:inline-block">${d._grp}</span></div>
-          <span class="mx ${mc(sr(d),d._grp==='RM'?.17:.20)}">${pct(sr(d))}</span>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;font-size:11px">
-          <div style="color:var(--muted)">Calls</div><div style="font-weight:700">${d.calls.toLocaleString()}</div>
-          <div style="color:var(--muted)">Calls/Hr</div><div style="font-weight:700">${f1(cph(d))}</div>
-          <div style="color:var(--muted)">DF Hours</div><div style="font-weight:700">${f2(d.workTime)}h</div>
-          <div style="color:var(--muted)">Seller</div><div style="font-weight:700">${d.seller}</div>
-          <div style="color:var(--muted)">Rental</div><div style="font-weight:700">${d.rental}</div>
-          <div style="color:var(--muted)">Email</div><div style="font-weight:700">${d.email}</div>
-        </div>
-      </div>`).join('')}</div>`;
-  }
-}
-
-// ─── COMPARE ─────────────────────────────────────────────────────
-function populateCompareSelects(){
-  const agents=aggregateAgents(Object.values(HIST));
-  if(!agents.length&&CUR){
-    const all=[...CUR.rm,...CUR.fancy];
-    all.forEach(a=>{
-      ['cmp-a','cmp-b'].forEach(id=>{
-        const opt=new Option(a.name,a.name);
-        document.getElementById(id).appendChild(opt.cloneNode(true));
-      });
-    });
-    return;
-  }
-  agents.forEach(a=>{
-    ['cmp-a','cmp-b'].forEach(id=>{
-      const opt=new Option(a.name+' ('+a._grp+')',a.name);
-      document.getElementById(id).appendChild(opt.cloneNode(true));
-    });
-  });
-}
-
-// ── WEEK vs WEEK COMPARE ──────────────────────────────────────────────
-function fmtShortDate(d){
-  try{ const dt=new Date(d+'T00:00:00'); return dt.toLocaleDateString('en-ZA',{day:'numeric',month:'short'}); }catch{return d;}
-}
-
-function populateWeekSelects(){
-  const sortedWeeks=Object.keys(HIST).sort((a,b)=>b.localeCompare(a));
-  ['wk-a','wk-b'].forEach(id=>{
-    const sel=document.getElementById(id);
-    if(!sel) return;
-    while(sel.options.length>1) sel.remove(1);
-    sortedWeeks.forEach(ws=>{
-      const h=HIST[ws]; const we=h.weekEnd||addDays(ws,4);
-      const label='Week of '+fmtShortDate(ws)+' – '+fmtShortDate(we);
-      sel.appendChild(new Option(label,ws));
-    });
-  });
-}
-
-function setQuickWeeks(){
-  const t=today(); const d=new Date();
-  const thisMonday=addDays(t,-((d.getDay()+6)%7));
-  const lastMonday=addDays(thisMonday,-7);
-  const weekBefore=addDays(thisMonday,-14);
-  const selA=document.getElementById('wk-a');
-  const selB=document.getElementById('wk-b');
-  if(selA&&selB){ selA.value=lastMonday; selB.value=weekBefore; updateWeekCompare(); }
-}
-
-function weekTeamStats(weekStart){
-  const h=HIST[weekStart]; if(!h) return null;
-  const agents=[...(h.rm||[]),...(h.fancy||[])];
-  const tCalls=agents.reduce((a,d)=>a+d.calls,0);
-  const tSuccess=agents.reduce((a,d)=>a+d.success,0);
-  const tSeller=agents.reduce((a,d)=>a+d.seller,0);
-  const tRental=agents.reduce((a,d)=>a+d.rental,0);
-  const tEmail=agents.reduce((a,d)=>a+d.email,0);
-  const tWorkH=agents.reduce((a,d)=>a+d.workTime,0);
-  const avgSR=tCalls>0?tSuccess/tCalls:0; const cph=tWorkH>0?tCalls/tWorkH:0;
-  return {weekStart,weekEnd:h.weekEnd||addDays(weekStart,4),
-    callers:agents.length,rmCount:(h.rm||[]).length,fancyCount:(h.fancy||[]).length,
-    calls:tCalls,success:tSuccess,seller:tSeller,rental:tRental,email:tEmail,
-    workH:tWorkH,successRate:avgSR,cph};
-}
-
-function updateWeekCompare(){
-  const wsA=document.getElementById('wk-a').value;
-  const wsB=document.getElementById('wk-b').value;
-  const el=document.getElementById('wk-cmp-result');
-  if(!el) return;
-  if(!wsA||!wsB){ el.innerHTML='<div class="no-data"><div class="ic">📅</div><p>Select two weeks above to compare full-team performance.</p></div>'; return; }
-  if(wsA===wsB){ el.innerHTML='<div class="no-data"><div class="ic">📅</div><p>Please select two different weeks.</p></div>'; return; }
-  const sA=weekTeamStats(wsA); const sB=weekTeamStats(wsB);
-  if(!sA||!sB){ el.innerHTML='<div class="no-data"><div class="ic">🔍</div><p>No data found for one or both selected weeks.</p></div>'; return; }
-  const weekLabel=s=>'Week of '+fmtShortDate(s.weekStart)+' – '+fmtShortDate(s.weekEnd);
-  const diffNum=(a,b)=>{ const d=a-b; const col=d>0?'var(--green)':d<0?'var(--qred)':'var(--muted)'; return '<span style="color:'+col+';font-weight:700">'+(d>=0?'+':'')+d+'</span>'; };
-  const diffPctFn=(a,b)=>{ const d=a-b; const col=d>0?'var(--green)':d<0?'var(--qred)':'var(--muted)'; return '<span style="color:'+col+';font-weight:700">'+(d>=0?'+':'')+d.toFixed(1)+'%</span>'; };
-  const row=(lbl,vA,vB,dH)=>'<tr><td style="font-weight:700;color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.5px;padding:8px 12px">'+lbl+'</td><td style="padding:8px 12px;font-weight:800;font-size:14px;color:var(--brand)">'+vA+'</td><td style="padding:8px 12px;font-weight:800;font-size:14px;color:#b8860b">'+vB+'</td><td style="padding:8px 12px">'+dH+'</td></tr>';
-  const tbody=[
-    row('Active Callers',sA.callers,sB.callers,diffNum(sA.callers,sB.callers)),
-    row('RM Callers',sA.rmCount,sB.rmCount,diffNum(sA.rmCount,sB.rmCount)),
-    row('Fancy Callers',sA.fancyCount,sB.fancyCount,diffNum(sA.fancyCount,sB.fancyCount)),
-    row('Total Calls',sA.calls.toLocaleString(),sB.calls.toLocaleString(),diffNum(sA.calls,sB.calls)),
-    row('Avg Success Rate',pct(sA.successRate),pct(sB.successRate),diffPctFn(sA.successRate*100,sB.successRate*100)),
-    row('Avg Calls/Hr',f1(sA.cph),f1(sB.cph),diffPctFn(sA.cph,sB.cph)),
-    row('Seller Leads',sA.seller,sB.seller,diffNum(sA.seller,sB.seller)),
-    row('Rental Leads',sA.rental,sB.rental,diffNum(sA.rental,sB.rental)),
-    row('Emails Collected',sA.email,sB.email,diffNum(sA.email,sB.email)),
-    row('Dialler Hours',f2(sA.workH)+'h',f2(sB.workH)+'h',diffPctFn(sA.workH,sB.workH)),
-  ].join('');
-  const thead='<tr style="background:var(--brand)"><th style="padding:12px;text-align:left;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,.7)">Metric</th><th style="padding:12px;text-align:left;font-size:11px;font-weight:900;color:var(--yellow)">'+weekLabel(sA)+'</th><th style="padding:12px;text-align:left;font-size:11px;font-weight:900;color:rgba(255,255,255,.85)">'+weekLabel(sB)+'</th><th style="padding:12px;text-align:left;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,.7)">Change</th></tr>';
-  el.innerHTML='<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;background:var(--card);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh)"><thead>'+thead+'</thead><tbody>'+tbody+'</tbody></table></div>';
-}
-
-function updateCompare(){
-  const nameA=document.getElementById('cmp-a').value;
-  const nameB=document.getElementById('cmp-b').value;
-  if(!nameA||!nameB){ return; }
-  if(nameA===nameB){ toast('Please select two different callers.'); return; }
-
-  const rangeVal=document.getElementById('cmp-range').value;
-  const t=today();
-  let from, to=t;
-  if(rangeVal==='current'){ const d=new Date();from=addDays(t,-((d.getDay()+6)%7)); to=addDays(from,4); }
-  else if(rangeVal==='lastweek'){ const d=new Date(); const thisMonday=addDays(t,-((d.getDay()+6)%7)); from=addDays(thisMonday,-7); to=addDays(from,4); }
-  else if(rangeVal==='month'){ from=addDays(t,-30); }
-  else if(rangeVal==='quarter'){ from=addDays(t,-90); }
-  else { from='2020-01-01'; }
-
-  const entries=getHistoryInRange(from,to);
-  if(!entries.length&&CUR){ entries.push({...CUR}); }
-  const agents=aggregateAgents(entries);
-
-  const aData=agents.find(a=>a.name===nameA)||null;
-  const bData=agents.find(a=>a.name===nameB)||null;
-
-  if(!aData||!bData){
-    document.getElementById('compare-content').innerHTML=
-      `<div class="no-data"><div class="ic">🔍</div><p>One or both callers have no data in this range. Try <strong>All Time</strong>.</p></div>`;
-    return;
-  }
-
-  const bench=a=>(a._grp==='RM'?B.rm:B.fancy);
-
-  const metrics=[
-    {lbl:'Total Calls',   va:aData.calls,    vb:bData.calls,    fmt:v=>v.toLocaleString()},
-    {lbl:'DF Hours',      va:aData.workTime,  vb:bData.workTime, fmt:v=>f2(v)+'h'},
-    {lbl:'Calls / Hour',  va:cph(aData),      vb:cph(bData),     fmt:v=>f1(v)+'/hr'},
-    {lbl:'Success Rate',  va:sr(aData),       vb:sr(bData),      fmt:v=>pct(v)},
-    {lbl:'Seller Leads',  va:aData.seller,    vb:bData.seller,   fmt:v=>v},
-    {lbl:'Rental Leads',  va:aData.rental,    vb:bData.rental,   fmt:v=>v},
-    {lbl:'Got Email',     va:aData.email,     vb:bData.email,    fmt:v=>v},
-  ];
-
-  const card=(d,cls)=>`<div class="comp-card ${cls}">
-    <div class="comp-name">${d.name}</div>
-    <div class="comp-group">${d.is_rm ? 'RM' : 'Fancy'}</div>
-    ${metrics.map(m=>{
-      const isWin = cls==='a' ? m.va>m.vb : m.vb>m.va;
-      const isLose= cls==='a' ? m.va<m.vb : m.vb<m.va;
-      const val   = cls==='a' ? m.va : m.vb;
-      return `<div class="comp-stat">
-        <span class="cs-label">${m.lbl}</span>
-        <span class="cs-val ${isWin?'win':isLose?'lose':''}">${m.fmt(val)}${isWin?' 🏆':''}</span>
-      </div>`;
-    }).join('')}
-  </div>`;
-
-  const radarNorm=(d,b)=>[
-    Math.min(100,sr(d)/b.sr*100),
-    Math.min(100,cph(d)/b.cph*100),
-    Math.min(100,(d.seller/(d.calls||1)*100)*5),
-    Math.min(100,(d.rental/(d.calls||1)*100)*10),
-    Math.min(100,(d.email/(d.calls||1)*100)*2),
-  ];
-
-  document.getElementById('compare-content').innerHTML=`
-    <div class="comp-grid">${card(aData,'a')}${card(bData,'b')}</div>
-    <div class="charts-compare">
-      <div class="cc">
-        <div class="cc-title">Performance Radar</div>
-        <div class="cc-sub">Normalised vs targets — further from centre = better</div>
-        <canvas id="radar-chart"></canvas>
-      </div>
-      <div class="cc">
-        <div class="cc-title">Key Metrics — Side by Side</div>
-        <div class="cc-sub">Direct comparison of absolute numbers</div>
-        <canvas id="bar-chart"></canvas>
-      </div>
-    </div>`;
-
-  if(cmpChart) cmpChart.destroy();
-  cmpChart=new Chart(document.getElementById('radar-chart'),{
-    type:'radar',
-    data:{
-      labels:['Success Rate','Calls/Hour','Seller\n(per 100)','Rental\n(per 100)','Email Rate'],
-      datasets:[
-        {label:aData.name, data:radarNorm(aData,bench(aData)), fill:true,
-         backgroundColor:'rgba(61,91,166,.18)', borderColor:'rgba(61,91,166,.9)',
-         pointBackgroundColor:'rgba(61,91,166,.9)', pointRadius:4},
-        {label:bData.name, data:radarNorm(bData,bench(bData)), fill:true,
-         backgroundColor:'rgba(253,197,3,.22)', borderColor:'rgba(200,155,0,.9)',
-         pointBackgroundColor:'rgba(200,155,0,.9)', pointRadius:4},
-      ]
-    },
-    options:{
-      responsive:true, maintainAspectRatio:true, aspectRatio:1.4,
-      plugins:{legend:{position:'bottom',labels:{font:{size:10},boxWidth:10,padding:12}}},
-      scales:{r:{beginAtZero:true,max:100,ticks:{stepSize:25,font:{size:8}},
-        pointLabels:{font:{size:9}}}}}
-  });
-
-  if(cmpBarChart) cmpBarChart.destroy();
-  const barMetrics=[
-    {lbl:'Calls',   va:aData.calls,    vb:bData.calls},
-    {lbl:'Success', va:aData.success,  vb:bData.success},
-    {lbl:'DF Hrs',  va:+f1(aData.workTime), vb:+f1(bData.workTime)},
-    {lbl:'Seller',  va:aData.seller,   vb:bData.seller},
-    {lbl:'Rental',  va:aData.rental,   vb:bData.rental},
-    {lbl:'Email',   va:aData.email,    vb:bData.email},
-  ];
-  cmpBarChart=new Chart(document.getElementById('bar-chart'),{
-    type:'bar',
-    data:{
-      labels:barMetrics.map(m=>m.lbl),
-      datasets:[
-        {label:aData.name, data:barMetrics.map(m=>m.va), backgroundColor:'rgba(61,91,166,.8)', borderRadius:5},
-        {label:bData.name, data:barMetrics.map(m=>m.vb), backgroundColor:'rgba(253,197,3,.85)', borderRadius:5},
-      ]
-    },
-    options:{
-      responsive:true, maintainAspectRatio:true, aspectRatio:1.6,
-      plugins:{legend:{position:'bottom',labels:{font:{size:10},boxWidth:10,padding:12}}},
-      scales:{
-        x:{grid:{display:false},ticks:{font:{size:9}}},
-        y:{beginAtZero:true,grid:{color:'rgba(0,0,0,.04)'},ticks:{font:{size:9}}}
-      }
-    }
-  });
-}
-
-// ─── WORK TIME ────────────────────────────────────────────────────
-function handleCT(e){
-  const file=e.target.files[0]; if(!file)return;
-  const reader=new FileReader();
-  reader.onload=ev=>{
-    try{
-      const lines=ev.target.result.trim().split('\n').filter(l=>l.trim());
-      if(lines.length<2) throw new Error('File too short');
-      const headers=lines[0].split(',').map(h=>h.replace(/"/g,'').trim().toLowerCase());
-      const ni=headers.findIndex(h=>h.includes('name')||h.includes('employee')||h.includes('user'));
-      const hi=headers.findIndex(h=>h.includes('hour')||h.includes('total')||h.includes('duration'));
-      if(ni<0||hi<0) throw new Error('Cannot find Name/Hours columns. Found: '+headers.join(', '));
-      const map={};
-      lines.slice(1).forEach(line=>{
-        const cols=line.split(',').map(c=>c.replace(/"/g,'').trim());
-        const n=cols[ni]; const h=parseFloat(cols[hi])||0;
-        if(n) map[n]=(map[n]||0)+h;
-      });
-      ctData=Object.entries(map).map(([name,hours])=>({name,hours}));
-      document.getElementById('ct-status').innerHTML=`✅ <strong>${file.name}</strong> — ${ctData.length} agents loaded`;
-      renderWT();
-      toast('✅ ConnectTeams data loaded — '+ctData.length+' agents');
-    }catch(err){ toast('❌ '+err.message); }
-  };
-  reader.readAsText(file);
-}
-
-function renderWT(){
-  if(!CUR||!ctData.length) return;
-  const all=[...CUR.rm,...CUR.fancy];
-  const rows=all.map(a=>{
-    const ct=ctData.find(c=>c.name.toLowerCase().includes(a.name.toLowerCase())||a.name.toLowerCase().includes(c.name.toLowerCase()));
-    const ctH=ct?ct.hours:null;
-    const eff=ctH&&ctH>0?a.workTime/ctH:null;
-    const effCls=eff===null?'':eff>=WT_TARGET?'good':eff>=.5?'warn':'bad';
-    const diff=ctH!==null?+(a.workTime-ctH).toFixed(2):null;
-    return {name:a.name,grp:CUR.rm.find(r=>r.name===a.name)?'RM':'Fancy',dfH:a.workTime,ctH,eff,effCls,diff};
-  });
-  const tbody=rows.map((r,i)=>`<tr>
-    <td style="color:var(--muted);font-size:10px">${i+1}</td>
-    <td class="ag">${r.name}</td>
-    <td><span class="mx ${r.grp==='RM'?'neu':'pur'}">${r.grp}</span></td>
-    <td><strong>${f2(r.dfH)}h</strong></td>
-    <td>${r.ctH!==null?f2(r.ctH)+'h':'<span style="color:var(--muted);font-size:11px">No match</span>'}</td>
-    <td style="font-weight:700;color:${r.diff===null?'var(--muted)':r.diff>0?'var(--green)':r.diff<-1?'var(--qred)':'var(--amber)'}">${r.diff!==null?(r.diff>=0?'+':'')+r.diff+'h':'—'}</td>
-    <td>
-      ${r.eff!==null?`<span class="mx ${r.effCls}">${pct(r.eff)}</span>
-      <div class="wt-bar-wrap"><div class="wt-bar ${r.effCls}" style="width:${Math.min(100,Math.round(r.eff*100))}%"></div></div>`:'—'}
-    </td>
-    <td>${r.eff===null?'<span style="color:var(--muted);font-size:11px">Unmatched</span>':r.eff>=WT_TARGET?'<span class="status green">✅ Efficient</span>':r.eff>=.5?'<span class="status amber">⚠️ Low</span>':'<span class="status red">❌ Very Low</span>'}</td>
-  </tr>`).join('');
-  document.getElementById('wt-table-wrap').innerHTML=`
-    <div class="tw">
-      <div class="th"><h2>DialFire Hours vs ConnectTeams Clocked Hours</h2></div>
-      <table><thead><tr>
-        <th>#</th><th>Agent</th><th>Group</th>
-        <th>DialFire Hrs</th><th>ConnectTeams Hrs</th>
-        <th>Difference</th><th>Efficiency</th><th>Status</th>
-      </tr></thead>
-      <tbody>${tbody}</tbody></table>
-    </div>`;
-}
-
-// ─── TABS ─────────────────────────────────────────────────────────
-function switchTab(id,btn){
-  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
-  document.getElementById('tab-'+id).classList.add('active');
-  btn.classList.add('active');
-}
-function switchTabById(id){
-  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
-  document.getElementById('tab-'+id).classList.add('active');
-  // activate matching tab button
-  document.querySelectorAll('.tab').forEach(b=>{
-    if(b.getAttribute('onclick')&&b.getAttribute('onclick').includes("'"+id+"'")) b.classList.add('active');
-  });
-  return false;
-}
-
-// ─── EXPORT ──────────────────────────────────────────────────────
-function exportCSV(){
-  if(!CUR){toast('No data loaded.');return;}
-  const hdr='Group,Agent,Division,Calls,DF Hours,Calls/Hr,Success,Success%,Rental,Seller,Email,Status\n';
-  const r=(d,b,g,div)=>`${g},${d.name},"${div||''}",${d.calls},${f2(d.workTime)},${f1(cph(d))},${d.success},${pct(sr(d))},${d.rental},${d.seller},${d.email},${stOf(d,b)}`;
-  const rows=[
-    ...CUR.rm.map(d=>r(d,B.rm,'RM','')),
-    ...CUR.fancy.map(d=>r(d,B.fancy,'Fancy',d.div))
-  ].join('\n');
-  const blob=new Blob([hdr+rows],{type:'text/csv'});
-  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
-  a.download=`quay1_performance_${CUR.week||CUR.periodStart}.csv`;a.click();
-  toast('📥 Exported!');
-}
-
-function toast(msg){
-  const t=document.getElementById('toast');
-  t.textContent=msg;t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),3200);
-}
-
-window.addEventListener('DOMContentLoaded',init);
-
-// ─── DAILY STATS ──────────────────────────────────────────────────
-function initDailyDate(){
-  const d = new Date(); d.setDate(d.getDate()-1);
-  document.getElementById('daily-date').value = d.toISOString().split('T')[0];
-}
-
-async function renderDaily(){
-  const dateVal = document.getElementById('daily-date').value;
-  if(!dateVal){ alert('Please select a date.'); return; }
-  const wrap = document.getElementById('daily-table-wrap');
-  const kpis = document.getElementById('daily-kpis');
-  wrap.innerHTML = '<div class="no-data"><div class="ic">&#x23F3;</div><p>Loading...</p></div>';
-  kpis.style.display = 'none';
-
-  // Try daily_data.json first
-  let dailyData = null;
-  try {
-    const r = await fetch('./data/daily_data.json?t='+Date.now());
-    if(r.ok){ const raw = await r.json(); dailyData = Array.isArray(raw) ? raw.find(e=>e.date===dateVal) : (raw[dateVal]||null); }
-  } catch(e){}
-
-  if(!dailyData){
-    const mon = toMonday(dateVal);
-    const hist = HIST[mon];
-    if(hist){
-      const agents = [...(hist.rm||[]).map(a=>({...a,_grp:'RM'})), ...(hist.fancy||[]).map(a=>({...a,_grp:'Fancy'}))];
-      _renderDailyTable(agents, dateVal, true);
-    } else {
-      wrap.innerHTML = '<div class="no-data"><div class="ic">&#x1F4ED;</div><p>No data found for <strong>'+dateVal+'</strong>.<br/>Daily data requires the daily fetch script to be configured.</p></div>';
-    }
-    return;
-  }
-  const agents = [...(dailyData.rm||[]).map(a=>({...a,_grp:'RM'})), ...(dailyData.fancy||[]).map(a=>({...a,_grp:'Fancy'}))];
-  _renderDailyTable(agents, dateVal, false);
-}
-
-function _renderDailyTable(agents, dateVal, isWeekly){
-  const wrap = document.getElementById('daily-table-wrap');
-  const kpisEl = document.getElementById('daily-kpis');
-  if(!agents.length){
-    wrap.innerHTML = '<div class="no-data"><div class="ic">&#x1F4ED;</div><p>No caller data found for '+dateVal+'.</p></div>';
-    kpisEl.style.display='none'; return;
-  }
-  const tC=agents.reduce((a,d)=>a+d.calls,0), tS=agents.reduce((a,d)=>a+d.success,0);
-  const tSel=agents.reduce((a,d)=>a+d.seller,0), tRen=agents.reduce((a,d)=>a+d.rental,0), tEm=agents.reduce((a,d)=>a+d.email,0);
-  const avgSR=tC>0?(tSel+tRen+tEm)/tC:0;
-  const note = isWeekly ? '<span style="font-size:10px;color:var(--amber);font-weight:600"> &#9888; Showing weekly totals (no daily file yet)</span>' : '';
-  kpisEl.innerHTML=[
-    {v:tC.toLocaleString(),l:'Total Calls'},
-    {v:pct(avgSR),l:'Avg Success %'},
-    {v:tSel,l:'Seller Leads'},
-    {v:tRen,l:'Rental Leads'},
-    {v:tEm,l:'Emails'},
-  ].map(k=>'<div class="daily-kpi"><div class="dkv">'+k.v+'</div><div class="dkl">'+k.l+'</div></div>').join('');
-  kpisEl.style.display='grid';
-  const sorted=[...agents].sort((a,b)=>b.calls-a.calls);
-  wrap.innerHTML='<div class="mgr-table-wrap">'+
-    '<div style="padding:12px 16px;font-size:11px;font-weight:700;color:var(--brand);text-transform:uppercase;border-bottom:2px solid var(--brand-xdk)">'+
-    'Caller Stats &#8212; '+dateVal+note+'</div>'+
-    '<table><thead><tr>'+
-    ['#','Agent','Group','Calls','DF Hours','Calls/Hr','Success','Success %','Rental','Seller','Email'].map(h=>'<th>'+h+'</th>').join('')+
-    '</tr></thead><tbody>'+
-    sorted.map((d,i)=>{
-      const c=cph(d),ss=sr(d),bench=d._grp==='RM'?B.rm:B.fancy;
-      return '<tr>'+
-        '<td style="color:var(--muted);font-size:11px">'+(i+1)+'</td>'+
-        '<td class="ag">'+d.name+(d.campaigns&&d.campaigns.length?'<br><span style="font-size:9px;font-weight:400;color:var(--muted)">'+d.campaigns.join(', ')+'</span>':'')+'</td>'+
-        '<td><span style="font-size:11px;background:'+(d._grp==='RM'?'rgba(61,91,166,.1)':'rgba(255,160,0,.15)')+';color:'+(d._grp==='RM'?'var(--brand)':'#b06800')+';padding:2px 7px;border-radius:4px;font-weight:700">'+d._grp+'</span></td>'+
-        '<td><strong>'+d.calls.toLocaleString()+'</strong></td>'+
-        '<td>'+f2(d.workTime)+'h</td>'+
-        '<td><span class="mx '+mc(c,bench.cph)+'">'+f1(c)+'/hr</span></td>'+
-        '<td>'+d.success+'</td>'+
-        '<td><span class="mx '+mc(ss,bench.sr)+'">'+pct(ss)+'</span></td>'+
-        '<td>'+d.rental+'</td><td>'+d.seller+'</td><td>'+d.email+'</td>'+
-        '</tr>';
-    }).join('')+
-    '</tbody></table></div>';
-}
-
-function exportDailyCSV(){
-  const wrap=document.getElementById('daily-table-wrap');
-  const rows=wrap.querySelectorAll('tbody tr');
-  if(!rows.length){alert('No data to export.');return;}
-  const dateVal=document.getElementById('daily-date').value;
-  const hdr='Agent,Group,Calls,DF Hours,Calls/Hr,Success,Success %,Rental,Seller,Email\n';
-  const csv=hdr+Array.from(rows).map(r=>{
-    const c=Array.from(r.querySelectorAll('td'));
-    return [c[1].textContent.split('\n')[0].trim(),c[2].textContent.trim(),c[3].textContent.trim(),c[4].textContent.trim(),c[5].textContent.trim(),c[6].textContent.trim(),c[7].textContent.trim(),c[8].textContent.trim(),c[9].textContent.trim(),c[10].textContent.trim()].join(',');
-  }).join('\n');
-  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
-  a.download='daily_stats_'+dateVal+'.csv';a.click();
-}
-
-// ─── MANAGER REPORTS ──────────────────────────────────────────────
-let _mgrSortKey='calls', _mgrSortAsc=false;
+function initDailyDate(){ const d=new Date(); d.setDate(d.getDate()-1); document.getElementById('daily-date').value=d.toISOString().split('T')[0]; }
+async function renderDaily(){ const dateVal=document.getElementById('daily-date').value; if(!dateVal){alert('Please select a date.');return;} const wrap=document.getElementById('daily-table-wrap'); const kpis=document.getElementById('daily-kpis'); wrap.innerHTML='<div class="no-data"><div class="ic">&#x23F3;</div><p>Loading...</p></div>'; kpis.style.display='none'; let dailyData=null; try{ const r=await fetch('./data/daily_data.json?t='+Date.now()); if(r.ok){const raw=await r.json(); dailyData=Array.isArray(raw)?raw.find(e=>e.date===dateVal):(raw[dateVal]||null);} }catch(e){} if(!dailyData){ const mon=toMonday(dateVal); const hist=HIST[mon]; if(hist){ const agents=[...(hist.rm||[]).map(a=>({...a,_grp:'RM'})),...(hist.fancy||[]).map(a=>({...a,_grp:'Fancy'}))]; _renderDailyTable(agents,dateVal,true); } else { wrap.innerHTML='<div class="no-data"><div class="ic">&#x1F4ED;</div><p>No data found for <strong>'+dateVal+'</strong>.</p></div>'; } return; } const agents=[...(dailyData.rm||[]).map(a=>({...a,_grp:'RM'})),...(dailyData.fancy||[]).map(a=>({...a,_grp:'Fancy'}))]; _renderDailyTable(agents,dateVal,false); }
+function _renderDailyTable(agents,dateVal,isWeekly){ const wrap=document.getElementById('daily-table-wrap'); const kpisEl=document.getElementById('daily-kpis'); if(!agents.length){wrap.innerHTML='<div class="no-data"><div class="ic">&#x1F4ED;</div><p>No caller data found for '+dateVal+'.</p></div>';kpisEl.style.display='none';return;} const tC=agents.reduce((a,d)=>a+d.calls,0),tSel=agents.reduce((a,d)=>a+(d.seller||0),0),tRen=agents.reduce((a,d)=>a+(d.rental||0),0),tEm=agents.reduce((a,d)=>a+(d.email||0),0); const avgSR=tC>0?(tSel+tRen+tEm)/tC:0; const note=isWeekly?'<span style="font-size:10px;color:var(--amber);font-weight:600"> ⚠ Showing weekly totals</span>':''; kpisEl.innerHTML=[{v:tC.toLocaleString(),l:'Total Calls'},{v:pct(avgSR),l:'Avg Success %'},{v:tSel,l:'Seller Leads'},{v:tRen,l:'Rental Leads'},{v:tEm,l:'Emails'}].map(k=>'<div class="daily-kpi"><div class="dkv">'+k.v+'</div><div class="dkl">'+k.l+'</div></div>').join(''); kpisEl.style.display='grid'; const sorted=[...agents].sort((a,b)=>b.calls-a.calls); wrap.innerHTML='<div class="mgr-table-wrap"><div style="padding:12px 16px;font-size:11px;font-weight:700;color:var(--brand);text-transform:uppercase;border-bottom:2px solid var(--brand-xdk)">Caller Stats — '+dateVal+note+'</div><table><thead><tr>'+['#','Agent','Group','Calls','DF Hours','Calls/Hr','Success','Success %','Rental','Seller','Email'].map(h=>'<th>'+h+'</th>').join('')+'</tr></thead><tbody>'+sorted.map((d,i)=>{const c=cph(d),ss=sr(d),bench=d._grp==='RM'?B.rm:B.fancy;return '<tr><td style="color:var(--muted);font-size:11px">'+(i+1)+'</td><td class="ag">'+d.name+'</td><td><span style="font-size:11px;background:'+(d._grp==='RM'?'rgba(61,91,166,.1)':'rgba(255,160,0,.15)')+';color:'+(d._grp==='RM'?'var(--brand)':'#b06800')+';padding:2px 7px;border-radius:4px;font-weight:700">'+d._grp+'</span></td><td><strong>'+d.calls.toLocaleString()+'</strong></td><td>'+f2(d.workTime)+'h</td><td><span class="mx '+mc(c,bench.cph)+'">'+f1(c)+'/hr</span></td><td>'+d.success+'</td><td><span class="mx '+mc(ss,bench.sr)+'">'+pct(ss)+'</span></td><td>'+d.rental+'</td><td>'+d.seller+'</td><td>'+d.email+'</td></tr>';}).join('')+'</tbody></table></div>'; }
+function exportDailyCSV(){ const wrap=document.getElementById('daily-table-wrap'); const rows=wrap.querySelectorAll('tbody tr'); if(!rows.length){alert('No data to export.');return;} const dateVal=document.getElementById('daily-date').value; const hdr='Agent,Group,Calls,DF Hours,Calls/Hr,Success,Success %,Rental,Seller,Email\n'; const csv=hdr+Array.from(rows).map(r=>{const c=Array.from(r.querySelectorAll('td'));return [c[1].textContent.split('\n')[0].trim(),c[2].textContent.trim(),c[3].textContent.trim(),c[4].textContent.trim(),c[5].textContent.trim(),c[6].textContent.trim(),c[7].textContent.trim(),c[8].textContent.trim(),c[9].textContent.trim(),c[10].textContent.trim()].join(',');}).join('\n'); const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='daily_stats_'+dateVal+'.csv';a.click(); }
 
 function _normCamp(n){return n.replace(/\s*[_\-\s]*(CM|NA)\s*$/i,"").trim();}
+function initMgrFilters(){ const t=today(),d=new Date(); const mon=addDays(t,-((d.getDay()+6)%7)); document.getElementById('mgr-from').value=addDays(mon,-7); document.getElementById('mgr-to').value=addDays(mon,-3); const campSet=new Set(); [CUR,...Object.values(HIST)].filter(Boolean).forEach(e=>{[...(e.rm||[]),...(e.fancy||[])].forEach(a=>(a.campaigns||[]).forEach(c=>campSet.add(_normCamp(c))));}); const list=document.getElementById('mgr-camp-list'); if(!campSet.size){list.innerHTML='<em style="font-size:12px;color:var(--muted)">No campaign data found.</em>';return;} list.innerHTML=Array.from(campSet).sort().map(c=>'<label class="camp-cb-item"><input type="checkbox" value="'+c+'" checked> '+c+'</label>').join(''); }
+function getSelectedCampaigns(){return Array.from(document.querySelectorAll('#mgr-camp-list input[type=checkbox]:checked')).map(cb=>cb.value);}
+function renderMgrReport(){ const from=document.getElementById('mgr-from').value,to=document.getElementById('mgr-to').value; const camps=getSelectedCampaigns(),wrap=document.getElementById('mgr-report-wrap'); if(!from||!to){alert('Please select a date range.');return;} if(!camps.length){alert('Please select at least one campaign.');return;} const entries=getHistoryInRange(from,to); if(!entries.length){wrap.innerHTML='<div class="no-data"><div class="ic">&#x1F4ED;</div><p>No weekly data found in that date range.</p></div>';return;} const campSet=new Set(camps),map={}; entries.forEach(e=>{[...(e.rm||[]).map(a=>({...a,_grp:'RM'})),...(e.fancy||[]).map(a=>({...a,_grp:'Fancy'}))].forEach(a=>{ if(!(a.campaigns||[]).some(c=>campSet.has(_normCamp(c))))return; const k=a.name.toLowerCase().trim(); if(!map[k])map[k]={...a,_weeks:1}; else{map[k].calls+=a.calls;map[k].success+=a.success;map[k].seller+=(a.seller||0);map[k].rental+=(a.rental||0);map[k].email+=(a.email||0);map[k].workTime=+((map[k].workTime+a.workTime).toFixed(2));map[k]._weeks++;} });}); const agents=Object.values(map); if(!agents.length){wrap.innerHTML='<div class="no-data"><div class="ic">&#x1F4ED;</div><p>No agents matched the selected campaigns in that range.</p></div>';return;} _renderMgrTable(agents,from,to,camps,entries.length); }
+function _renderMgrTable(agents,from,to,camps,weeks){ const wrap=document.getElementById('mgr-report-wrap'); const sorted=[...agents].sort((a,b)=>{const gv=d=>_mgrSortKey==='sr'?(d.calls>0?((d.rental||0)+(d.email||0)+(d.seller||0))/d.calls:0):_mgrSortKey==='cph'?(d.workTime>0?d.calls/d.workTime:0):(d[_mgrSortKey]||0);return _mgrSortAsc?gv(a)-gv(b):gv(b)-gv(a);}); const tC=agents.reduce((a,d)=>a+d.calls,0),tS=agents.reduce((a,d)=>a+d.success,0),tSel=agents.reduce((a,d)=>a+(d.seller||0),0),tRen=agents.reduce((a,d)=>a+(d.rental||0),0),tEm=agents.reduce((a,d)=>a+(d.email||0),0),tWt=agents.reduce((a,d)=>a+d.workTime,0); const avgSR=tC>0?(tSel+tRen+tEm)/tC:0,avgCPH=tWt>0?tC/tWt:0; const cols=['#','Agent','Group','Weeks','Calls','DF Hours','Calls/Hr','Success','Success %','Seller','Rental','Email']; const sortKeys=[null,'name','_grp','_weeks','calls','workTime','cph','success','sr','seller','rental','email']; const thHTML=cols.map((c,ci)=>{if(!sortKeys[ci])return '<th>'+c+'</th>';const k=sortKeys[ci],active=_mgrSortKey===k,arrow=active?(_mgrSortAsc?'↑':'↓'):'↕';return '<th onclick="_mgrSort('+JSON.stringify(k)+')" style="white-space:nowrap">'+c+' <span style="opacity:'+(active?1:.4)+'">'+arrow+'</span></th>';}).join(''); const rowHTML=sorted.map((d,i)=>{const c=d.workTime>0?d.calls/d.workTime:0,ss=d.calls>0?((d.rental||0)+(d.email||0)+(d.seller||0))/d.calls:0,bench=d._grp==='RM'?B.rm:B.fancy;return '<tr><td style="color:var(--muted);font-size:11px">'+(i+1)+'</td><td class="ag">'+d.name+'</td><td><span style="font-size:11px;background:'+(d._grp==='RM'?'rgba(61,91,166,.1)':'rgba(255,160,0,.15)')+';color:'+(d._grp==='RM'?'var(--brand)':'#b06800')+';padding:2px 7px;border-radius:4px;font-weight:700">'+d._grp+'</span></td><td style="text-align:center">'+d._weeks+'</td><td><strong>'+d.calls.toLocaleString()+'</strong></td><td>'+f2(d.workTime)+'h</td><td><span class="mx '+mc(c,bench.cph)+'">'+f1(c)+'/hr</span></td><td>'+d.success+'</td><td><span class="mx '+mc(ss,bench.sr)+'">'+pct(ss)+'</span></td><td>'+d.seller+'</td><td>'+d.rental+'</td><td>'+d.email+'</td></tr>';}).join(''); const sumRow='<tr class="mgr-sum-row"><td colspan="4">Totals / Averages</td><td>'+tC.toLocaleString()+'</td><td>'+f2(tWt)+'h</td><td>'+f1(avgCPH)+'/hr</td><td>'+tS+'</td><td>'+pct(avgSR)+'</td><td>'+tSel+'</td><td>'+tRen+'</td><td>'+tEm+'</td></tr>'; wrap.innerHTML='<div class="mgr-table-wrap"><div style="padding:12px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid var(--brand-xdk)"><span style="font-size:11px;font-weight:700;color:var(--brand);text-transform:uppercase">'+from+' → '+to+' · '+weeks+' week'+(weeks!==1?'s':'')+' · '+camps.join(', ')+'</span><span style="font-size:11px;color:var(--muted)">'+agents.length+' agents</span></div><table><thead><tr>'+thHTML+'</tr></thead><tbody>'+rowHTML+sumRow+'</tbody></table></div>'; }
+function _mgrSort(k){ _mgrSortKey===k?_mgrSortAsc=!_mgrSortAsc:(_mgrSortKey=k,_mgrSortAsc=false); const from=document.getElementById('mgr-from').value,to=document.getElementById('mgr-to').value,camps=getSelectedCampaigns(); if(from&&to&&camps.length)renderMgrReport(); }
+function exportMgrCSV(){ const wrap=document.getElementById('mgr-report-wrap'); const rows=wrap.querySelectorAll('tbody tr:not(.mgr-sum-row)'); if(!rows.length){alert('No data to export.');return;} const from=document.getElementById('mgr-from').value,to=document.getElementById('mgr-to').value; const hdr='Agent,Group,Weeks,Calls,DF Hours,Calls/Hr,Success,Success %,Seller,Rental,Email\n'; const csv=hdr+Array.from(rows).map(r=>{const c=Array.from(r.querySelectorAll('td'));return [c[1].textContent.split('\n')[0].trim(),c[2].textContent.trim(),c[3].textContent.trim(),c[4].textContent.trim(),c[5].textContent.trim(),c[6].textContent.trim(),c[7].textContent.trim(),c[8].textContent.trim(),c[9].textContent.trim(),c[10].textContent.trim(),c[11].textContent.trim()].join(',');}).join('\n'); const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='manager_report_'+from+'_to_'+to+'.csv';a.click(); }
 
-function initMgrFilters(){
-  const t=today(), d=new Date();
-  const mon=addDays(t,-((d.getDay()+6)%7));
-  document.getElementById('mgr-from').value=addDays(mon,-7);
-  document.getElementById('mgr-to').value=addDays(mon,-3);
-  const campSet=new Set();
-  [CUR,...Object.values(HIST)].filter(Boolean).forEach(e=>{
-    [...(e.rm||[]),...(e.fancy||[])].forEach(a=>(a.campaigns||[]).forEach(c=>campSet.add(_normCamp(c))));
-  });
-  const list=document.getElementById('mgr-camp-list');
-  if(!campSet.size){list.innerHTML='<em style="font-size:12px;color:var(--muted)">No campaign data found.</em>';return;}
-  list.innerHTML=Array.from(campSet).sort().map(c=>
-    '<label class="camp-cb-item"><input type="checkbox" value="'+c+'" checked> '+c+'</label>'
-  ).join('');
-}
-
-function getSelectedCampaigns(){
-  return Array.from(document.querySelectorAll('#mgr-camp-list input[type=checkbox]:checked')).map(cb=>cb.value);
-}
-
-function renderMgrReport(){
-  const from=document.getElementById('mgr-from').value, to=document.getElementById('mgr-to').value;
-  const camps=getSelectedCampaigns(), wrap=document.getElementById('mgr-report-wrap');
-  if(!from||!to){alert('Please select a date range.');return;}
-  if(!camps.length){alert('Please select at least one campaign.');return;}
-  const entries=getHistoryInRange(from,to);
-  if(!entries.length){wrap.innerHTML='<div class="no-data"><div class="ic">&#x1F4ED;</div><p>No weekly data found in that date range.</p></div>';return;}
-  const campSet=new Set(camps), map={};
-  entries.forEach(e=>{
-    [...(e.rm||[]).map(a=>({...a,_grp:'RM'})),...(e.fancy||[]).map(a=>({...a,_grp:'Fancy'}))].forEach(a=>{
-      if(!(a.campaigns||[]).some(c=>campSet.has(_normCamp(c))))return;
-      const k=a.name.toLowerCase().trim();
-      if(!map[k])map[k]={...a,_weeks:1};
-      else{map[k].calls+=a.calls;map[k].success+=a.success;map[k].seller+=a.seller;map[k].rental+=a.rental;map[k].email+=a.email;map[k].workTime=+((map[k].workTime+a.workTime).toFixed(2));map[k]._weeks++;}
-    });
-  });
-  const agents=Object.values(map);
-  if(!agents.length){wrap.innerHTML='<div class="no-data"><div class="ic">&#x1F4ED;</div><p>No agents matched the selected campaigns in that range.</p></div>';return;}
-  _renderMgrTable(agents,from,to,camps,entries.length);
-}
-
-function _renderMgrTable(agents,from,to,camps,weeks){
-  const wrap=document.getElementById('mgr-report-wrap');
-  const sorted=[...agents].sort((a,b)=>{
-    const gv=d=>_mgrSortKey==='sr'?(d.calls>0?((d.rental||0)+(d.email||0)+(d.seller||0))/d.calls:0):_mgrSortKey==='cph'?(d.workTime>0?d.calls/d.workTime:0):(d[_mgrSortKey]||0);
-    return _mgrSortAsc?gv(a)-gv(b):gv(b)-gv(a);
-  });
-  const tC=agents.reduce((a,d)=>a+d.calls,0),tS=agents.reduce((a,d)=>a+d.success,0);
-  const tSel=agents.reduce((a,d)=>a+d.seller,0),tRen=agents.reduce((a,d)=>a+d.rental,0);
-  const tEm=agents.reduce((a,d)=>a+d.email,0),tWt=agents.reduce((a,d)=>a+d.workTime,0);
-  const avgSR=tC>0?(tSel+tRen+tEm)/tC:0,avgCPH=tWt>0?tC/tWt:0;
-  const cols=['#','Agent','Group','Weeks','Calls','DF Hours','Calls/Hr','Success','Success %','Rental','Seller','Email'];
-  const sortKeys=[null,'name','_grp','_weeks','calls','workTime','cph','success','sr','rental','seller','email'];
-  const thHTML=cols.map((c,ci)=>{
-    if(!sortKeys[ci])return '<th>'+c+'</th>';
-    const k=sortKeys[ci],active=_mgrSortKey===k,arrow=active?(_mgrSortAsc?'&#8593;':'&#8595;'):'&#8597;';
-    return '<th onclick="_mgrSort('+JSON.stringify(k)+')'+'" style="white-space:nowrap">'+c+' <span style="opacity:'+(active?1:.4)+'">'+arrow+'</span></th>';
-  }).join('');
-  const rowHTML=sorted.map((d,i)=>{
-    const c=d.workTime>0?d.calls/d.workTime:0,ss=d.calls>0?((d.rental||0)+(d.email||0)+(d.seller||0))/d.calls:0,bench=d._grp==='RM'?B.rm:B.fancy;
-    return '<tr>'+
-      '<td style="color:var(--muted);font-size:11px">'+(i+1)+'</td>'+
-      '<td class="ag">'+d.name+(d.campaigns&&d.campaigns.length?'<br><span style="font-size:9px;font-weight:400;color:var(--muted)">'+d.campaigns.join(', ')+'</span>':'')+'</td>'+
-      '<td><span style="font-size:11px;background:'+(d._grp==='RM'?'rgba(61,91,166,.1)':'rgba(255,160,0,.15)')+';color:'+(d._grp==='RM'?'var(--brand)':'#b06800')+';padding:2px 7px;border-radius:4px;font-weight:700">'+d._grp+'</span></td>'+
-      '<td style="text-align:center">'+d._weeks+'</td>'+
-      '<td><strong>'+d.calls.toLocaleString()+'</strong></td>'+
-      '<td>'+f2(d.workTime)+'h</td>'+
-      '<td><span class="mx '+mc(c,bench.cph)+'">'+f1(c)+'/hr</span></td>'+
-      '<td>'+d.success+'</td>'+
-      '<td><span class="mx '+mc(ss,bench.sr)+'">'+pct(ss)+'</span></td>'+
-      '<td>'+d.rental+'</td><td>'+d.seller+'</td><td>'+d.email+'</td>'+
-      '</tr>';
-  }).join('');
-  const sumRow='<tr class="mgr-sum-row"><td colspan="4">Totals / Averages</td>'+
-    '<td>'+tC.toLocaleString()+'</td><td>'+f2(tWt)+'h</td><td>'+f1(avgCPH)+'/hr</td>'+
-    '<td>'+tS+'</td><td>'+pct(avgSR)+'</td><td>'+tRen+'</td><td>'+tSel+'</td><td>'+tEm+'</td></tr>';
-  wrap.innerHTML='<div class="mgr-table-wrap">'+
-    '<div style="padding:12px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid var(--brand-xdk)">'+
-      '<span style="font-size:11px;font-weight:700;color:var(--brand);text-transform:uppercase">'+
-        from+' &#8594; '+to+' &middot; '+weeks+' week'+(weeks!==1?'s':'')+' &middot; '+camps.join(', ')+'</span>'+
-      '<span style="font-size:11px;color:var(--muted)">'+agents.length+' agents</span>'+
-    '</div>'+
-    '<table><thead><tr>'+thHTML+'</tr></thead><tbody>'+rowHTML+sumRow+'</tbody></table></div>';
-}
-
-function _mgrSort(k){
-  _mgrSortKey===k?_mgrSortAsc=!_mgrSortAsc:(_mgrSortKey=k,_mgrSortAsc=false);
-  const from=document.getElementById('mgr-from').value,to=document.getElementById('mgr-to').value,camps=getSelectedCampaigns();
-  if(from&&to&&camps.length)renderMgrReport();
-}
-
-function exportMgrCSV(){
-  const wrap=document.getElementById('mgr-report-wrap');
-  const rows=wrap.querySelectorAll('tbody tr:not(.mgr-sum-row)');
-  if(!rows.length){alert('No data to export.');return;}
-  const from=document.getElementById('mgr-from').value,to=document.getElementById('mgr-to').value;
-  const hdr='Agent,Group,Weeks,Calls,DF Hours,Calls/Hr,Success,Success %,Rental,Seller,Email\n';
-  const csv=hdr+Array.from(rows).map(r=>{
-    const c=Array.from(r.querySelectorAll('td'));
-    return [c[1].textContent.split('\n')[0].trim(),c[2].textContent.trim(),c[3].textContent.trim(),c[4].textContent.trim(),c[5].textContent.trim(),c[6].textContent.trim(),c[7].textContent.trim(),c[8].textContent.trim(),c[9].textContent.trim(),c[10].textContent.trim(),c[11].textContent.trim()].join(',');
-  }).join('\n');
-  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
-  a.download='manager_report_'+from+'_to_'+to+'.csv';a.click();
-}
-
+window.addEventListener('DOMContentLoaded',init);
 </script>
 </body>
 </html>
