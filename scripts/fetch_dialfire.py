@@ -76,23 +76,46 @@ def fetch_json(url, params, label, tag, timeout=30, max_polls=8, headers=None):
             except Exception:
                 poll_url = r.headers.get("Location")
             if not poll_url:
-                loc_hdr = dict(r.headers).get("Location", dict(r.headers).get("location", ""))
-                print(f"  [{label}] {tag}: HTTP 202 - no poll URL (Location={loc_hdr!r}, body={r.text[:100]!r})")
+                # Also try location header directly
+                poll_url = dict(r.headers).get("Location", dict(r.headers).get("location", "")) or None
+            if poll_url:
+                # Async response: poll the given URL
+                for attempt in range(max_polls):
+                    time.sleep(3)
+                    pr = requests.get(poll_url, timeout=timeout,
+                                      headers=headers or {})
+                    if pr.status_code == 200:
+                        try:
+                            return pr.json()
+                        except Exception:
+                            return {}
+                    if pr.status_code in (401, 403):
+                        print(f"  [{label}] {tag} poll {attempt+1}: HTTP {pr.status_code}")
+                        break
+                print(f"  [{label}] {tag} polling timed out after {max_polls} attempts")
                 return {}
-            for attempt in range(max_polls):
-                time.sleep(3)
-                pr = requests.get(poll_url, timeout=timeout,
-                                  headers=headers or {})
-                if pr.status_code == 200:
-                    try:
-                        return pr.json()
-                    except Exception:
+            else:
+                # No poll URL: body='status:202' means DialFire is computing the report.
+                # Retry the same URL after a delay (up to max_polls times).
+                loc_hdr = r.headers.get("Location", "")
+                print(f"  [{label}] {tag}: HTTP 202 - no poll URL (Location={loc_hdr!r}, body={r.text[:100]!r}), retrying...")
+                for attempt in range(max_polls):
+                    time.sleep(5)
+                    r2 = requests.get(url, params=params, timeout=timeout,
+                                      headers=headers or {})
+                    if r2.status_code == 200:
+                        try:
+                            return r2.json()
+                        except Exception:
+                            return {}
+                    if r2.status_code in (401, 403):
+                        print(f"  [{label}] {tag} retry {attempt+1}: HTTP {r2.status_code}")
                         return None
-                elif pr.status_code != 202:
-                    print(f"  [{label}] {tag} poll {attempt+1}: HTTP {pr.status_code}")
-                    break
-            print(f"  [{label}] {tag} polling timed out after {max_polls} attempts")
-            return {}
+                    if r2.status_code != 202:
+                        print(f"  [{label}] {tag} retry {attempt+1}: HTTP {r2.status_code}")
+                        break
+                print(f"  [{label}] {tag}: all retries returned 202, giving up")
+                return {}
         if r.status_code == 403:
             print(f"  [{label}] {tag}: HTTP 403 - invalid token")
             return None
@@ -107,9 +130,6 @@ def fetch_json(url, params, label, tag, timeout=30, max_polls=8, headers=None):
     except Exception as e:
         print(f"  [{label}] {tag}: exception: {e}")
         return {}
-
-
-# -- Column name helper -------------------------------------------------------
 def _col_names(col_defs):
     names = []
     if isinstance(col_defs, list):
