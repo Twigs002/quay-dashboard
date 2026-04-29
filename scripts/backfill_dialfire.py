@@ -276,7 +276,7 @@ def parse_row(row):
 
     calls   = int(row.get("completed") or row.get("calls") or _col(0) or 0)
     success = int(row.get("success") or _col(1) or 0)
-    wt_raw  = float(row.get("workTime") or 0)
+    wt_raw  = float(row.get("workTime") or _col(3) or 0)
     # workTime from editsDef_v2 is in hours; >1000 means it was in ms
     work_hrs = wt_raw / 3600000 if wt_raw > 1000 else wt_raw
 
