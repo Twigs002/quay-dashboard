@@ -615,18 +615,13 @@ def main():
         agent["campaigns"] = agent_campaigns.get(name, [])
 
     # Re-classify agents based on campaigns:
-    # RM   = ONLY worked on: Clienthub Master, New Contacts, No Answer / Not contacted
-    # Fancy = has worked on New Contacts AND Goal Diggers (any sub-campaign)
-    _RM_CAMPS    = {"Clienthub Master", "New Contacts", "No Answer / Not contacted"}
-    _FANCY_TRIGGER = {"New Contacts", "Goal Diggers"}  # normalised names
+    # RM          = ONLY worked on ClientHub / New Contacts campaigns
+    # Fancy Caller = worked on ClientHub AND assassins (or any other non-RM campaign)
+    _RM_CAMPS = {"Clienthub Master", "New Contacts", "No Answer / Not contacted"}
     for _name, _agent in merged.items():
         _camps = set(_agent.get("campaigns", []))
-        if _FANCY_TRIGGER.issubset(_camps):
-            _agent["is_rm"] = False  # fancy caller
-        elif _camps and _camps.issubset(_RM_CAMPS):
-            _agent["is_rm"] = True   # RM
-        else:
-            _agent["is_rm"] = False  # default to fancy
+        # RM: all campaigns are RM-type (clienthub / new contacts only)
+        _agent["is_rm"] = bool(_camps) and _camps.issubset(_RM_CAMPS)
     agents = list(merged.values())
     for a in agents:
         a["cph"] = round(a["calls"] / a["workTime"], 1) if a["workTime"] > 0 else 0.0
