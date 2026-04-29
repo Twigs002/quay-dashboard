@@ -253,8 +253,8 @@ def fetch_campaign_week(campaign, date_from, date_to):
     return []
 
 
+# RM = ONLY worked on ClientHub / New Contacts; Fancy = worked on clienthub + something else
 RM_CAMPAIGNS  = {"Clienthub Master", "New Contacts", "No Answer / Not contacted"}
-FANCY_TRIGGER = {"New Contacts", "Goal Diggers"}
 
 
 def _norm_camp(n):
@@ -380,9 +380,8 @@ def main():
 
         for agent in agents.values():
             camps = set(agent.get("campaigns", []))
-            if FANCY_TRIGGER.issubset(camps): agent["is_rm"] = False
-            elif camps and camps.issubset(RM_CAMPAIGNS): agent["is_rm"] = True
-            else: agent["is_rm"] = False
+            # RM: only clienthub/new contacts; Fancy: clienthub + anything else
+            agent["is_rm"] = bool(camps) and camps.issubset(RM_CAMPAIGNS)
             b = BENCHMARKS["rm_success_rate"] if agent["is_rm"] else BENCHMARKS["fc_success_rate"]
             agent["meetsTarget"] = (agent["cph"] >= BENCHMARKS["cph"] and agent["successRate"] >= b) if agent["calls"] > 0 else False
         rm    = [v for v in agents.values() if v["is_rm"]]
