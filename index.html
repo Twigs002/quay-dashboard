@@ -297,14 +297,21 @@ tbody td{padding:11px 14px;font-size:12px;white-space:nowrap}
   <div class="tab-panel" id="tab-daily">
     <div class="range-card" style="margin-bottom:14px">
       <h2>📆 Daily Stats</h2>
-      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:10px">
         <div>
           <label style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px">Date</label>
           <input type="date" id="daily-date" style="padding:7px 10px;border:1px solid #ddd;border-radius:6px;font-size:13px;background:var(--light)">
         </div>
-        <button class="btn btn-yellow" style="margin-top:18px" onclick="renderDaily()">Load</button>
-        <button class="btn" style="margin-top:18px;background:var(--light);color:var(--brand);border:1px solid var(--brand)" onclick="exportDailyCSV()">&#11015; Export CSV</button>
+        <div style="display:flex;gap:6px;align-items:flex-end;flex-wrap:wrap">
+          <button class="preset-btn" style="margin-top:18px" onclick="setDailyDate('today')">Today</button>
+          <button class="preset-btn" style="margin-top:18px" onclick="setDailyDate('yesterday')">Yesterday</button>
+          <button class="preset-btn" style="margin-top:18px" onclick="stepDailyDate(-1)">◀ Prev Day</button>
+          <button class="preset-btn" style="margin-top:18px" onclick="stepDailyDate(1)">Next Day ▶</button>
+          <button class="btn btn-yellow" style="margin-top:18px" onclick="renderDaily()">Load</button>
+          <button class="btn" style="margin-top:18px;background:var(--light);color:var(--brand);border:1px solid var(--brand)" onclick="exportDailyCSV()">&#11015; Export CSV</button>
+        </div>
       </div>
+      <div id="daily-available-dates" style="font-size:11px;color:var(--muted);margin-top:4px"></div>
     </div>
     <div id="daily-kpis" class="daily-grid" style="display:none"></div>
     <div id="daily-table-wrap"><div class="no-data"><div class="ic">📆</div><p>Select a date above and click <strong>Load</strong> to see daily caller stats.</p></div></div>
@@ -481,10 +488,105 @@ function updateMonthCompare(){ const ymA=document.getElementById('mo-a').value,y
 function handleCT(e){ const file=e.target.files[0]; if(!file) return; const reader=new FileReader(); reader.onload=ev=>{ try{ const lines=ev.target.result.trim().split('\n').filter(l=>l.trim()); if(lines.length<2) throw new Error('File too short'); const headers=lines[0].split(',').map(h=>h.replace(/"/g,'').trim().toLowerCase()); const ni=headers.findIndex(h=>h.includes('name')||h.includes('employee')||h.includes('user')); const hi=headers.findIndex(h=>h.includes('hour')||h.includes('total')||h.includes('duration')); if(ni<0||hi<0) throw new Error('Cannot find Name/Hours columns. Found: '+headers.join(', ')); const map={}; lines.slice(1).forEach(line=>{ const cols=line.split(',').map(c=>c.replace(/"/g,'').trim()); const n=cols[ni]; const h=parseFloat(cols[hi])||0; if(n) map[n]=(map[n]||0)+h; }); ctData=Object.entries(map).map(([name,hours])=>({name,hours})); try{ localStorage.setItem('quay_ct_data',JSON.stringify(ctData)); }catch(e){} document.getElementById('ct-status').innerHTML=`✅ <strong>${file.name}</strong> — ${ctData.length} agents loaded`; renderWT(); toast('✅ ConnectTeams data loaded — '+ctData.length+' agents'); }catch(err){ toast('❌ '+err.message); } }; reader.readAsText(file); }
 function renderWT(){ if(!CUR||!ctData.length) return; const all=[...(CUR.rm||[]),...(CUR.fancy||[])]; const rows=all.map(a=>{ const ct=ctData.find(c=>c.name.toLowerCase().includes(a.name.toLowerCase())||a.name.toLowerCase().includes(c.name.toLowerCase())); const ctH=ct?ct.hours:null; const eff=ctH&&ctH>0?a.workTime/ctH:null; const effCls=eff===null?'':eff>=WT_TARGET?'good':eff>=.5?'warn':'bad'; const diff=ctH!==null?+(a.workTime-ctH).toFixed(2):null; return {name:a.name,grp:(CUR.rm||[]).find(r=>r.name===a.name)?'RM':'Fancy',dfH:a.workTime,ctH,eff,effCls,diff}; }); const tbody=rows.map((r,i)=>`<tr><td style="color:var(--muted);font-size:10px">${i+1}</td><td class="ag">${r.name}</td><td><span class="mx ${r.grp==='RM'?'neu':'pur'}">${r.grp}</span></td><td><strong>${f2(r.dfH)}h</strong></td><td>${r.ctH!==null?f2(r.ctH)+'h':'<span style="color:var(--muted);font-size:11px">No match</span>'}</td><td style="font-weight:700;color:${r.diff===null?'var(--muted)':r.diff>0?'var(--green)':r.diff<-1?'var(--qred)':'var(--amber)'}">${r.diff!==null?(r.diff>=0?'+':'')+r.diff+'h':'—'}</td><td>${r.eff!==null?'<span class="mx '+r.effCls+'">'+pct(r.eff)+'</span><div class="wt-bar-wrap"><div class="wt-bar '+r.effCls+'" style="width:'+Math.min(100,Math.round(r.eff*100))+'%"></div></div>':'—'}</td><td>${r.eff===null?'<span style="color:var(--muted);font-size:11px">Unmatched</span>':r.eff>=WT_TARGET?'<span class="status green">✅ Efficient</span>':r.eff>=.5?'<span class="status amber">⚠️ Low</span>':'<span class="status red">❌ Very Low</span>'}</td></tr>`).join(''); document.getElementById('wt-table-wrap').innerHTML=`<div class="tw"><div class="th"><h2>DialFire Hours vs ConnectTeams Clocked Hours</h2></div><table><thead><tr><th>#</th><th>Agent</th><th>Group</th><th>DialFire Hrs</th><th>ConnectTeams Hrs</th><th>Difference</th><th>Efficiency</th><th>Status</th></tr></thead><tbody>${tbody}</tbody></table></div>`; }
 
-function initDailyDate(){ const d=new Date(); d.setDate(d.getDate()-1); document.getElementById('daily-date').value=d.toISOString().split('T')[0]; }
-async function renderDaily(){ const dateVal=document.getElementById('daily-date').value; if(!dateVal){alert('Please select a date.');return;} const wrap=document.getElementById('daily-table-wrap'); const kpis=document.getElementById('daily-kpis'); wrap.innerHTML='<div class="no-data"><div class="ic">&#x23F3;</div><p>Loading...</p></div>'; kpis.style.display='none'; let dailyData=null; try{ const r=await fetch('./data/daily_data.json?t='+Date.now()); if(r.ok){const raw=await r.json(); dailyData=Array.isArray(raw)?raw.find(e=>e.date===dateVal):(raw[dateVal]||null);} }catch(e){} if(!dailyData){ wrap.innerHTML='<div class="no-data"><div class="ic">&#x1F4ED;</div><p>No daily data available for <strong>'+dateVal+'</strong>.</p><p style="font-size:11px;color:var(--muted);margin-top:8px">Daily stats are only available when a daily export has been loaded. Weekly summaries can be viewed in the <strong>All Staff</strong> tab.</p></div>'; return; } const agents=[...(dailyData.rm||[]).map(a=>({...a,_grp:'RM'})),...(dailyData.fancy||[]).map(a=>({...a,_grp:'Fancy'}))]; _renderDailyTable(agents,dateVal,false); }
-function _renderDailyTable(agents,dateVal,isWeekly){ const wrap=document.getElementById('daily-table-wrap'); const kpisEl=document.getElementById('daily-kpis'); if(!agents.length){wrap.innerHTML='<div class="no-data"><div class="ic">&#x1F4ED;</div><p>No caller data found for '+dateVal+'.</p></div>';kpisEl.style.display='none';return;} const tC=agents.reduce((a,d)=>a+d.calls,0),tSel=agents.reduce((a,d)=>a+(d.seller||0),0),tRen=agents.reduce((a,d)=>a+(d.rental||0),0),tEm=agents.reduce((a,d)=>a+(d.email||0),0); const avgSR=tC>0?(tSel+tRen+tEm)/tC:0; const note=isWeekly?'<span style="font-size:10px;color:var(--amber);font-weight:600"> ⚠ Showing weekly totals</span>':''; kpisEl.innerHTML=[{v:tC.toLocaleString(),l:'Total Calls'},{v:pct(avgSR),l:'Avg Success %'},{v:tSel,l:'Seller Leads'},{v:tRen,l:'Rental Leads'},{v:tEm,l:'Emails'}].map(k=>'<div class="daily-kpi"><div class="dkv">'+k.v+'</div><div class="dkl">'+k.l+'</div></div>').join(''); kpisEl.style.display='grid'; const sorted=[...agents].sort((a,b)=>b.calls-a.calls); wrap.innerHTML='<div class="mgr-table-wrap"><div style="padding:12px 16px;font-size:11px;font-weight:700;color:var(--brand);text-transform:uppercase;border-bottom:2px solid var(--brand-xdk)">Caller Stats — '+dateVal+note+'</div><table><thead><tr>'+['#','Agent','Group','Calls','DF Hours','Calls/Hr','Success','Success %','Rental','Seller','Email'].map(h=>'<th>'+h+'</th>').join('')+'</tr></thead><tbody>'+sorted.map((d,i)=>{const c=cph(d),ss=sr(d),bench=d._grp==='RM'?B.rm:B.fancy;return '<tr><td style="color:var(--muted);font-size:11px">'+(i+1)+'</td><td class="ag">'+d.name+'</td><td><span style="font-size:11px;background:'+(d._grp==='RM'?'rgba(61,91,166,.1)':'rgba(255,160,0,.15)')+';color:'+(d._grp==='RM'?'var(--brand)':'#b06800')+';padding:2px 7px;border-radius:4px;font-weight:700">'+d._grp+'</span></td><td><strong>'+d.calls.toLocaleString()+'</strong></td><td>'+f2(d.workTime)+'h</td><td><span class="mx '+mc(c,bench.cph)+'">'+f1(c)+'/hr</span></td><td>'+d.success+'</td><td><span class="mx '+mc(ss,bench.sr)+'">'+pct(ss)+'</span></td><td>'+d.rental+'</td><td>'+d.seller+'</td><td>'+d.email+'</td></tr>';}).join('')+'</tbody></table></div>'; }
-function exportDailyCSV(){ const wrap=document.getElementById('daily-table-wrap'); const rows=wrap.querySelectorAll('tbody tr'); if(!rows.length){alert('No data to export.');return;} const dateVal=document.getElementById('daily-date').value; const hdr='Agent,Group,Calls,DF Hours,Calls/Hr,Success,Success %,Rental,Seller,Email\n'; const csv=hdr+Array.from(rows).map(r=>{const c=Array.from(r.querySelectorAll('td'));return [c[1].textContent.split('\n')[0].trim(),c[2].textContent.trim(),c[3].textContent.trim(),c[4].textContent.trim(),c[5].textContent.trim(),c[6].textContent.trim(),c[7].textContent.trim(),c[8].textContent.trim(),c[9].textContent.trim(),c[10].textContent.trim()].join(',');}).join('\n'); const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='daily_stats_'+dateVal+'.csv';a.click(); }
+function initDailyDate(){
+  // Default to yesterday
+  const d=new Date(); d.setDate(d.getDate()-1);
+  document.getElementById('daily-date').value=d.toISOString().split('T')[0];
+  // Show available dates info from history
+  const availEl=document.getElementById('daily-available-dates');
+  if(availEl){
+    const weeks=Object.keys(HIST).sort((a,b)=>b.localeCompare(a));
+    if(weeks.length){
+      const latest=weeks[0]; const oldest=weeks[weeks.length-1];
+      availEl.textContent='Weekly data available from '+oldest+' to '+latest+' ('+weeks.length+' weeks). Daily granularity requires daily_data.json uploads.';
+    }
+  }
+}
+function setDailyDate(when){
+  const d=new Date();
+  if(when==='yesterday') d.setDate(d.getDate()-1);
+  document.getElementById('daily-date').value=d.toISOString().split('T')[0];
+  renderDaily();
+}
+function stepDailyDate(delta){
+  const inp=document.getElementById('daily-date');
+  if(!inp.value) return;
+  const p=inp.value.split('-');
+  const d=new Date(+p[0],+p[1]-1,+p[2]+delta);
+  inp.value=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  renderDaily();
+}
+async function renderDaily(){
+  const dateVal=document.getElementById('daily-date').value;
+  if(!dateVal){alert('Please select a date.');return;}
+  const wrap=document.getElementById('daily-table-wrap');
+  const kpis=document.getElementById('daily-kpis');
+  wrap.innerHTML='<div class="no-data"><div class="ic">&#x23F3;</div><p>Loading...</p></div>';
+  kpis.style.display='none';
+  // 1) Try dedicated daily_data.json first
+  let dailyData=null;
+  try{
+    const r=await fetch('./data/daily_data.json?t='+Date.now());
+    if(r.ok){
+      const raw=await r.json();
+      dailyData=Array.isArray(raw)?raw.find(e=>e.date===dateVal):(raw[dateVal]||null);
+    }
+  }catch(e){}
+  // 2) Fallback: find the week in HIST that contains the selected date
+  if(!dailyData){
+    const selectedMs=new Date(dateVal+'T00:00:00').getTime();
+    const matchWeek=Object.entries(HIST).find(([ws,v])=>{
+      const weekStart=new Date(ws+'T00:00:00').getTime();
+      const weekEnd=new Date((v.weekEnd||addDays(ws,6))+'T00:00:00').getTime()+86400000;
+      return selectedMs>=weekStart && selectedMs<weekEnd;
+    });
+    if(matchWeek){
+      const [ws,wv]=matchWeek;
+      const agents=[...(wv.rm||[]).map(a=>({...a,_grp:'RM'})),...(wv.fancy||[]).map(a=>({...a,_grp:'Fancy'}))];
+      const weekEnd=wv.weekEnd||addDays(ws,4);
+      _renderDailyTable(agents,dateVal,true,ws,weekEnd);
+      return;
+    }
+    // 3) Last resort: use CUR (current week data) if date falls within current week
+    if(CUR){
+      const curWs=CUR.week||CUR.periodStart;
+      if(curWs){
+        const weekStart=new Date(curWs+'T00:00:00').getTime();
+        const weekEnd=new Date(addDays(curWs,6)+'T00:00:00').getTime()+86400000;
+        if(selectedMs>=weekStart && selectedMs<weekEnd){
+          const agents=[...(CUR.rm||[]).map(a=>({...a,_grp:'RM'})),...(CUR.fancy||[]).map(a=>({...a,_grp:'Fancy'}))];
+          _renderDailyTable(agents,dateVal,true,curWs,addDays(curWs,4));
+          return;
+        }
+      }
+    }
+    wrap.innerHTML='<div class="no-data"><div class="ic">&#x1F4ED;</div><p>No data available for <strong>'+dateVal+'</strong>.</p><p style="font-size:11px;color:var(--muted);margin-top:8px">No daily export or weekly data covers this date.<br>Weekly summaries for any covered date can be viewed in the <strong>All Staff</strong> tab.</p></div>';
+    return;
+  }
+  const agents=[...(dailyData.rm||[]).map(a=>({...a,_grp:'RM'})),...(dailyData.fancy||[]).map(a=>({...a,_grp:'Fancy'}))];
+  _renderDailyTable(agents,dateVal,false);
+}
+function _renderDailyTable(agents,dateVal,isWeekly,weekStart,weekEnd){
+  const wrap=document.getElementById('daily-table-wrap');
+  const kpisEl=document.getElementById('daily-kpis');
+  if(!agents.length){wrap.innerHTML='<div class="no-data"><div class="ic">&#x1F4ED;</div><p>No caller data found for '+dateVal+'.</p></div>';kpisEl.style.display='none';return;}
+  const tC=agents.reduce((a,d)=>a+d.calls,0),tSel=agents.reduce((a,d)=>a+(d.seller||0),0),tRen=agents.reduce((a,d)=>a+(d.rental||0),0),tEm=agents.reduce((a,d)=>a+(d.email||0),0);
+  const avgSR=tC>0?(tSel+tRen+tEm)/tC:0;
+  const weeklyNote=isWeekly&&weekStart?'<span style="font-size:10px;background:var(--amber-l);color:var(--amber);font-weight:700;padding:3px 9px;border-radius:6px;margin-left:8px">⚠ Weekly totals for week of '+weekStart+(weekEnd?' – '+weekEnd:'')+' (no per-day data)</span>':'';
+  kpisEl.innerHTML=[{v:tC.toLocaleString(),l:'Total Calls'},{v:pct(avgSR),l:'Avg Success %'},{v:tSel,l:'Seller Leads'},{v:tRen,l:'Rental Leads'},{v:tEm,l:'Emails'}].map(k=>'<div class="daily-kpi"><div class="dkv">'+k.v+'</div><div class="dkl">'+k.l+'</div></div>').join('');
+  kpisEl.style.display='grid';
+  const sorted=[...agents].sort((a,b)=>b.calls-a.calls);
+  wrap.innerHTML='<div class="mgr-table-wrap"><div style="padding:12px 16px;font-size:11px;font-weight:700;color:var(--brand);text-transform:uppercase;border-bottom:2px solid var(--brand-xdk)">Caller Stats — '+dateVal+weeklyNote+'</div><table><thead><tr>'+['#','Agent','Group','Calls','DF Hours','Calls/Hr','Success','Success %','Rental','Seller','Email'].map(h=>'<th>'+h+'</th>').join('')+'</tr></thead><tbody>'+sorted.map((d,i)=>{const c=cph(d),ss=sr(d),bench=d._grp==='RM'?B.rm:B.fancy;return '<tr><td style="color:var(--muted);font-size:11px">'+(i+1)+'</td><td class="ag">'+d.name+'</td><td><span style="font-size:11px;background:'+(d._grp==='RM'?'rgba(61,91,166,.1)':'rgba(255,160,0,.15)')+';color:'+(d._grp==='RM'?'var(--brand)':'#b06800')+';padding:2px 7px;border-radius:4px;font-weight:700">'+d._grp+'</span></td><td><strong>'+d.calls.toLocaleString()+'</strong></td><td>'+f2(d.workTime)+'h</td><td><span class="mx '+mc(c,bench.cph)+'">'+f1(c)+'/hr</span></td><td>'+d.success+'</td><td><span class="mx '+mc(ss,bench.sr)+'">'+pct(ss)+'</span></td><td>'+d.rental+'</td><td>'+d.seller+'</td><td>'+d.email+'</td></tr>';}).join('')+'</tbody></table></div>';
+}
+function exportDailyCSV(){
+  const wrap=document.getElementById('daily-table-wrap');
+  const rows=wrap.querySelectorAll('tbody tr');
+  if(!rows.length){alert('No data to export.');return;}
+  const dateVal=document.getElementById('daily-date').value;
+  const hdr='Agent,Group,Calls,DF Hours,Calls/Hr,Success,Success %,Rental,Seller,Email\n';
+  const csv=hdr+Array.from(rows).map(r=>{const c=Array.from(r.querySelectorAll('td'));return [c[1].textContent.split('\n')[0].trim(),c[2].textContent.trim(),c[3].textContent.trim(),c[4].textContent.trim(),c[5].textContent.trim(),c[6].textContent.trim(),c[7].textContent.trim(),c[8].textContent.trim(),c[9].textContent.trim(),c[10].textContent.trim()].join(',');}).join('\n');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='daily_stats_'+dateVal+'.csv';a.click();
+}
 
 function _normCamp(n){return n.replace(/\s*[_\-\s]*(CM|NA)\s*$/i,"").trim();}
 function initMgrFilters(){ const t=today(),d=new Date(); const mon=addDays(t,-((d.getDay()+6)%7)); document.getElementById('mgr-from').value=addDays(mon,-7); document.getElementById('mgr-to').value=addDays(mon,-3); const campSet=new Set(); [CUR,...Object.values(HIST)].filter(Boolean).forEach(e=>{[...(e.rm||[]),...(e.fancy||[])].forEach(a=>(a.campaigns||[]).forEach(c=>campSet.add(_normCamp(c))));}); const list=document.getElementById('mgr-camp-list'); if(!campSet.size){list.innerHTML='<em style="font-size:12px;color:var(--muted)">No campaign data found.</em>';return;} list.innerHTML=Array.from(campSet).sort().map(c=>'<label class="camp-cb-item"><input type="checkbox" value="'+c+'" checked> '+c+'</label>').join(''); }
