@@ -109,19 +109,49 @@ def fetch_json(url, params, label, tag, max_poll=10):
     try:
         r = requests.get(url, params=params, timeout=30)
         if r.status_code == 202:
+            # Try to get a poll URL from Location header or JSON body
             loc = r.headers.get("Location") or r.headers.get("location")
-            for _ in range(max_poll):
-                time.sleep(3)
-                r2 = requests.get(loc, timeout=30) if loc else r
-                if r2.status_code == 200:
-                    try:
-                        return r2.json()
-                    except Exception:
-                        return {}
-                if r2.status_code in (401, 403):
-                    print(f"  [{label}] {tag} -> {r2.status_code}")
-                    return None
-            return {}
+            if not loc:
+                try:
+                    body = r.json()
+                    loc = body.get("url") or body.get("statusUrl") or body.get("location")
+                except Exception:
+                    pass
+            if loc:
+                # Poll the given URL
+                for attempt in range(max_poll):
+                    time.sleep(3)
+                    r2 = requests.get(loc, timeout=30)
+                    if r2.status_code == 200:
+                        try:
+                            return r2.json()
+                        except Exception:
+                            return {}
+                    if r2.status_code in (401, 403):
+                        print(f"  [{label}] {tag} -> poll {r2.status_code}")
+                        return None
+                print(f"  [{label}] {tag} -> polling timed out after {max_poll} attempts")
+                return {}
+            else:
+                # No poll URL: DialFire returned 202 with body='status:202', meaning
+                # the request is queued. Retry the same URL after a delay.
+                print(f"  [{label}] {tag} -> HTTP 202 no poll URL, retrying (body={r.text[:80]!r})")
+                for attempt in range(max_poll):
+                    time.sleep(5)
+                    r2 = requests.get(url, params=params, timeout=30)
+                    if r2.status_code == 200:
+                        try:
+                            return r2.json()
+                        except Exception:
+                            return {}
+                    if r2.status_code in (401, 403):
+                        print(f"  [{label}] {tag} -> retry {r2.status_code}")
+                        return None
+                    if r2.status_code != 202:
+                        print(f"  [{label}] {tag} -> retry HTTP {r2.status_code}")
+                        break
+                print(f"  [{label}] {tag} -> all retries returned 202, giving up")
+                return {}
         if r.status_code in (401, 403):
             print(f"  [{label}] {tag} -> HTTP {r.status_code} (token issue)")
             return None
@@ -129,15 +159,13 @@ def fetch_json(url, params, label, tag, max_poll=10):
             try:
                 return r.json()
             except Exception as e:
-                print(f"  [{label}] JSON error: {e} | body={r.text[:200]}")
+                print(f"  [{label}] {tag} -> JSON parse error: {e}")
                 return {}
         print(f"  [{label}] {tag} -> HTTP {r.status_code} | {r.text[:100]}")
         return {}
     except Exception as e:
         print(f"  [{label}] {tag} -> error: {e}")
         return {}
-
-
 def fetch_lead_counts_bf(cid, token, ts, label):
     """Fetch lead counts per agent using editsDef_v2 group0=Lead_Status group1=user."""
     result = {}
