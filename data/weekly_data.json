@@ -1,19 +1,69 @@
 {
-  "generated": "2026-04-29T09:32:08.765949+00:00",
+  "generated": "2026-04-30T07:28:05.255416+00:00",
   "week": "2026-04-27",
   "periodStart": "2026-04-27",
   "periodEnd": "2026-05-01",
   "rm": [
     {
       "name": "Gio",
-      "calls": 216,
-      "success": 41,
-      "seller": 11,
+      "calls": 477,
+      "success": 91,
+      "seller": 24,
       "rental": 0,
-      "email": 30,
-      "cph": 41.9,
-      "successRate": 21.0,
-      "workTime": 5.16,
+      "email": 67,
+      "cph": 44.8,
+      "successRate": 19.8,
+      "workTime": 10.65,
+      "meetsTarget": false,
+      "is_rm": true,
+      "campaigns": [
+        "Clienthub Master",
+        "New Contacts"
+      ]
+    },
+    {
+      "name": "SadiqaCarelse",
+      "calls": 242,
+      "success": 45,
+      "seller": 5,
+      "rental": 0,
+      "email": 39,
+      "cph": 53.1,
+      "successRate": 18.8,
+      "workTime": 4.56,
+      "meetsTarget": true,
+      "is_rm": true,
+      "campaigns": [
+        "Clienthub Master",
+        "New Contacts"
+      ]
+    },
+    {
+      "name": "WhitneyMalgas",
+      "calls": 219,
+      "success": 59,
+      "seller": 3,
+      "rental": 0,
+      "email": 56,
+      "cph": 57.5,
+      "successRate": 26.9,
+      "workTime": 3.81,
+      "meetsTarget": true,
+      "is_rm": true,
+      "campaigns": [
+        "Clienthub Master"
+      ]
+    },
+    {
+      "name": "NaomiCiza",
+      "calls": 164,
+      "success": 40,
+      "seller": 1,
+      "rental": 0,
+      "email": 39,
+      "cph": 38.0,
+      "successRate": 24.8,
+      "workTime": 4.32,
       "meetsTarget": false,
       "is_rm": true,
       "campaigns": [
@@ -25,14 +75,14 @@
   "fancy": [
     {
       "name": "CraigCarroll",
-      "calls": 182,
-      "success": 26,
-      "seller": 7,
+      "calls": 6,
+      "success": 1,
+      "seller": 0,
       "rental": 0,
-      "email": 18,
-      "cph": 39.1,
-      "successRate": 14.3,
-      "workTime": 4.65,
+      "email": 1,
+      "cph": 42.9,
+      "successRate": 16.7,
+      "workTime": 0.14,
       "meetsTarget": false,
       "campaigns": [
         "Goal Diggers"
