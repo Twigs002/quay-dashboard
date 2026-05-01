@@ -1,21 +1,21 @@
 [
   {
-    "generated": "2026-04-30T07:28:05.255416+00:00",
+    "generated": "2026-05-01T07:25:21.533724+00:00",
     "week": "2026-04-27",
     "weekStart": "2026-04-27",
     "weekEnd": "2026-05-01",
     "rm": [
       {
         "name": "Gio",
-        "calls": 477,
-        "success": 91,
-        "seller": 24,
+        "calls": 598,
+        "success": 111,
+        "seller": 26,
         "rental": 0,
-        "email": 67,
-        "cph": 44.8,
-        "successRate": 19.8,
-        "workTime": 10.65,
-        "meetsTarget": false,
+        "email": 85,
+        "cph": 45.7,
+        "successRate": 19.1,
+        "workTime": 13.08,
+        "meetsTarget": true,
         "is_rm": true,
         "campaigns": [
           "Clienthub Master",
@@ -24,15 +24,32 @@
       },
       {
         "name": "SadiqaCarelse",
-        "calls": 242,
-        "success": 45,
-        "seller": 5,
+        "calls": 308,
+        "success": 62,
+        "seller": 6,
         "rental": 0,
-        "email": 39,
-        "cph": 53.1,
-        "successRate": 18.8,
-        "workTime": 4.56,
+        "email": 55,
+        "cph": 51.0,
+        "successRate": 20.3,
+        "workTime": 6.04,
         "meetsTarget": true,
+        "is_rm": true,
+        "campaigns": [
+          "Clienthub Master",
+          "New Contacts"
+        ]
+      },
+      {
+        "name": "NaomiCiza",
+        "calls": 232,
+        "success": 57,
+        "seller": 4,
+        "rental": 0,
+        "email": 53,
+        "cph": 38.0,
+        "successRate": 24.9,
+        "workTime": 6.11,
+        "meetsTarget": false,
         "is_rm": true,
         "campaigns": [
           "Clienthub Master",
@@ -56,20 +73,19 @@
         ]
       },
       {
-        "name": "NaomiCiza",
-        "calls": 164,
-        "success": 40,
-        "seller": 1,
+        "name": "CameronPaulse",
+        "calls": 15,
+        "success": 3,
+        "seller": 3,
         "rental": 0,
-        "email": 39,
-        "cph": 38.0,
-        "successRate": 24.8,
-        "workTime": 4.32,
+        "email": 0,
+        "cph": 35.7,
+        "successRate": 20.0,
+        "workTime": 0.42,
         "meetsTarget": false,
         "is_rm": true,
         "campaigns": [
-          "Clienthub Master",
-          "New Contacts"
+          "Clienthub Master"
         ]
       }
     ],
