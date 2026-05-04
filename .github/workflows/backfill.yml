@@ -41,6 +41,10 @@ jobs:
           ASSASSINS_CM_TOKEN: ${{ secrets.ASSASSINS_CM_TOKEN }}
           ASSASSINS_NA_ID: ${{ secrets.ASSASSINS_NA_ID }}
           ASSASSINS_NA_TOKEN: ${{ secrets.ASSASSINS_NA_TOKEN }}
+          AMIGOS_CM_ID: ${{ secrets.AMIGOS_CM_ID }}
+          AMIGOS_CM_TOKEN: ${{ secrets.AMIGOS_CM_TOKEN }}
+          AMIGOS_NA_ID: ${{ secrets.AMIGOS_NA_ID }}
+          AMIGOS_NA_TOKEN: ${{ secrets.AMIGOS_NA_TOKEN }}
           CAMPAIGN_CLIENTHUB_NO_ANSWER_ID: ${{ secrets.CAMPAIGN_CLIENTHUB_NO_ANSWER_ID }}
           CAMPAIGN_CLIENTHUB_NO_ANSWER_TOKEN: ${{ secrets.CAMPAIGN_CLIENTHUB_NO_ANSWER_TOKEN }}
           DIALFIRE_CAMPAIGNS: ${{ secrets.DIALFIRE_CAMPAIGNS }}
