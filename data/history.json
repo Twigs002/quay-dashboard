@@ -1,59 +1,57 @@
 [
   {
-    "generated": "2026-05-01T07:25:21.533724+00:00",
+    "generated": "2026-05-04T07:11:25Z",
     "week": "2026-04-27",
     "weekStart": "2026-04-27",
-    "weekEnd": "2026-05-01",
-    "rm": [
+    "weekEnd": "2026-05-03",
+    "rm": [],
+    "fancy": [
       {
         "name": "Gio",
-        "calls": 598,
-        "success": 111,
+        "calls": 631,
+        "success": 120,
         "seller": 26,
         "rental": 0,
-        "email": 85,
-        "cph": 45.7,
-        "successRate": 19.1,
-        "workTime": 13.08,
-        "meetsTarget": true,
-        "is_rm": true,
+        "email": 94,
+        "cph": 46.1,
+        "successRate": 19.0,
+        "workTime": 13.6839,
+        "is_rm": false,
+        "meetsTarget": false,
         "campaigns": [
-          "Clienthub Master",
-          "New Contacts"
+          "CLIENTHUB"
         ]
       },
       {
         "name": "SadiqaCarelse",
-        "calls": 308,
-        "success": 62,
+        "calls": 340,
+        "success": 66,
         "seller": 6,
         "rental": 0,
-        "email": 55,
+        "email": 59,
         "cph": 51.0,
-        "successRate": 20.3,
-        "workTime": 6.04,
-        "meetsTarget": true,
-        "is_rm": true,
+        "successRate": 19.4,
+        "workTime": 6.6687,
+        "is_rm": false,
+        "meetsTarget": false,
         "campaigns": [
-          "Clienthub Master",
-          "New Contacts"
+          "CLIENTHUB"
         ]
       },
       {
         "name": "NaomiCiza",
-        "calls": 232,
-        "success": 57,
+        "calls": 270,
+        "success": 62,
         "seller": 4,
         "rental": 0,
-        "email": 53,
-        "cph": 38.0,
-        "successRate": 24.9,
-        "workTime": 6.11,
+        "email": 58,
+        "cph": 39.1,
+        "successRate": 23.0,
+        "workTime": 6.905,
+        "is_rm": false,
         "meetsTarget": false,
-        "is_rm": true,
         "campaigns": [
-          "Clienthub Master",
-          "New Contacts"
+          "CLIENTHUB"
         ]
       },
       {
@@ -63,13 +61,13 @@
         "seller": 3,
         "rental": 0,
         "email": 56,
-        "cph": 57.5,
+        "cph": 57.4,
         "successRate": 26.9,
-        "workTime": 3.81,
+        "workTime": 3.8122,
+        "is_rm": false,
         "meetsTarget": true,
-        "is_rm": true,
         "campaigns": [
-          "Clienthub Master"
+          "CLIENTHUB"
         ]
       },
       {
@@ -81,15 +79,29 @@
         "email": 0,
         "cph": 35.7,
         "successRate": 20.0,
-        "workTime": 0.42,
+        "workTime": 0.4203,
+        "is_rm": false,
         "meetsTarget": false,
-        "is_rm": true,
         "campaigns": [
-          "Clienthub Master"
+          "CLIENTHUB"
         ]
-      }
-    ],
-    "fancy": [
+      },
+      {
+        "name": "QhayiyaDayimani",
+        "calls": 13,
+        "success": 1,
+        "seller": 0,
+        "rental": 0,
+        "email": 1,
+        "cph": 5.2,
+        "successRate": 7.7,
+        "workTime": 2.5128,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "ASSASSINS"
+        ]
+      },
       {
         "name": "CraigCarroll",
         "calls": 6,
@@ -100,16 +112,16 @@
         "cph": 42.9,
         "successRate": 16.7,
         "workTime": 0.14,
+        "is_rm": false,
         "meetsTarget": false,
         "campaigns": [
-          "Goal Diggers"
-        ],
-        "is_rm": false
+          "CAMP2"
+        ]
       }
     ]
   },
   {
-    "generated": "2026-04-29T16:04:06Z",
+    "generated": "2026-05-04T07:10:14Z",
     "week": "2026-04-20",
     "weekStart": "2026-04-20",
     "weekEnd": "2026-04-26",
@@ -279,7 +291,7 @@
     ]
   },
   {
-    "generated": "2026-04-29T16:04:00Z",
+    "generated": "2026-05-04T07:10:05Z",
     "week": "2026-04-13",
     "weekStart": "2026-04-13",
     "weekEnd": "2026-04-19",
@@ -432,7 +444,7 @@
     ]
   },
   {
-    "generated": "2026-04-29T16:03:54Z",
+    "generated": "2026-05-04T07:09:59Z",
     "week": "2026-04-06",
     "weekStart": "2026-04-06",
     "weekEnd": "2026-04-12",
@@ -585,7 +597,7 @@
     ]
   },
   {
-    "generated": "2026-04-29T16:03:49Z",
+    "generated": "2026-05-04T07:09:53Z",
     "week": "2026-03-30",
     "weekStart": "2026-03-30",
     "weekEnd": "2026-04-05",
@@ -754,7 +766,7 @@
     ]
   },
   {
-    "generated": "2026-04-29T16:03:42Z",
+    "generated": "2026-05-04T07:09:47Z",
     "week": "2026-03-23",
     "weekStart": "2026-03-23",
     "weekEnd": "2026-03-29",
@@ -955,7 +967,7 @@
     ]
   },
   {
-    "generated": "2026-04-29T16:03:37Z",
+    "generated": "2026-05-04T07:09:40Z",
     "week": "2026-03-16",
     "weekStart": "2026-03-16",
     "weekEnd": "2026-03-22",
@@ -1189,7 +1201,7 @@
     ]
   },
   {
-    "generated": "2026-04-29T16:03:31Z",
+    "generated": "2026-05-04T07:09:29Z",
     "week": "2026-03-09",
     "weekStart": "2026-03-09",
     "weekEnd": "2026-03-15",
@@ -1423,7 +1435,7 @@
     ]
   },
   {
-    "generated": "2026-04-29T16:03:25Z",
+    "generated": "2026-05-04T07:09:22Z",
     "week": "2026-03-02",
     "weekStart": "2026-03-02",
     "weekEnd": "2026-03-08",
@@ -1657,7 +1669,7 @@
     ]
   },
   {
-    "generated": "2026-04-29T16:03:18Z",
+    "generated": "2026-05-04T07:09:15Z",
     "week": "2026-02-23",
     "weekStart": "2026-02-23",
     "weekEnd": "2026-03-01",
