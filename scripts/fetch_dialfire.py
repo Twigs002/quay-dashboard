@@ -571,6 +571,16 @@ def main():
             campaigns.append({"id": leg_id, "token": leg_tok, "label": "LEGACY", "name": leg_name})
             print(f"  Legacy campaign: {leg_id} ({leg_name})")
 
+    # Always append from DIALFIRE_CAMPAIGNS (in addition to any hardcoded vars above)
+    raw = os.environ.get("DIALFIRE_CAMPAIGNS", "")
+    if raw:
+        try:
+            for c in json.loads(raw):
+                if c.get("id") and c.get("token"):
+                    campaigns.append(c)
+        except json.JSONDecodeError as e:
+            print(f"WARNING: Could not parse DIALFIRE_CAMPAIGNS: {e}")
+
     if not campaigns:
         print("No campaigns configured.")
         return
