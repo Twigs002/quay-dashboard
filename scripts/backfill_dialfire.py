@@ -71,15 +71,15 @@ if amigos_na_id and amigos_na_tok:
 
 FORCE_REFETCH = os.environ.get("FORCE_REFETCH", "").strip().lower() in ("true", "1", "yes")
 
-if not CAMPAIGNS:
-    raw = os.environ.get("DIALFIRE_CAMPAIGNS", "")
-    if raw:
-        try:
-            for c in json.loads(raw):
-                if c.get("id") and c.get("token"):
-                    CAMPAIGNS.append(c)
-        except Exception as e:
-            print(f"Warning: could not parse DIALFIRE_CAMPAIGNS: {e}")
+# Always append from DIALFIRE_CAMPAIGNS (in addition to any hardcoded vars above)
+raw = os.environ.get("DIALFIRE_CAMPAIGNS", "")
+if raw:
+    try:
+        for c in json.loads(raw):
+            if c.get("id") and c.get("token"):
+                CAMPAIGNS.append(c)
+    except Exception as e:
+        print(f"Warning: could not parse DIALFIRE_CAMPAIGNS: {e}")
 
 if not CAMPAIGNS:
     raise SystemExit("ERROR: No campaigns configured.")
