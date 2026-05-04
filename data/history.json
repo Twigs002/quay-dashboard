@@ -1,5 +1,82 @@
 [
   {
+    "generated": "2026-05-04T07:47:34.029258+00:00",
+    "week": "2026-05-04",
+    "weekStart": "2026-05-04",
+    "weekEnd": "2026-05-08",
+    "rm": [
+      {
+        "name": "Gio",
+        "calls": 122,
+        "success": 24,
+        "seller": 7,
+        "rental": 1,
+        "email": 16,
+        "cph": 40.7,
+        "successRate": 27.9,
+        "workTime": 3.0,
+        "meetsTarget": false,
+        "is_rm": true,
+        "campaigns": [
+          "Clienthub Master",
+          "New Contacts"
+        ]
+      },
+      {
+        "name": "NaomiCiza",
+        "calls": 51,
+        "success": 7,
+        "seller": 0,
+        "rental": 0,
+        "email": 7,
+        "cph": 47.7,
+        "successRate": 14.6,
+        "workTime": 1.07,
+        "meetsTarget": false,
+        "is_rm": true,
+        "campaigns": [
+          "Clienthub Master",
+          "New Contacts"
+        ]
+      },
+      {
+        "name": "SadiqaCarelse",
+        "calls": 36,
+        "success": 4,
+        "seller": 0,
+        "rental": 0,
+        "email": 4,
+        "cph": 51.4,
+        "successRate": 12.1,
+        "workTime": 0.7,
+        "meetsTarget": false,
+        "is_rm": true,
+        "campaigns": [
+          "Clienthub Master",
+          "New Contacts"
+        ]
+      }
+    ],
+    "fancy": [
+      {
+        "name": "CraigCarroll",
+        "calls": 6,
+        "success": 1,
+        "seller": 0,
+        "rental": 0,
+        "email": 1,
+        "cph": 42.9,
+        "successRate": 16.7,
+        "workTime": 0.14,
+        "meetsTarget": false,
+        "campaigns": [
+          "Goal Diggers"
+        ],
+        "is_rm": false
+      }
+    ]
+  },
+  {
     "generated": "2026-05-04T07:11:25Z",
     "week": "2026-04-27",
     "weekStart": "2026-04-27",
