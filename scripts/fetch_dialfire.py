@@ -549,6 +549,20 @@ def main():
         campaigns.append({"id": ass_na_id, "token": ass_na_tok, "label": "ASSASSINS_NA", "name": ass_na_name})
         print(f"  Assassins NA campaign: {ass_na_id} ({ass_na_name})")
 
+    amigos_cm_id  = os.environ.get("AMIGOS_CM_ID", "").strip()
+    amigos_cm_tok = os.environ.get("AMIGOS_CM_TOKEN", "").strip()
+    if amigos_cm_id and amigos_cm_tok:
+        amigos_cm_name = fetch_campaign_name(amigos_cm_id, amigos_cm_tok)
+        campaigns.append({"id": amigos_cm_id, "token": amigos_cm_tok, "label": "AMIGOS_CM", "name": amigos_cm_name})
+        print(f"  Amigos CM campaign: {amigos_cm_id} ({amigos_cm_name})")
+
+    amigos_na_id  = os.environ.get("AMIGOS_NA_ID", "").strip()
+    amigos_na_tok = os.environ.get("AMIGOS_NA_TOKEN", "").strip()
+    if amigos_na_id and amigos_na_tok:
+        amigos_na_name = fetch_campaign_name(amigos_na_id, amigos_na_tok)
+        campaigns.append({"id": amigos_na_id, "token": amigos_na_tok, "label": "AMIGOS_NA", "name": amigos_na_name})
+        print(f"  Amigos NA campaign: {amigos_na_id} ({amigos_na_name})")
+
     leg_id  = os.environ.get("DIALFIRE_CAMPAIGN_ID", "").strip()
     leg_tok = os.environ.get("DIALFIRE_CAMPAIGN_TOKEN", "").strip()
     if leg_id and leg_tok:
