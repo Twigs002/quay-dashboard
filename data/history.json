@@ -1,63 +1,6 @@
 [
   {
-    "generated": "2026-05-04T18:04:00Z",
-    "week": "2026-05-04",
-    "weekStart": "2026-05-04",
-    "weekEnd": "2026-05-04",
-    "rm": [],
-    "fancy": [
-      {
-        "name": "SadiqaCarelse",
-        "calls": 162,
-        "success": 30,
-        "seller": 7,
-        "rental": 0,
-        "email": 22,
-        "cph": 41.2,
-        "successRate": 18.5,
-        "workTime": 3.9319,
-        "is_rm": false,
-        "meetsTarget": false,
-        "campaigns": [
-          "CLIENTHUB"
-        ]
-      },
-      {
-        "name": "Gio",
-        "calls": 155,
-        "success": 28,
-        "seller": 3,
-        "rental": 1,
-        "email": 22,
-        "cph": 45.5,
-        "successRate": 18.1,
-        "workTime": 3.4039,
-        "is_rm": false,
-        "meetsTarget": false,
-        "campaigns": [
-          "CLIENTHUB"
-        ]
-      },
-      {
-        "name": "NaomiCiza",
-        "calls": 131,
-        "success": 20,
-        "seller": 0,
-        "rental": 0,
-        "email": 20,
-        "cph": 38.9,
-        "successRate": 15.3,
-        "workTime": 3.3706,
-        "is_rm": false,
-        "meetsTarget": false,
-        "campaigns": [
-          "CLIENTHUB"
-        ]
-      }
-    ]
-  },
-  {
-    "generated": "2026-05-04T18:03:26Z",
+    "generated": "2026-05-04T18:18:32Z",
     "week": "2026-04-27",
     "weekStart": "2026-04-27",
     "weekEnd": "2026-05-03",
@@ -189,6 +132,63 @@
         "meetsTarget": false,
         "campaigns": [
           "CAMP2"
+        ]
+      }
+    ]
+  },
+  {
+    "generated": "2026-05-04T18:04:00Z",
+    "week": "2026-05-04",
+    "weekStart": "2026-05-04",
+    "weekEnd": "2026-05-04",
+    "rm": [],
+    "fancy": [
+      {
+        "name": "SadiqaCarelse",
+        "calls": 162,
+        "success": 30,
+        "seller": 7,
+        "rental": 0,
+        "email": 22,
+        "cph": 41.2,
+        "successRate": 18.5,
+        "workTime": 3.9319,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      },
+      {
+        "name": "Gio",
+        "calls": 155,
+        "success": 28,
+        "seller": 3,
+        "rental": 1,
+        "email": 22,
+        "cph": 45.5,
+        "successRate": 18.1,
+        "workTime": 3.4039,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      },
+      {
+        "name": "NaomiCiza",
+        "calls": 131,
+        "success": 20,
+        "seller": 0,
+        "rental": 0,
+        "email": 20,
+        "cph": 38.9,
+        "successRate": 15.3,
+        "workTime": 3.3706,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
         ]
       }
     ]
