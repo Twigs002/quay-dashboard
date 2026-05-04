@@ -59,6 +59,15 @@ ass_na_id  = os.environ.get("ASSASSINS_NA_ID", "").strip()
 ass_na_tok = os.environ.get("ASSASSINS_NA_TOKEN", "").strip()
 if ass_na_id and ass_na_tok:
     CAMPAIGNS.append({"id": ass_na_id, "token": ass_na_tok, "name": "ASSASSINS_NA"})
+amigos_cm_id  = os.environ.get("AMIGOS_CM_ID", "").strip()
+amigos_cm_tok = os.environ.get("AMIGOS_CM_TOKEN", "").strip()
+if amigos_cm_id and amigos_cm_tok:
+    CAMPAIGNS.append({"id": amigos_cm_id, "token": amigos_cm_tok, "name": "AMIGOS_CM"})
+
+amigos_na_id  = os.environ.get("AMIGOS_NA_ID", "").strip()
+amigos_na_tok = os.environ.get("AMIGOS_NA_TOKEN", "").strip()
+if amigos_na_id and amigos_na_tok:
+    CAMPAIGNS.append({"id": amigos_na_id, "token": amigos_na_tok, "name": "AMIGOS_NA"})
 
 FORCE_REFETCH = os.environ.get("FORCE_REFETCH", "").strip().lower() in ("true", "1", "yes")
 
