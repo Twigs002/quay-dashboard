@@ -1,6 +1,6 @@
 [
   {
-    "generated": "2026-05-04T08:32:37Z",
+    "generated": "2026-05-04T11:19:21Z",
     "week": "2026-04-27",
     "weekStart": "2026-04-27",
     "weekEnd": "2026-05-03",
@@ -8,14 +8,14 @@
     "fancy": [
       {
         "name": "Gio",
-        "calls": 651,
-        "success": 123,
-        "seller": 26,
+        "calls": 721,
+        "success": 134,
+        "seller": 29,
         "rental": 1,
-        "email": 96,
-        "cph": 46.1,
-        "successRate": 18.9,
-        "workTime": 14.1136,
+        "email": 102,
+        "cph": 46.0,
+        "successRate": 18.6,
+        "workTime": 15.685,
         "is_rm": false,
         "meetsTarget": false,
         "campaigns": [
@@ -24,14 +24,14 @@
       },
       {
         "name": "SadiqaCarelse",
-        "calls": 358,
-        "success": 68,
-        "seller": 7,
+        "calls": 415,
+        "success": 81,
+        "seller": 12,
         "rental": 0,
-        "email": 60,
-        "cph": 51.3,
-        "successRate": 19.0,
-        "workTime": 6.9753,
+        "email": 67,
+        "cph": 50.3,
+        "successRate": 19.5,
+        "workTime": 8.2581,
         "is_rm": false,
         "meetsTarget": false,
         "campaigns": [
@@ -40,14 +40,14 @@
       },
       {
         "name": "NaomiCiza",
-        "calls": 284,
-        "success": 64,
+        "calls": 321,
+        "success": 71,
         "seller": 4,
         "rental": 0,
-        "email": 60,
-        "cph": 39.2,
-        "successRate": 22.5,
-        "workTime": 7.2411,
+        "email": 67,
+        "cph": 38.9,
+        "successRate": 22.1,
+        "workTime": 8.2506,
         "is_rm": false,
         "meetsTarget": false,
         "campaigns": [
@@ -137,7 +137,7 @@
     ]
   },
   {
-    "generated": "2026-05-04T08:32:03Z",
+    "generated": "2026-05-04T11:19:16Z",
     "week": "2026-04-20",
     "weekStart": "2026-04-20",
     "weekEnd": "2026-04-26",
@@ -308,7 +308,7 @@
     ]
   },
   {
-    "generated": "2026-05-04T08:31:40Z",
+    "generated": "2026-05-04T11:19:11Z",
     "week": "2026-04-13",
     "weekStart": "2026-04-13",
     "weekEnd": "2026-04-19",
@@ -462,7 +462,7 @@
     ]
   },
   {
-    "generated": "2026-05-04T08:31:11Z",
+    "generated": "2026-05-04T11:19:05Z",
     "week": "2026-04-06",
     "weekStart": "2026-04-06",
     "weekEnd": "2026-04-12",
@@ -615,7 +615,7 @@
     ]
   },
   {
-    "generated": "2026-05-04T08:30:53Z",
+    "generated": "2026-05-04T11:18:59Z",
     "week": "2026-03-30",
     "weekStart": "2026-03-30",
     "weekEnd": "2026-04-05",
@@ -784,7 +784,7 @@
     ]
   },
   {
-    "generated": "2026-05-04T08:30:35Z",
+    "generated": "2026-05-04T11:18:54Z",
     "week": "2026-03-23",
     "weekStart": "2026-03-23",
     "weekEnd": "2026-03-29",
@@ -985,7 +985,7 @@
     ]
   },
   {
-    "generated": "2026-05-04T08:30:06Z",
+    "generated": "2026-05-04T11:18:48Z",
     "week": "2026-03-16",
     "weekStart": "2026-03-16",
     "weekEnd": "2026-03-22",
@@ -1237,7 +1237,7 @@
     ]
   },
   {
-    "generated": "2026-05-04T08:29:37Z",
+    "generated": "2026-05-04T11:18:42Z",
     "week": "2026-03-09",
     "weekStart": "2026-03-09",
     "weekEnd": "2026-03-15",
@@ -1473,7 +1473,7 @@
     ]
   },
   {
-    "generated": "2026-05-04T08:29:01Z",
+    "generated": "2026-05-04T11:18:35Z",
     "week": "2026-03-02",
     "weekStart": "2026-03-02",
     "weekEnd": "2026-03-08",
@@ -1726,7 +1726,7 @@
     ]
   },
   {
-    "generated": "2026-05-04T08:28:31Z",
+    "generated": "2026-05-04T11:18:29Z",
     "week": "2026-02-23",
     "weekStart": "2026-02-23",
     "weekEnd": "2026-03-01",
