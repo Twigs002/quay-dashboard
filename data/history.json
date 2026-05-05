@@ -8,7 +8,7 @@
     "fancy": [
       {
         "name": "Gio",
-        "calls": 191,
+        "calls": 238,
         "success": 35,
         "seller": 4,
         "rental": 1,
@@ -19,7 +19,8 @@
         "is_rm": false,
         "meetsTarget": false,
         "campaigns": [
-          "CLIENTHUB"
+          "CLIENTHUB",
+          "CLIENTHUB_NEW"
         ]
       },
       {
