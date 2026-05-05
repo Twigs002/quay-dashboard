@@ -13,7 +13,7 @@
         "seller": 4,
         "rental": 1,
         "email": 28,
-        "cph": 45.1,
+        "cph": 56.2,
         "successRate": 18.3,
         "workTime": 4.2344,
         "is_rm": false,
@@ -56,7 +56,7 @@
         ]
       },
       {
-        "name": "Test",
+        "name": "Jason",
         "calls": 147,
         "success": 2,
         "seller": 1,
@@ -291,14 +291,14 @@
       },
       {
         "name": "NielSteenkamp",
-        "calls": 2,
+        "calls": 30,
         "success": 2,
         "seller": 0,
         "rental": 0,
         "email": 2,
-        "cph": 45.6,
+        "cph": 43.9,
         "successRate": 100.0,
-        "workTime": 0.0439,
+        "workTime": 0.6833,
         "is_rm": false,
         "meetsTarget": true,
         "campaigns": [
