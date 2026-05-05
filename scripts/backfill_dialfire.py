@@ -263,7 +263,7 @@ def fetch_campaign_week(campaign, date_from, date_to):
 
 
 # RM = ONLY worked on ClientHub / New Contacts; Fancy = worked on clienthub + something else
-RM_CAMPAIGNS  = {"Clienthub Master", "New Contacts", "No Answer / Not contacted"}
+RM_CAMPAIGNS  = {"Clienthub Master", "New Contacts", "No Answer / Not contacted", "CLIENTHUB"}
 
 
 def _norm_camp(n):
