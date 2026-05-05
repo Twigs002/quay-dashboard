@@ -1,11 +1,79 @@
 [
   {
-    "generated": "2026-05-05T07:30:51Z",
+    "generated": "2026-05-05T07:41:20Z",
     "week": "2026-05-04",
     "weekStart": "2026-05-04",
     "weekEnd": "2026-05-04",
     "rm": [],
     "fancy": [
+      {
+        "name": "Gio",
+        "calls": 191,
+        "success": 35,
+        "seller": 4,
+        "rental": 1,
+        "email": 28,
+        "cph": 45.1,
+        "successRate": 18.3,
+        "workTime": 4.2344,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      },
+      {
+        "name": "SadiqaCarelse",
+        "calls": 181,
+        "success": 35,
+        "seller": 7,
+        "rental": 0,
+        "email": 27,
+        "cph": 42.0,
+        "successRate": 19.3,
+        "workTime": 4.3094,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      },
+      {
+        "name": "NaomiCiza",
+        "calls": 155,
+        "success": 26,
+        "seller": 0,
+        "rental": 0,
+        "email": 26,
+        "cph": 38.8,
+        "successRate": 16.8,
+        "workTime": 3.9928,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      },
+      {
+        "name": "Test",
+        "calls": 147,
+        "success": 2,
+        "seller": 1,
+        "rental": 0,
+        "email": 1,
+        "cph": 58.6,
+        "successRate": 1.4,
+        "workTime": 2.51,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "KOEKSISTERS_NEW",
+          "KOEKSISTERS",
+          "WOLVES",
+          "WOLVES_NEW",
+          "BOETS"
+        ]
+      },
       {
         "name": "ClaudioFratini",
         "calls": 141,
@@ -20,26 +88,6 @@
         "meetsTarget": false,
         "campaigns": [
           "DUTCHMEN"
-        ]
-      },
-      {
-        "name": "Test",
-        "calls": 114,
-        "success": 2,
-        "seller": 1,
-        "rental": 0,
-        "email": 1,
-        "cph": 55.0,
-        "successRate": 1.8,
-        "workTime": 2.0722,
-        "is_rm": false,
-        "meetsTarget": false,
-        "campaigns": [
-          "KOEKSISTERS_NEW",
-          "KOEKSISTERS",
-          "WOLVES",
-          "WOLVES_NEW",
-          "BOETS"
         ]
       },
       {
@@ -142,6 +190,22 @@
         ]
       },
       {
+        "name": "WhitneyMalgas",
+        "calls": 37,
+        "success": 10,
+        "seller": 3,
+        "rental": 0,
+        "email": 6,
+        "cph": 52.4,
+        "successRate": 27.0,
+        "workTime": 0.7061,
+        "is_rm": false,
+        "meetsTarget": true,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      },
+      {
         "name": "KayleighDucroq",
         "calls": 31,
         "success": 3,
@@ -155,6 +219,23 @@
         "meetsTarget": false,
         "campaigns": [
           "WARRIORS"
+        ]
+      },
+      {
+        "name": "DeclanT",
+        "calls": 29,
+        "success": 6,
+        "seller": 1,
+        "rental": 0,
+        "email": 5,
+        "cph": 22.8,
+        "successRate": 20.7,
+        "workTime": 1.2694,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "SPARTANS",
+          "SOCCERMOMS"
         ]
       },
       {
@@ -172,23 +253,6 @@
         "campaigns": [
           "QUEENS_NEW",
           "QUEENS"
-        ]
-      },
-      {
-        "name": "DeclanT",
-        "calls": 16,
-        "success": 5,
-        "seller": 1,
-        "rental": 0,
-        "email": 4,
-        "cph": 19.9,
-        "successRate": 31.2,
-        "workTime": 0.8022,
-        "is_rm": false,
-        "meetsTarget": false,
-        "campaigns": [
-          "SPARTANS",
-          "SOCCERMOMS"
         ]
       },
       {
@@ -210,14 +274,14 @@
       },
       {
         "name": "JoshAdonis",
-        "calls": 4,
-        "success": 3,
-        "seller": 1,
+        "calls": 14,
+        "success": 4,
+        "seller": 2,
         "rental": 0,
         "email": 2,
-        "cph": 19.1,
-        "successRate": 75.0,
-        "workTime": 0.2092,
+        "cph": 22.6,
+        "successRate": 28.6,
+        "workTime": 0.6183,
         "is_rm": false,
         "meetsTarget": false,
         "campaigns": [
@@ -240,75 +304,11 @@
           "DUTCHMEN",
           "SURFERS"
         ]
-      },
-      {
-        "name": "Gio",
-        "calls": 1,
-        "success": 0,
-        "seller": 0,
-        "rental": 0,
-        "email": 0,
-        "cph": 18.2,
-        "successRate": 0.0,
-        "workTime": 0.055,
-        "is_rm": false,
-        "meetsTarget": false,
-        "campaigns": [
-          "CLIENTHUB"
-        ]
-      },
-      {
-        "name": "NaomiCiza",
-        "calls": 1,
-        "success": 0,
-        "seller": 0,
-        "rental": 0,
-        "email": 0,
-        "cph": 34.3,
-        "successRate": 0.0,
-        "workTime": 0.0292,
-        "is_rm": false,
-        "meetsTarget": false,
-        "campaigns": [
-          "CLIENTHUB"
-        ]
-      },
-      {
-        "name": "SadiqaCarelse",
-        "calls": 1,
-        "success": 0,
-        "seller": 0,
-        "rental": 0,
-        "email": 0,
-        "cph": 16.4,
-        "successRate": 0.0,
-        "workTime": 0.0608,
-        "is_rm": false,
-        "meetsTarget": false,
-        "campaigns": [
-          "CLIENTHUB"
-        ]
-      },
-      {
-        "name": "WhitneyMalgas",
-        "calls": 1,
-        "success": 0,
-        "seller": 0,
-        "rental": 0,
-        "email": 0,
-        "cph": 53.7,
-        "successRate": 0.0,
-        "workTime": 0.0186,
-        "is_rm": false,
-        "meetsTarget": false,
-        "campaigns": [
-          "CLIENTHUB"
-        ]
       }
     ]
   },
   {
-    "generated": "2026-05-05T07:08:07Z",
+    "generated": "2026-05-05T07:39:22Z",
     "week": "2026-04-27",
     "weekStart": "2026-04-27",
     "weekEnd": "2026-05-03",
