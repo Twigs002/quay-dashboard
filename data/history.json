@@ -258,19 +258,19 @@
       },
       {
         "name": "StaddyMalonga",
-        "calls": 16,
+        "calls": 87,
         "success": 2,
         "seller": 0,
         "rental": 0,
         "email": 2,
-        "cph": 23.6,
+        "cph": 26.0,
         "successRate": 12.5,
-        "workTime": 0.6767,
+        "workTime": 3.35,
         "is_rm": false,
         "meetsTarget": false,
         "campaigns": [
-          "SLAYERS_NEW",
-          "SLAYERS"
+          "slayers_CM",
+          "slayers_NA"
         ]
       },
       {
