@@ -9,7 +9,7 @@ grouped by Lead_Status (outer) and user (inner).
 Lead_Status mapping:
   seller : LEAD (Seller Lead, On the Market, Wants a Valuation)
   rental : RENTAL_LEAD
-  email  : GOT_EMAI
+  email  : GOT_EMAIL
 """
 import os, json, re, time, datetime, pytz
 import requests
@@ -59,7 +59,7 @@ def build_timespan(period_start, period_end, now_sast):
         days_to_end = 0
     else:               # Tue-Fri: end at yesterday to get reliable 200 response
         days_to_end = 1
-        return f"{days_to_start}-{days_to_end}day"
+    return f"{days_to_start}-{days_to_end}day"
 
 
 # -- Poll helper --------------------------------------------------------------
