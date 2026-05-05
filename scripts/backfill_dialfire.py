@@ -262,7 +262,7 @@ def fetch_campaign_week(campaign, date_from, date_to):
     return []
 
 
-# RM = ONLY worked on ClientHub / New Contacts; Fancy = worked on clienthub + something else
+# RM = ONLY worked on ClientHub / New Contacts; Fancy = worked on clienthub + something else 
 RM_CAMPAIGNS  = {"Clienthub Master", "New Contacts", "No Answer / Not contacted", "CLIENTHUB"}
 
 
