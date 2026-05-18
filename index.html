@@ -385,7 +385,7 @@ function setExecPeriod(p,btn){ execPeriod=p; document.querySelectorAll('.ep-btn'
 
 function renderExec(){
   const t=today(); let from,to=t;
-  if(execPeriod==='week'){ const d=new Date(); from=addDays(t,-((d.getDay()+6)%7)); to=addDays(from,4); }
+      if(execPeriod==='week'){ const d=new Date(); const rawMon=addDays(t,-((d.getDay()+6)%7)); from=d.getDay()===1?addDays(rawMon,-7):rawMon; to=addDays(from,4); }
   else if(execPeriod==='lastweek'){ const d=new Date(); const tm=addDays(t,-((d.getDay()+6)%7)); from=addDays(tm,-7); to=addDays(from,4); }
   else if(execPeriod==='month'){ from=firstOfMonth(); to=t; }
   else if(execPeriod==='quarter'){ from=addDays(t,-90); }
