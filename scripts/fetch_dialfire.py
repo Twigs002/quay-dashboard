@@ -38,8 +38,14 @@ EMAIL_STATUSES  = {"GOT_EMAIL"}
 # -- Date helpers -------------------------------------------------------------
 def get_current_week_bounds(now_sast):
     today = now_sast.date()
-    monday = today - datetime.timedelta(days=today.weekday())
-    friday = monday + datetime.timedelta(days=4)
+    weekday = today.weekday()  # 0=Mon
+    if weekday == 0:
+              # On Monday the new week just started with no data yet;
+              # return the previous completed week (Mon-Fri) instead
+              monday = today - datetime.timedelta(days=7)
+    else:
+              monday = today - datetime.timedelta(days=weekday)
+          friday = monday + datetime.timedelta(days=4)
     return monday, friday
 
 
