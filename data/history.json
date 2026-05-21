@@ -1,20 +1,20 @@
 [
   {
-    "generated": "2026-05-20T04:44:23.764450+00:00",
+    "generated": "2026-05-21T04:51:53.570804+00:00",
     "week": "2026-05-18",
     "weekStart": "2026-05-18",
     "weekEnd": "2026-05-22",
     "rm": [
       {
         "name": "WarrickSolomons",
-        "calls": 585,
-        "success": 109,
+        "calls": 586,
+        "success": 110,
         "seller": 7,
         "rental": 0,
-        "email": 102,
-        "cph": 63.4,
-        "successRate": 18.6,
-        "workTime": 9.22,
+        "email": 103,
+        "cph": 63.3,
+        "successRate": 18.8,
+        "workTime": 9.26,
         "meetsTarget": true,
         "is_rm": true,
         "campaigns": [
@@ -23,14 +23,14 @@
       },
       {
         "name": "SadiqaCarelse",
-        "calls": 406,
-        "success": 88,
+        "calls": 410,
+        "success": 90,
         "seller": 9,
         "rental": 0,
-        "email": 78,
-        "cph": 53.0,
-        "successRate": 21.7,
-        "workTime": 7.66,
+        "email": 80,
+        "cph": 52.8,
+        "successRate": 22.0,
+        "workTime": 7.76,
         "meetsTarget": true,
         "is_rm": true,
         "campaigns": [
@@ -39,14 +39,14 @@
       },
       {
         "name": "CameronPaulse",
-        "calls": 397,
-        "success": 83,
+        "calls": 399,
+        "success": 84,
         "seller": 18,
         "rental": 0,
-        "email": 64,
+        "email": 65,
         "cph": 45.7,
-        "successRate": 20.9,
-        "workTime": 8.68,
+        "successRate": 21.1,
+        "workTime": 8.74,
         "meetsTarget": true,
         "is_rm": true,
         "campaigns": [
@@ -55,14 +55,14 @@
       },
       {
         "name": "NaomiCiza",
-        "calls": 384,
-        "success": 82,
+        "calls": 387,
+        "success": 85,
         "seller": 4,
         "rental": 0,
-        "email": 78,
-        "cph": 44.4,
-        "successRate": 21.4,
-        "workTime": 8.65,
+        "email": 81,
+        "cph": 44.0,
+        "successRate": 22.0,
+        "workTime": 8.79,
         "meetsTarget": false,
         "is_rm": true,
         "campaigns": [
@@ -71,14 +71,14 @@
       },
       {
         "name": "BrandonNtini",
-        "calls": 383,
-        "success": 97,
+        "calls": 384,
+        "success": 98,
         "seller": 2,
         "rental": 1,
-        "email": 94,
+        "email": 95,
         "cph": 40.3,
-        "successRate": 25.3,
-        "workTime": 9.5,
+        "successRate": 25.5,
+        "workTime": 9.53,
         "meetsTarget": false,
         "is_rm": true,
         "campaigns": [
@@ -100,19 +100,35 @@
         "campaigns": [
           "Clienthub Master"
         ]
+      },
+      {
+        "name": "Gio",
+        "calls": 150,
+        "success": 37,
+        "seller": 8,
+        "rental": 0,
+        "email": 29,
+        "cph": 42.6,
+        "successRate": 24.7,
+        "workTime": 3.52,
+        "meetsTarget": false,
+        "is_rm": true,
+        "campaigns": [
+          "Clienthub Master"
+        ]
       }
     ],
     "fancy": [
       {
         "name": "Test",
-        "calls": 784,
-        "success": 57,
-        "seller": 4,
+        "calls": 1133,
+        "success": 91,
+        "seller": 6,
         "rental": 0,
-        "email": 51,
-        "cph": 56.6,
+        "email": 83,
+        "cph": 55.2,
         "successRate": 28.6,
-        "workTime": 13.86,
+        "workTime": 20.53,
         "meetsTarget": true,
         "is_rm": false,
         "campaigns": [
@@ -129,14 +145,14 @@
       },
       {
         "name": "CraigCarroll",
-        "calls": 575,
-        "success": 52,
-        "seller": 4,
+        "calls": 940,
+        "success": 60,
+        "seller": 5,
         "rental": 0,
-        "email": 46,
-        "cph": 57.0,
-        "successRate": 13.9,
-        "workTime": 10.08,
+        "email": 53,
+        "cph": 59.8,
+        "successRate": 13.8,
+        "workTime": 15.73,
         "meetsTarget": false,
         "is_rm": false,
         "campaigns": [
@@ -144,36 +160,20 @@
           "AVENGERS_NEW",
           "BETTIES_",
           "PROTEAS_NEW",
-          "PROTEAS_"
-        ]
-      },
-      {
-        "name": "ZivanaKriel",
-        "calls": 554,
-        "success": 114,
-        "seller": 14,
-        "rental": 0,
-        "email": 98,
-        "cph": 65.7,
-        "successRate": 20.4,
-        "workTime": 8.43,
-        "meetsTarget": true,
-        "is_rm": false,
-        "campaigns": [
-          "Clienthub Master",
-          "AMIGOS_"
+          "PROTEAS_",
+          "GOAL_DIGGERS_"
         ]
       },
       {
         "name": "JoshAdonis",
-        "calls": 411,
-        "success": 62,
-        "seller": 4,
+        "calls": 581,
+        "success": 102,
+        "seller": 7,
         "rental": 0,
-        "email": 57,
-        "cph": 35.4,
+        "email": 94,
+        "cph": 35.7,
         "successRate": 29.7,
-        "workTime": 11.6,
+        "workTime": 16.28,
         "meetsTarget": false,
         "campaigns": [
           "WOMBATS_",
@@ -183,15 +183,32 @@
         "is_rm": false
       },
       {
-        "name": "DeclanT",
-        "calls": 265,
-        "success": 28,
-        "seller": 7,
+        "name": "ZivanaKriel",
+        "calls": 567,
+        "success": 120,
+        "seller": 14,
         "rental": 0,
-        "email": 21,
-        "cph": 38.0,
+        "email": 104,
+        "cph": 65.1,
+        "successRate": 21.0,
+        "workTime": 8.71,
+        "meetsTarget": true,
+        "is_rm": false,
+        "campaigns": [
+          "Clienthub Master",
+          "AMIGOS_"
+        ]
+      },
+      {
+        "name": "DeclanT",
+        "calls": 357,
+        "success": 30,
+        "seller": 8,
+        "rental": 0,
+        "email": 22,
+        "cph": 38.8,
         "successRate": 14.7,
-        "workTime": 6.97,
+        "workTime": 9.2,
         "meetsTarget": false,
         "is_rm": false,
         "campaigns": [
@@ -201,6 +218,23 @@
           "SOCCERMOMS_NEW",
           "SOCCERMOMS_"
         ]
+      },
+      {
+        "name": "QhayiyaDayimani",
+        "calls": 336,
+        "success": 7,
+        "seller": 0,
+        "rental": 0,
+        "email": 7,
+        "cph": 19.8,
+        "successRate": 1.4,
+        "workTime": 16.93,
+        "meetsTarget": false,
+        "campaigns": [
+          "HOUT_BAES_",
+          "ASSASSINS_"
+        ],
+        "is_rm": false
       },
       {
         "name": "NeelamJameel",
@@ -218,23 +252,6 @@
           "Clienthub Master",
           "AMIGOS_"
         ]
-      },
-      {
-        "name": "QhayiyaDayimani",
-        "calls": 212,
-        "success": 7,
-        "seller": 0,
-        "rental": 0,
-        "email": 7,
-        "cph": 18.1,
-        "successRate": 1.4,
-        "workTime": 11.71,
-        "meetsTarget": false,
-        "campaigns": [
-          "HOUT_BAES_",
-          "ASSASSINS_"
-        ],
-        "is_rm": false
       },
       {
         "name": "SimoneVermeulen",
@@ -272,14 +289,14 @@
       },
       {
         "name": "DouglasNkulu",
-        "calls": 110,
-        "success": 18,
+        "calls": 160,
+        "success": 30,
         "seller": 2,
         "rental": 0,
-        "email": 15,
-        "cph": 32.2,
-        "successRate": 22.5,
-        "workTime": 3.42,
+        "email": 27,
+        "cph": 32.7,
+        "successRate": 23.1,
+        "workTime": 4.89,
         "meetsTarget": false,
         "campaigns": [
           "QUEENS_",
@@ -288,15 +305,33 @@
         "is_rm": false
       },
       {
+        "name": "BronwynBotha",
+        "calls": 149,
+        "success": 12,
+        "seller": 12,
+        "rental": 0,
+        "email": 0,
+        "cph": 28.3,
+        "successRate": 0.0,
+        "workTime": 5.26,
+        "meetsTarget": false,
+        "campaigns": [
+          "DUTCHMEN_NEW",
+          "DUTCHMEN_",
+          "SURFERS_"
+        ],
+        "is_rm": false
+      },
+      {
         "name": "ViannVisser",
-        "calls": 95,
-        "success": 1,
+        "calls": 125,
+        "success": 3,
         "seller": 0,
         "rental": 0,
-        "email": 1,
-        "cph": 21.4,
-        "successRate": 1.1,
-        "workTime": 4.44,
+        "email": 3,
+        "cph": 21.0,
+        "successRate": 2.4,
+        "workTime": 5.96,
         "meetsTarget": false,
         "campaigns": [
           "CAVALIERS_"
@@ -304,32 +339,31 @@
         "is_rm": false
       },
       {
-        "name": "BronwynBotha",
-        "calls": 49,
-        "success": 6,
-        "seller": 6,
+        "name": "Leon Salimu",
+        "calls": 69,
+        "success": 32,
+        "seller": 4,
         "rental": 0,
-        "email": 0,
-        "cph": 23.3,
-        "successRate": 16.0,
-        "workTime": 2.1,
+        "email": 28,
+        "cph": 22.1,
+        "successRate": 46.4,
+        "workTime": 3.12,
         "meetsTarget": false,
         "campaigns": [
-          "DUTCHMEN_",
-          "SURFERS_"
+          "LIONS_"
         ],
         "is_rm": false
       },
       {
         "name": "AnneeqaWilliams",
-        "calls": 42,
-        "success": 6,
-        "seller": 0,
+        "calls": 59,
+        "success": 11,
+        "seller": 2,
         "rental": 0,
-        "email": 6,
-        "cph": 28.8,
+        "email": 9,
+        "cph": 24.4,
         "successRate": 0.0,
-        "workTime": 1.46,
+        "workTime": 2.42,
         "meetsTarget": false,
         "campaigns": [
           "DRAGONS_",
@@ -338,50 +372,68 @@
         "is_rm": false
       },
       {
-        "name": "Leon Salimu",
-        "calls": 33,
-        "success": 13,
-        "seller": 1,
+        "name": "Nicolette",
+        "calls": 44,
+        "success": 11,
+        "seller": 0,
         "rental": 0,
-        "email": 12,
-        "cph": 25.4,
-        "successRate": 39.4,
-        "workTime": 1.3,
+        "email": 11,
+        "cph": 27.5,
+        "successRate": 25.0,
+        "workTime": 1.6,
         "meetsTarget": false,
         "campaigns": [
-          "LIONS_"
+          "DRAGONS_"
         ],
         "is_rm": false
       },
       {
         "name": "TamzinJacobs",
-        "calls": 31,
+        "calls": 44,
         "success": 7,
         "seller": 3,
         "rental": 0,
         "email": 4,
-        "cph": 25.2,
-        "successRate": 25.0,
-        "workTime": 1.23,
+        "cph": 25.6,
+        "successRate": 0.0,
+        "workTime": 1.72,
         "meetsTarget": false,
         "campaigns": [
+          "VIPERS_NEW",
           "VIPERS_"
         ],
         "is_rm": false
       },
       {
-        "name": "Nicolette",
-        "calls": 27,
-        "success": 9,
+        "name": "NielSteenkamp",
+        "calls": 36,
+        "success": 0,
         "seller": 0,
         "rental": 0,
-        "email": 9,
-        "cph": 27.6,
-        "successRate": 33.3,
-        "workTime": 0.98,
+        "email": 0,
+        "cph": 46.2,
+        "successRate": 0.0,
+        "workTime": 0.78,
         "meetsTarget": false,
         "campaigns": [
-          "DRAGONS_"
+          "DUTCHMEN_",
+          "SURFERS_"
+        ],
+        "is_rm": false
+      },
+      {
+        "name": "ShanikaLotz",
+        "calls": 17,
+        "success": 6,
+        "seller": 2,
+        "rental": 0,
+        "email": 4,
+        "cph": 30.4,
+        "successRate": 35.3,
+        "workTime": 0.56,
+        "meetsTarget": false,
+        "campaigns": [
+          "KNIGHTS_"
         ],
         "is_rm": false
       },
@@ -414,22 +466,6 @@
         "meetsTarget": false,
         "campaigns": [
           "PIRATES_"
-        ],
-        "is_rm": false
-      },
-      {
-        "name": "NielSteenkamp",
-        "calls": 6,
-        "success": 0,
-        "seller": 0,
-        "rental": 0,
-        "email": 0,
-        "cph": 46.2,
-        "successRate": 0.0,
-        "workTime": 0.13,
-        "meetsTarget": false,
-        "campaigns": [
-          "DUTCHMEN_"
         ],
         "is_rm": false
       }
