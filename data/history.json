@@ -1,6 +1,6 @@
 [
   {
-    "generated": "2026-05-26T06:22:07Z",
+    "generated": "2026-05-26T06:51:26Z",
     "week": "2026-05-25",
     "weekStart": "2026-05-25",
     "weekEnd": "2026-05-25",
@@ -39,16 +39,32 @@
       },
       {
         "name": "SadiqaCarelse",
-        "calls": 169,
-        "success": 24,
-        "seller": 2,
+        "calls": 181,
+        "success": 29,
+        "seller": 3,
         "rental": 0,
-        "email": 19,
+        "email": 22,
         "cph": 43.4,
-        "successRate": 14.2,
-        "workTime": 3.8914,
+        "successRate": 16.0,
+        "workTime": 4.1686,
         "is_rm": true,
         "meetsTarget": false,
+        "campaigns": [
+          "CLIENTHUB"
+        ]
+      },
+      {
+        "name": "WarrickSolomons",
+        "calls": 14,
+        "success": 4,
+        "seller": 0,
+        "rental": 0,
+        "email": 4,
+        "cph": 57.1,
+        "successRate": 28.6,
+        "workTime": 0.2453,
+        "is_rm": true,
+        "meetsTarget": true,
         "campaigns": [
           "CLIENTHUB"
         ]
@@ -57,14 +73,14 @@
     "fancy": [
       {
         "name": "Test",
-        "calls": 147,
+        "calls": 164,
         "success": 7,
         "seller": 0,
         "rental": 0,
         "email": 7,
-        "cph": 47.5,
-        "successRate": 4.8,
-        "workTime": 3.0934,
+        "cph": 47.9,
+        "successRate": 4.3,
+        "workTime": 3.4247,
         "is_rm": false,
         "meetsTarget": false,
         "campaigns": [
@@ -76,6 +92,24 @@
           "BOETS",
           "DEALERS",
           "DRAGONS"
+        ]
+      },
+      {
+        "name": "SimoneVermeulen",
+        "calls": 103,
+        "success": 33,
+        "seller": 3,
+        "rental": 0,
+        "email": 30,
+        "cph": 34.4,
+        "successRate": 32.0,
+        "workTime": 2.995,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "FURYS",
+          "TIGERS_NEW",
+          "TIGERS"
         ]
       },
       {
@@ -95,24 +129,6 @@
         ]
       },
       {
-        "name": "SimoneVermeulen",
-        "calls": 77,
-        "success": 29,
-        "seller": 0,
-        "rental": 0,
-        "email": 0,
-        "cph": 33.1,
-        "successRate": 37.7,
-        "workTime": 2.3272,
-        "is_rm": false,
-        "meetsTarget": false,
-        "campaigns": [
-          "FURYS",
-          "TIGERS_NEW",
-          "TIGERS"
-        ]
-      },
-      {
         "name": "ZivanaKriel",
         "calls": 68,
         "success": 12,
@@ -126,6 +142,24 @@
         "meetsTarget": false,
         "campaigns": [
           "SLAYERS"
+        ]
+      },
+      {
+        "name": "BronwynBotha",
+        "calls": 64,
+        "success": 2,
+        "seller": 0,
+        "rental": 0,
+        "email": 2,
+        "cph": 37.7,
+        "successRate": 3.1,
+        "workTime": 1.6961,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "DUTCHMEN",
+          "SURFERS_NEW",
+          "SURFERS"
         ]
       },
       {
@@ -143,24 +177,6 @@
         "campaigns": [
           "LLAMAS",
           "VIPERS"
-        ]
-      },
-      {
-        "name": "BronwynBotha",
-        "calls": 60,
-        "success": 2,
-        "seller": 0,
-        "rental": 0,
-        "email": 2,
-        "cph": 37.7,
-        "successRate": 3.3,
-        "workTime": 1.5917,
-        "is_rm": false,
-        "meetsTarget": false,
-        "campaigns": [
-          "DUTCHMEN",
-          "SURFERS_NEW",
-          "SURFERS"
         ]
       },
       {
@@ -281,7 +297,7 @@
     ]
   },
   {
-    "generated": "2026-05-26T06:20:14Z",
+    "generated": "2026-05-26T06:49:40Z",
     "week": "2026-05-18",
     "weekStart": "2026-05-18",
     "weekEnd": "2026-05-24",
