@@ -393,11 +393,28 @@ def parse_row(row):
         except Exception:
             return 0.0
 
-    calls   = _int(row.get("completed") or row.get("calls") or 0)
-    success = _int(row.get("success", 0))
-    wt_raw  = row.get("workTime") or row.get("work_time") or row.get("workHours") or 0
-    work_h  = _float(wt_raw)
-    work_h = round(wt_raw / 3600000 if wt_raw > 1000 else wt_raw, 2)
+    # Positional column fallback (matches backfill_dialfire.py): editsDef_v2 returns
+    # columns in the order requested via column0..column3, i.e. [completed, success,
+    # successRate, workTime]. If the keyed accessor (row.get('workTime')) is missing
+    # because DialFire returned a localized/renamed columnDef name, fall back to the
+    # positional value from row['columns'].
+    cols = row.get("columns", [])
+    def _col(i, default=0):
+        try:
+            return float(cols[i]) if i < len(cols) and cols[i] not in (None, "", "-") else float(default)
+        except Exception:
+            return float(default)
+
+    calls   = _int(row.get("completed") or row.get("calls") or _col(0))
+    success = _int(row.get("success") or _col(1))
+    wt_raw  = row.get("workTime") or row.get("work_time") or row.get("workHours") or _col(3) or 0
+    try:
+        wt_num = float(wt_raw)
+    except Exception:
+        wt_num = 0.0
+    # workTime from editsDef_v2 is in hours; >1000 means it was in ms (matches backfill).
+    # 4-decimal precision to avoid compounding rounding error across many campaigns.
+    work_h = round(wt_num / 3600000 if wt_num > 1000 else wt_num, 4)
 
     sr_raw = row.get("successRate") or row.get("success_rate") or 0
     try:
@@ -437,13 +454,15 @@ def fetch_campaign(cid, token, index, total, period_start, period_end, ts, campa
     label = f"{index + 1}/{total} {cid}"
     base = f"{API_BASE}/api/campaigns/{cid}"
 
-    seen = set()
-    unique_ts = []
-    # Include both -1day (ending yesterday, more reliable) and -0day (ending today) variants
-    for t in [ts, "1-1day", "0-0day"]:
-        if t not in seen:
-            seen.add(t)
-            unique_ts.append(t)
+    # Only query the real period timespan. Previous versions fell back to
+    # "1-1day" (yesterday only) / "0-0day" (today only) when the primary
+    # request returned an empty dict (HTTP 202 poll timeout, 5xx, JSON parse
+    # error). That silently replaced a whole week's worth of data with a
+    # single day for that campaign, undercounting workTime/calls when any
+    # campaign hit a transient API failure. If a campaign legitimately fails,
+    # we now log it and exclude that campaign for this run, matching
+    # backfill_dialfire.py behavior.
+    unique_ts = [ts]
 
     for cur_ts in unique_ts:
         params = {
@@ -624,7 +643,7 @@ def main():
             ex["seller"]   += agent["seller"]
             ex["rental"]   += agent["rental"]
             ex["email"]    += agent["email"]
-            ex["workTime"]  = round(ex["workTime"] + agent["workTime"], 2)
+            ex["workTime"]  = round(ex["workTime"] + agent["workTime"], 4)
             # Once flagged as RM (CLIENTHUB), keep that flag
             if agent.get("is_rm"):
                 ex["is_rm"] = True
