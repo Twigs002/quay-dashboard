@@ -17,7 +17,7 @@ Environment variables:
   END_DATE            e.g. "2026-04-13" -- optional, defaults to yesterday
 """
 
-import os, json, time, requests
+import os, json, time, re, requests
 from datetime import datetime, timedelta, timezone, date as date_type
 
 LOCALE = "en_US"
@@ -76,7 +76,7 @@ raw = os.environ.get("DIALFIRE_CAMPAIGNS", "")
 if raw:
     try:
         for c in json.loads(raw):
-            if c.get("id") and c.get("token"):
+            if c.get("id") and c.get("token") and not any(x["id"] == c["id"] for x in CAMPAIGNS):
                 CAMPAIGNS.append(c)
     except Exception as e:
         print(f"Warning: could not parse DIALFIRE_CAMPAIGNS: {e}")
@@ -205,7 +205,7 @@ def fetch_lead_counts_bf(cid, token, ts, label):
                     cnt = 0
                     if ucols:
                         try: cnt = int(ucols[0]) if ucols[0] not in (None,"","-") else 0
-                        except: pass
+                        except Exception: pass
                     if ag and ag != "-":
                         if ag not in result: result[ag] = {"seller":0,"rental":0,"email":0}
                         result[ag][bucket] += cnt
@@ -267,7 +267,6 @@ RM_CAMPAIGNS  = {"Clienthub Master", "New Contacts", "No Answer / Not contacted"
 
 
 def _norm_camp(n):
-    import re
     return re.sub(r"\s*[_\-\s]*(CM|NA)\s*$", "", n, flags=re.IGNORECASE).strip()
 
 
@@ -281,7 +280,7 @@ def parse_row(row):
     cols = row.get("columns", [])
     def _col(i, default=0):
         try: return float(cols[i] or 0)
-        except Exception: return float(default)
+        except Exception: return float(default)  # noqa: column parse fallback
 
     calls   = int(row.get("completed") or row.get("calls") or _col(0) or 0)
     success = int(row.get("success") or _col(1) or 0)
