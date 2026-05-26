@@ -367,25 +367,31 @@ def main():
                 n = parsed["name"]
                 if not n or n in ("Unknown", "-", "\u2014", "\u2013", "None"):
                     continue
-                if n not in agents:
-                    agents[n] = parsed.copy()
                 cname = _norm_camp(campaign.get("name", ""))
-                if cname and cname not in agents[n]["campaigns"]:
-                    agents[n]["campaigns"].append(cname)
+                if n not in agents:
+                    # First time we've seen this agent: take parsed as the
+                    # starting values and start a fresh campaigns list.
+                    a = parsed.copy()
+                    a["campaigns"] = [cname] if cname else []
+                    agents[n] = a
                 else:
+                    # Agent seen in a previous campaign. ALWAYS add this
+                    # campaign's counts -- the previous version of this
+                    # block only added counts when cname was already in
+                    # the agent's campaigns list (i.e. duplicate rows),
+                    # which meant multi-campaign agents only ever reflected
+                    # their first campaign.
                     a = agents[n]
                     a["calls"]   += parsed["calls"]
                     a["success"] += parsed["success"]
                     a["seller"]  += parsed["seller"]
                     a["rental"]  += parsed["rental"]
                     a["email"]   += parsed["email"]
-                    total_wt = a["workTime"] + parsed["workTime"]
-                    a["workTime"] = round(total_wt, 4)
-                    a["cph"] = round(a["calls"] / total_wt, 1) if total_wt > 0 else 0.0
+                    a["workTime"] = round(a["workTime"] + parsed["workTime"], 4)
+                    if cname and cname not in a["campaigns"]:
+                        a["campaigns"].append(cname)
+                    a["cph"] = round(a["calls"] / a["workTime"], 1) if a["workTime"] > 0 else 0.0
                     a["successRate"] = round(a["success"] / a["calls"] * 100, 1) if a["calls"] > 0 else 0.0
-                    cname2 = _norm_camp(campaign.get("name", ""))
-                    if cname2 and cname2 not in a["campaigns"]:
-                        a["campaigns"].append(cname2)
 
         for agent in agents.values():
             camps = set(agent.get("campaigns", []))

@@ -1,212 +1,143 @@
 """
-DialFire Campaign Stats -> weekly_data.json fetche
-====================================================
-Fetches agent stats from DialFire API using per-campaign tokens.
+DialFire Weekly Stats Fetcher (Mon-Sun)
+========================================
+Fetches the current week's per-agent stats from DialFire and writes to:
+  - data/weekly_data.json   (latest snapshot, used by the dashboard)
+  - data/history.json       (week-by-week history, used by the charts)
 
-Leads and email counts come from the Dialfire editsDef_v2 report
-grouped by Lead_Status (outer) and user (inner).
+Week boundary: Monday 00:00 -> Sunday 23:59 SAST.
+On Mondays we fetch the PREVIOUS completed Mon-Sun week (since the new
+week has just started and has no meaningful data yet).
 
-Lead_Status mapping:
-  seller : LEAD (Seller Lead, On the Market, Wants a Valuation)
-  rental : RENTAL_LEAD
-  email  : GOT_EMAIL
+Uses the same per-campaign editsDef_v2 endpoint as backfill_dialfire.py.
+Aggregates correctly across all campaigns an agent appears in (this was
+broken in earlier versions and in backfill_dialfire.py - see the docstring
+of merge_agent_row below).
 """
-import os, json, re, time, datetime, pytz
-import requests
+import os, re, json, time, requests, datetime
+from datetime import timezone, timedelta
+import pytz
 
-# -- Config -------------------------------------------------------------------
-LOCALE = "en_US"
-TIMEZONE = pytz.timezone("Africa/Johannesburg")
-API_BASE      = "https://api.dialfire.com"
-API_BASE_APP  = "https://app.dialfire.com"
+# ---------------------------------------------------------------------------
+# Config
+# ---------------------------------------------------------------------------
+LOCALE       = "en_US"
+TIMEZONE     = pytz.timezone("Africa/Johannesburg")
+API_BASE     = "https://api.dialfire.com"
 
 BENCHMARKS = {
-    "cph": 45,
-    "daily_calls": 315,
+    "cph":             45,
+    "daily_calls":     315,
     "rm_success_rate": 17,
     "fc_success_rate": 20,
 }
-
-# RM classification is now campaign-based:
-# agents calling campaign_clienthub are RM; all others are Fancy.
 
 SELLER_STATUSES = {"LEAD"}
 RENTAL_STATUSES = {"RENTAL_LEAD"}
 EMAIL_STATUSES  = {"GOT_EMAIL"}
 
+# Agents who ONLY work these campaigns are classified as "RM" (relationship
+# manager). Anyone working ClientHub plus another campaign is "Fancy" (Fancy
+# Caller).
+RM_CAMPAIGNS = {"Clienthub Master", "New Contacts", "No Answer / Not contacted", "CLIENTHUB"}
 
-# -- Date helpers -------------------------------------------------------------
-def get_current_week_bounds(now_sast):
+
+# ---------------------------------------------------------------------------
+# Date helpers
+# ---------------------------------------------------------------------------
+def get_week_bounds(now_sast):
+    """Return (monday, sunday) for the week we should fetch.
+
+    On Mondays we fetch the PREVIOUS completed week (so the dashboard shows
+    last week's full Mon-Sun). On Tue-Sun we fetch the CURRENT week (which
+    is partial week-to-date).
+    """
     today = now_sast.date()
-    weekday = today.weekday()  # 0=Mon
+    weekday = today.weekday()  # 0=Mon ... 6=Sun
     if weekday == 0:
-              # On Monday the new week just started with no data yet;
-              # return the previous completed week (Mon-Fri) instead
-              monday = today - datetime.timedelta(days=7)
+        monday = today - timedelta(days=7)
     else:
-              monday = today - datetime.timedelta(days=weekday)
-    friday = monday + datetime.timedelta(days=4)
-    return monday, friday
+        monday = today - timedelta(days=weekday)
+    sunday = monday + timedelta(days=6)
+    return monday, sunday
 
 
-def build_timespan(period_start, period_end, now_sast):
-    today = now_sast.date()
-    # days_to_end: how many days ago the period ended (relative to today).
-    # Using max(0, days - 1) matches backfill_dialfire.py's formula, so Mon
-    # last-week fetches use '7-2day' which DialFire handles synchronously,
-    # avoiding the '7-3day' boundary that returns HTTP 202 and caused fallback
-    # to broader timespans (7-1day, 14-1day) that inflated call counts.
-    days_to_start = (today - period_start).days
-    days_to_end   = max(0, (today - period_end).days - 1)
-    return f"{days_to_start}-{days_to_end}day"
+def dates_to_timespan(date_from, date_to):
+    """Convert absolute dates to Dialfire 'X-Yday' relative timespan.
+
+    Dialfire timespan 'X-Yday' = from X days ago to Y days ago (UTC).
+    We subtract 1 from the end so the full end day is included.
+    """
+    today = datetime.datetime.now(timezone.utc).date()
+    days_from = (today - date_from).days
+    days_to   = (today - date_to).days - 1
+    if days_to < 0:
+        days_to = 0
+    if days_from < days_to:
+        days_from = days_to
+    return f"{days_from}-{days_to}day"
 
 
-# -- Poll helper --------------------------------------------------------------
-def fetch_json(url, params, label, tag, timeout=30, max_polls=8, headers=None):
+# ---------------------------------------------------------------------------
+# HTTP helper with 202-polling
+# ---------------------------------------------------------------------------
+def fetch_json(url, params, label, tag, max_poll=10):
+    """GET url with params; handle DialFire's 202-then-poll async pattern."""
     try:
-        r = requests.get(url, params=params, timeout=timeout,
-                         headers=headers or {})
+        r = requests.get(url, params=params, timeout=30)
         if r.status_code == 202:
-            poll_url = None
-            try:
-                body202 = r.json()
-                poll_url = body202.get("url") or body202.get("statusUrl") or r.headers.get("Location")
-            except Exception:
-                poll_url = r.headers.get("Location")
-            if not poll_url:
-                # Also try location header directly
-                poll_url = dict(r.headers).get("Location", dict(r.headers).get("location", "")) or None
-            if poll_url:
-                # Async response: poll the given URL
-                for attempt in range(max_polls):
+            loc = r.headers.get("Location") or r.headers.get("location")
+            if not loc:
+                try:
+                    body = r.json()
+                    loc = body.get("url") or body.get("statusUrl") or body.get("location")
+                except Exception:
+                    pass
+            if loc:
+                for _ in range(max_poll):
                     time.sleep(3)
-                    pr = requests.get(poll_url, timeout=timeout,
-                                      headers=headers or {})
-                    if pr.status_code == 200:
-                        try:
-                            return pr.json()
-                        except Exception:
-                            return {}
-                    if pr.status_code in (401, 403):
-                        print(f"  [{label}] {tag} poll {attempt+1}: HTTP {pr.status_code}")
-                        break
-                print(f"  [{label}] {tag} polling timed out after {max_polls} attempts")
+                    r2 = requests.get(loc, timeout=30)
+                    if r2.status_code == 200:
+                        try:    return r2.json()
+                        except: return {}
+                    if r2.status_code in (401, 403):
+                        print(f"  [{label}] {tag} -> poll {r2.status_code}")
+                        return None
+                print(f"  [{label}] {tag} -> polling timed out")
                 return {}
             else:
-                # No poll URL: body='status:202' means DialFire is computing the report.
-                # Retry the same URL after a delay (up to max_polls times).
-                loc_hdr = r.headers.get("Location", "")
-                print(f"  [{label}] {tag}: HTTP 202 - no poll URL (Location={loc_hdr!r}, body={r.text[:100]!r}), retrying...")
-                for attempt in range(max_polls):
+                print(f"  [{label}] {tag} -> 202 no poll URL, retrying same URL")
+                for _ in range(max_poll):
                     time.sleep(5)
-                    r2 = requests.get(url, params=params, timeout=timeout,
-                                      headers=headers or {})
+                    r2 = requests.get(url, params=params, timeout=30)
                     if r2.status_code == 200:
-                        try:
-                            return r2.json()
-                        except Exception:
-                            return {}
+                        try:    return r2.json()
+                        except: return {}
                     if r2.status_code in (401, 403):
-                        print(f"  [{label}] {tag} retry {attempt+1}: HTTP {r2.status_code}")
                         return None
                     if r2.status_code != 202:
-                        print(f"  [{label}] {tag} retry {attempt+1}: HTTP {r2.status_code}")
                         break
-                print(f"  [{label}] {tag}: all retries returned 202, giving up")
                 return {}
-        if r.status_code == 403:
-            print(f"  [{label}] {tag}: HTTP 403 - invalid token")
+        if r.status_code in (401, 403):
+            print(f"  [{label}] {tag} -> HTTP {r.status_code} (token issue)")
             return None
-        if r.status_code != 200:
-            print(f"  [{label}] {tag}: HTTP {r.status_code}")
-            return {}
-        try:
-            return r.json()
-        except Exception as e:
-            print(f"  [{label}] {tag}: JSON parse error: {e}")
-            return {}
-    except Exception as e:
-        print(f"  [{label}] {tag}: exception: {e}")
+        if r.status_code == 200:
+            try:    return r.json()
+            except Exception as e:
+                print(f"  [{label}] {tag} -> JSON parse error: {e}")
+                return {}
+        print(f"  [{label}] {tag} -> HTTP {r.status_code}")
         return {}
-def _col_names(col_defs):
-    names = []
-    if isinstance(col_defs, list):
-        for cd in col_defs:
-            if isinstance(cd, dict):
-                names.append(cd.get("name") or cd.get("id") or cd.get("key") or "")
-            elif isinstance(cd, str):
-                names.append(cd)
-    return names
+    except Exception as e:
+        print(f"  [{label}] {tag} -> error: {e}")
+        return {}
 
 
-# -- Extract rows from editsDef_v2 dict response ------------------------------
-def extract_rows(data, label):
-    if not isinstance(data, dict):
-        return []
-
-    col_defs   = data.get("columnDefs", [])
-    grp_names  = _col_names(col_defs)
-    groups_raw = data.get("groups", [])
-
-    print(f"  [{label}] DIAG grpDefs={grp_names} groups={type(groups_raw).__name__}[{len(groups_raw) if hasattr(groups_raw,'__len__') else '?'}]")
-
-    def _cn(cd):
-        return _col_names(cd) or grp_names
-
-    def _parse_group_item(item, cn):
-        if not isinstance(item, dict):
-            return None
-        if "value" in item and "columns" in item:
-            cols = item["columns"]
-            name = str(item["value"]).strip()
-            if not name or name in ("-", "\u2014", "\u2013"):
-                return None
-            row = {"name": name}
-            for i, cname in enumerate(cn):
-                if i < len(cols):
-                    row[cname] = cols[i]
-            return row
-        return None
-
-    rows = []
-    if isinstance(groups_raw, list):
-        for item in groups_raw:
-            row = _parse_group_item(item, grp_names)
-            if row:
-                rows.append(row)
-                continue
-            if isinstance(item, dict) and "groups" in item:
-                inner_col_defs = item.get("columnDefs", col_defs)
-                cn = _cn(inner_col_defs)
-                inner_groups = item.get("groups", [])
-                if isinstance(inner_groups, list):
-                    for sub in inner_groups:
-                        row = _parse_group_item(sub, cn)
-                        if row:
-                            rows.append(row)
-    elif isinstance(groups_raw, dict):
-        inner_col_defs = groups_raw.get("columnDefs", col_defs)
-        cn = _cn(inner_col_defs)
-        inner_groups = groups_raw.get("groups", [])
-        if isinstance(inner_groups, list):
-            for item in inner_groups:
-                row = _parse_group_item(item, cn)
-                if row:
-                    rows.append(row)
-
-    print(f"  [{label}] extracted {len(rows)} rows")
-    if rows:
-        print(f"  [{label}] sample row: {rows[0]}")
-    return rows
-
-
-# -- Fetch actual campaign name from Dialfire API -----------------------------
+# ---------------------------------------------------------------------------
+# Campaign helpers
+# ---------------------------------------------------------------------------
 def fetch_campaign_name(cid, token):
-    """
-    Fetch the human-readable campaign name for a given campaign ID.
-    Tries GET /api/campaigns/{cid} with access_token param.
-    Returns the name string, or cid as fallback.
-    """
+    """GET /api/campaigns/{cid} to get the human-readable name."""
     url = f"{API_BASE}/api/campaigns/{cid}"
     try:
         r = requests.get(url, params={"access_token": token}, timeout=10)
@@ -214,513 +145,332 @@ def fetch_campaign_name(cid, token):
             data = r.json()
             name = (data.get("name") or data.get("title") or data.get("label") or "").strip()
             if name:
-                print(f"  [campaign {cid}] name: {name!r}")
                 return name
-        print(f"  [campaign {cid}] name fetch HTTP {r.status_code}, using id as fallback")
-    except Exception as e:
-        print(f"  [campaign {cid}] name fetch error: {e}")
+    except Exception:
+        pass
     return cid
 
 
-# -- Fetch lead/email counts --------------------------------------------------
 def fetch_lead_counts(cid, token, ts, label):
-    """
-    Fetch Lead_Status counts per agent.
-    Approach 1: contacts/filter POST - if hits contain full fields, parse them.
-    Approach 2: editsDef_v2 group0=Lead_Status, group1=user (fastest, works in practice).
-    Approach 3: editsDef_v2 group0=user, group1=Lead_Status.
-    Returns: {agent_name: {"seller": N, "rental": N, "email": N}, ...}
-    """
-    result = {}
-    base_url     = f"{API_BASE}/api/campaigns/{cid}/reports/editsDef_v2/report/{LOCALE}"
-    contacts_url = f"{API_BASE}/api/campaigns/{cid}/contacts/filter"
-    bearer_hdr   = {"Authorization": f"Bearer {token}"}
+    """Lead-status counts per agent for the campaign (editsDef_v2 grouped)."""
+    result   = {}
+    base_url = f"{API_BASE}/api/campaigns/{cid}/reports/editsDef_v2/report/{LOCALE}"
 
-    # --- Approach 1: contacts/filter - only proceed if hits have full field data ---
-    try:
-        r_cf = requests.post(contacts_url,
-                             headers={**bearer_hdr, "Content-Type": "application/json"},
-                             json={},
-                             timeout=15)
-        if r_cf.status_code in (401, 403):
-            r_cf = requests.post(contacts_url,
-                                 params={"access_token": token},
-                                 headers={"Content-Type": "application/json"},
-                                 json={},
-                                 timeout=15)
-        print(f"  [{label}] contacts/filter: HTTP {r_cf.status_code}")
-        if r_cf.status_code == 200:
-            resp = r_cf.json() if r_cf.text else {}
-            hits = resp.get("hits", []) if isinstance(resp, dict) else (resp if isinstance(resp, list) else [])
-            if hits and isinstance(hits[0], dict):
-                sample_keys = list(hits[0].keys())[:15]
-                print(f"  [{label}] contacts hits sample keys: {sample_keys}")
-                # Only proceed if hits have actual field data (not just $id)
-                has_fields = any(k for k in sample_keys if k != "$id")
-                if has_fields:
-                    lead_f = next((k for k in ["Lead_Status","$Lead_Status","hs_lead_status"] if k in hits[0]), None)
-                    agent_f = next((k for k in ["assigned_user","$assigned_user","last_edit_user"] if k in hits[0]), None)
-                    if lead_f and agent_f:
-                        for c in hits:
-                            if not isinstance(c, dict): continue
-                            sv = str(c.get(lead_f,"") or "").strip().upper()
-                            ag = str(c.get(agent_f,"") or "").strip()
-                            if not ag or ag in ("-","None",""): continue
-                            bucket = None
-                            if sv in {s.upper() for s in SELLER_STATUSES}: bucket = "seller"
-                            elif sv in {s.upper() for s in RENTAL_STATUSES}: bucket = "rental"
-                            elif sv in {s.upper() for s in EMAIL_STATUSES}: bucket = "email"
-                            if bucket:
-                                if ag not in result: result[ag] = {"seller":0,"rental":0,"email":0}
-                                result[ag][bucket] += 1
-                        if result:
-                            print(f"  [{label}] contacts SUCCESS: {result}")
-                            return result
-                else:
-                    print(f"  [{label}] contacts: hits only have $id, skipping to editsDef_v2")
-    except Exception as e:
-        print(f"  [{label}] contacts/filter error: {e}")
+    params = {
+        "access_token": token,
+        "asTree":       "true",
+        "timespan":     ts,
+        "group0":       "Lead_Status",
+        "group1":       "user",
+        "column0":      "completed",
+    }
+    data = fetch_json(base_url, params, label, "leads: Lead_Status>user")
+    if not (data and isinstance(data, dict)):
+        return result
 
-    # --- Approach 2: editsDef_v2 group0=Lead_Status, group1=user (primary, proven to work) ---
-    try:
-        params1 = {
-            "access_token": token,
-            "asTree": "true",
-            "timespan": ts,
-            "group0": "Lead_Status",
-            "group1": "user",
-            "column0": "completed",
-        }
-        data1 = fetch_json(base_url, params1, label,
-                           "leads ap2: Lead_Status>user",
-                           timeout=30, max_polls=30)
-        if data1 is not None and isinstance(data1, dict):
-            groups1 = data1.get("groups", [])
-            print(f"  [{label}] leads ap2: groups={len(groups1) if isinstance(groups1,list) else type(groups1).__name__}")
-            if isinstance(groups1, list) and len(groups1) > 0:
-                first = groups1[0]
-                if isinstance(first, dict):
-                    inner = first.get("groups", first.get("children", None))
-                    if isinstance(inner, list):
-                        for sgrp in groups1:
-                            if not isinstance(sgrp, dict): continue
-                            status_val = str(sgrp.get("value", "")).strip().upper()
-                            bucket = None
-                            if status_val in {s.upper() for s in SELLER_STATUSES}: bucket = "seller"
-                            elif status_val in {s.upper() for s in RENTAL_STATUSES}: bucket = "rental"
-                            elif status_val in {s.upper() for s in EMAIL_STATUSES}: bucket = "email"
-                            if bucket is None: continue
-                            inner_grps = sgrp.get("groups", sgrp.get("children", []))
-                            for u in (inner_grps if isinstance(inner_grps, list) else []):
-                                if isinstance(u, dict):
-                                    agent_name = str(u.get("value", ""))
-                                    ucols = u.get("columns", [])
-                                    count = 0
-                                    if isinstance(ucols, list) and len(ucols) > 0:
-                                        try: count = int(ucols[0]) if ucols[0] not in (None,"","-") else 0
-                                        except (ValueError, TypeError): pass
-                                    if agent_name and agent_name != "-":
-                                        if agent_name not in result: result[agent_name]={"seller":0,"rental":0,"email":0}
-                                        result[agent_name][bucket] += count
-        if result:
-            print(f"  [{label}] leads ap2 SUCCESS: {result}")
-            return result
-    except Exception as e:
-        print(f"  [{label}] leads ap2 error: {e}")
-
-    # --- Approach 3: editsDef_v2 group0=user, group1=Lead_Status ---
-    try:
-        params2 = {
-            "access_token": token,
-            "asTree": "true",
-            "timespan": ts,
-            "group0": "user",
-            "group1": "Lead_Status",
-            "column0": "completed",
-        }
-        data2 = fetch_json(base_url, params2, label,
-                           "leads ap3: user>Lead_Status",
-                           timeout=30, max_polls=30)
-        if data2 is not None and isinstance(data2, dict):
-            groups2 = data2.get("groups", [])
-            print(f"  [{label}] leads ap3: groups={len(groups2) if isinstance(groups2,list) else type(groups2).__name__}")
-            if isinstance(groups2, list) and len(groups2) > 0:
-                for ugrp in groups2:
-                    if not isinstance(ugrp, dict): continue
-                    agent_name = str(ugrp.get("value", "")).strip()
-                    if not agent_name or agent_name in ("-",""): continue
-                    inner_grps = ugrp.get("groups", ugrp.get("children", []))
-                    for sgrp in (inner_grps if isinstance(inner_grps, list) else []):
-                        if not isinstance(sgrp, dict): continue
-                        status_val = str(sgrp.get("value", "")).strip().upper()
-                        scols = sgrp.get("columns", [])
-                        count = 0
-                        if isinstance(scols, list) and len(scols) > 0:
-                            try: count = int(scols[0]) if scols[0] not in (None,"","-") else 0
-                            except (ValueError, TypeError): pass
-                        if agent_name and agent_name != "-":
-                            bucket = None
-                            if status_val in {s.upper() for s in SELLER_STATUSES}: bucket="seller"
-                            elif status_val in {s.upper() for s in RENTAL_STATUSES}: bucket="rental"
-                            elif status_val in {s.upper() for s in EMAIL_STATUSES}: bucket="email"
-                            if bucket:
-                                if agent_name not in result: result[agent_name]={"seller":0,"rental":0,"email":0}
-                                result[agent_name][bucket] += count
-        if result:
-            print(f"  [{label}] leads ap3 SUCCESS: {result}")
-            return result
-    except Exception as e:
-        print(f"  [{label}] leads ap3 error: {e}")
-
-    print(f"  [{label}] fetch_lead_counts: all approaches failed, returning {{}}")
+    for sgrp in data.get("groups", []):
+        if not isinstance(sgrp, dict):
+            continue
+        status_val = str(sgrp.get("value", "")).strip().upper()
+        bucket = None
+        if   status_val in {s.upper() for s in SELLER_STATUSES}: bucket = "seller"
+        elif status_val in {s.upper() for s in RENTAL_STATUSES}: bucket = "rental"
+        elif status_val in {s.upper() for s in EMAIL_STATUSES}:  bucket = "email"
+        if bucket is None:
+            continue
+        for u in sgrp.get("groups", sgrp.get("children", [])):
+            if not isinstance(u, dict):
+                continue
+            ag = str(u.get("value", "")).strip()
+            if not ag or ag in ("-", ""):
+                continue
+            ucols = u.get("columns", [])
+            cnt = 0
+            if ucols:
+                try:
+                    cnt = int(ucols[0]) if ucols[0] not in (None, "", "-") else 0
+                except Exception:
+                    pass
+            if ag not in result:
+                result[ag] = {"seller": 0, "rental": 0, "email": 0}
+            result[ag][bucket] += cnt
     return result
+
+
+def fetch_campaign_week(campaign, ts):
+    """Fetch per-agent editsDef_v2 stats for one campaign for the given timespan."""
+    cid   = campaign["id"]
+    token = campaign["token"]
+    label = campaign.get("name", cid)
+    base  = f"{API_BASE}/api/campaigns/{cid}"
+
+    print(f"  [{label}] timespan={ts}")
+
+    params = {
+        "access_token": token,
+        "asTree":       "true",
+        "timespan":     ts,
+        "group0":       "user",
+        "column0":      "completed",
+        "column1":      "success",
+        "column2":      "successRate",
+        "column3":      "workTime",
+    }
+
+    data = fetch_json(f"{base}/reports/editsDef_v2/report/{LOCALE}", params, label, f"editsDef_v2 ts={ts}")
+    if data is None:
+        print(f"  [{label}] HTTP 4xx - skipping campaign")
+        return []
+    if not data:
+        print(f"  [{label}] no data")
+        return []
+
+    grp = data.get("groups", [])
+    if not (isinstance(grp, list) and len(grp) > 0):
+        print(f"  [{label}] empty groups")
+        return []
+
+    print(f"  [{label}] {len(grp)} agent rows")
+
+    lead_counts = fetch_lead_counts(cid, token, ts, label)
+    for item in grp:
+        if isinstance(item, dict):
+            ag = str(item.get("value", "")).strip()
+            if ag in lead_counts:
+                item["seller"] = lead_counts[ag]["seller"]
+                item["rental"] = lead_counts[ag]["rental"]
+                item["email"]  = lead_counts[ag]["email"]
+    return grp
+
+
+def _norm_camp(n):
+    """Strip CM/NA suffix variants. 'Goal Diggers - CM' -> 'Goal Diggers'."""
+    return re.sub(r"\s*[_\-\s]*(CM|NA)\s*$", "", n, flags=re.IGNORECASE).strip()
+
+
+# ---------------------------------------------------------------------------
+# Row parsing
+# ---------------------------------------------------------------------------
 def parse_row(row):
-    if not isinstance(row, dict):
+    """Convert one DialFire 'group' row into our agent dict format."""
+    name = str(
+        row.get("value") or row.get("name") or row.get("user") or
+        row.get("username") or row.get("agent_name") or "Unknown"
+    ).strip()
+    if not name or name in ("-", "—", "–", "Unknown", "None", ""):
         return None
-    name = str(row.get("name", "")).strip()
-    if not name or name in ("", "-", "\u2014", "\u2013"):
-        return None
 
-    def _int(v):
-        try:
-            return int(round(float(v or 0)))
-        except Exception:
-            return 0
-
-    def _float(v):
-        try:
-            return round(float(v or 0), 2)
-        except Exception:
-            return 0.0
-
-    # Positional column fallback (matches backfill_dialfire.py): editsDef_v2 returns
-    # columns in the order requested via column0..column3, i.e. [completed, success,
-    # successRate, workTime]. If the keyed accessor (row.get('workTime')) is missing
-    # because DialFire returned a localized/renamed columnDef name, fall back to the
-    # positional value from row['columns'].
+    # editsDef_v2 returns columns positionally in the order we requested:
+    # [completed, success, successRate, workTime].
     cols = row.get("columns", [])
     def _col(i, default=0):
-        try:
-            return float(cols[i]) if i < len(cols) and cols[i] not in (None, "", "-") else float(default)
-        except Exception:
-            return float(default)
+        try:    return float(cols[i] or 0)
+        except: return float(default)
 
-    calls   = _int(row.get("completed") or row.get("calls") or _col(0))
-    success = _int(row.get("success") or _col(1))
-    wt_raw  = row.get("workTime") or row.get("work_time") or row.get("workHours") or _col(3) or 0
-    try:
-        wt_num = float(wt_raw)
-    except Exception:
-        wt_num = 0.0
-    # workTime from editsDef_v2 is in hours; >1000 means it was in ms (matches backfill).
-    # 4-decimal precision to avoid compounding rounding error across many campaigns.
-    work_h = round(wt_num / 3600000 if wt_num > 1000 else wt_num, 4)
+    calls   = int(row.get("completed") or row.get("calls") or _col(0) or 0)
+    success = int(row.get("success") or _col(1) or 0)
+    wt_raw  = float(row.get("workTime") or _col(3) or 0)
+    # workTime from editsDef_v2 is in hours unless the raw integer is > 1000,
+    # in which case it's milliseconds.
+    work_hrs = wt_raw / 3600000 if wt_raw > 1000 else wt_raw
 
-    sr_raw = row.get("successRate") or row.get("success_rate") or 0
-    try:
-        sr_float = float(sr_raw)
-        if 0.0 <= sr_float <= 1.0:
-            sr = round(sr_float * 100, 1)
-        else:
-            sr = round(sr_float, 1)
-    except Exception:
-        sr = round(success / calls * 100, 1) if calls else 0.0
-
-    seller = _int(row.get("seller", 0))
-    rental = _int(row.get("rental", 0))
-    email  = _int(row.get("email", 0))
-
-    cph_val = round(calls / work_h, 1) if work_h > 0 else 0.0
-    # is_rm is determined by campaign in main(); default False here
-    bench   = BENCHMARKS["rm_success_rate"]  # will be re-evaluated in main()
-    meets   = cph_val >= BENCHMARKS["cph"] and sr >= bench
+    cph = round(calls / work_hrs, 1) if work_hrs > 0 else 0.0
+    sr  = round(success / calls * 100, 1) if calls > 0 else 0.0
 
     return {
         "name":        name,
         "calls":       calls,
         "success":     success,
-        "seller":      seller,
-        "rental":      rental,
-        "email":       email,
-        "cph":         cph_val,
+        "seller":      int(row.get("seller_lead") or row.get("seller") or 0),
+        "rental":      int(row.get("rental_lead") or row.get("rental") or 0),
+        "email":       int(row.get("got_email")   or row.get("email")  or 0),
+        "cph":         cph,
         "successRate": sr,
-        "workTime":    work_h,
-        "meetsTarget": meets,
+        "workTime":    round(work_hrs, 4),
+        "is_rm":       False,
+        "meetsTarget": False,
+        "campaigns":   [],
     }
 
 
+def merge_agent_row(agents, parsed, cname):
+    """Add `parsed` (one campaign's row for an agent) into the running
+    `agents` dict.
 
-def fetch_campaign(cid, token, index, total, period_start, period_end, ts, campaign_label="", campaign_name=""):
-    label = f"{index + 1}/{total} {cid}"
-    base = f"{API_BASE}/api/campaigns/{cid}"
+    For every (agent, campaign) pair we ADD the campaign's counts to the
+    agent's running totals -- and append the campaign name. The previous
+    implementations in this script and in backfill_dialfire.py had a bug
+    where new-campaign rows only appended the name but skipped the counts,
+    so multi-campaign agents only ever reflected their first campaign.
+    """
+    n = parsed["name"]
+    if n not in agents:
+        # First time we've seen this agent - take parsed as the starting
+        # values and start a fresh campaigns list.
+        a = parsed.copy()
+        a["campaigns"] = [cname] if cname else []
+        agents[n] = a
+        return
 
-    # Only query the real period timespan. Previous versions fell back to
-    # "1-1day" (yesterday only) / "0-0day" (today only) when the primary
-    # request returned an empty dict (HTTP 202 poll timeout, 5xx, JSON parse
-    # error). That silently replaced a whole week's worth of data with a
-    # single day for that campaign, undercounting workTime/calls when any
-    # campaign hit a transient API failure. If a campaign legitimately fails,
-    # we now log it and exclude that campaign for this run, matching
-    # backfill_dialfire.py behavior.
-    unique_ts = [ts]
-
-    for cur_ts in unique_ts:
-        params = {
-            "access_token": token,
-            "asTree": "true",
-            "timespan": cur_ts,
-            "group0": "user",
-            "column0": "completed",
-            "column1": "success",
-            "column2": "successRate",
-            "column3": "workTime",
-        }
-        data = fetch_json(f"{base}/reports/editsDef_v2/report/{LOCALE}", params,
-                          label, f"editsDef_v2 ts={cur_ts}")
-        if data is None:
-            print(f"  [{label}] 403 - token invalid, skipping campaign")
-            return []
-        if isinstance(data, dict):
-            grp = data.get("groups", [])
-            grp_len = len(grp) if hasattr(grp, "__len__") else 0
-            if grp_len > 0:
-                rows = extract_rows(data, label)
-                if rows:
-                    print(f"  [{label}] SUCCESS with ts={cur_ts}")
-                    lead_counts = fetch_lead_counts(cid, token, cur_ts, label)
-                    for row in rows:
-                        name = row.get("name", "")
-                        if name in lead_counts:
-                            row["seller"] = lead_counts[name]["seller"]
-                            row["rental"] = lead_counts[name]["rental"]
-                            row["email"]  = lead_counts[name]["email"]
-                    for row in rows:
-                        row["campaign_label"] = campaign_label
-                        row["campaign_name"]  = campaign_name or campaign_label
-                    return rows
-        else:
-            print(f"  [{label}] ts={cur_ts} got non-dict: {type(data).__name__}")
-
-    print(f"  [{label}] all timespans failed")
-    return []
+    a = agents[n]
+    a["calls"]    += parsed["calls"]
+    a["success"]  += parsed["success"]
+    a["seller"]   += parsed["seller"]
+    a["rental"]   += parsed["rental"]
+    a["email"]    += parsed["email"]
+    a["workTime"]  = round(a["workTime"] + parsed["workTime"], 4)
+    if cname and cname not in a["campaigns"]:
+        a["campaigns"].append(cname)
 
 
-# -- Main ---------------------------------------------------------------------
-def main():
-    now_utc  = datetime.datetime.now(datetime.timezone.utc)
-    now_sast = now_utc.astimezone(TIMEZONE)
-
-    period_start, period_end = get_current_week_bounds(now_sast)
-    ts = build_timespan(period_start, period_end, now_sast)
-
-    print("=== DialFire Weekly Fetch ===")
-    print(f"Period : {period_start} (Mon) to {period_end} (Fri)")
-    print(f"Timespan: {ts}")
-
+# ---------------------------------------------------------------------------
+# Campaign configuration (env-var driven)
+# ---------------------------------------------------------------------------
+def load_campaigns():
+    """Build the list of (id, token, name) campaign tuples from env vars."""
     campaigns = []
 
-    ch_id  = os.environ.get("CAMPAIGN_CLIENTHUB_ID", "").strip()
-    ch_tok = os.environ.get("CAMPAIGN_CLIENTHUB_TOKEN", "").strip()
-    if ch_id and ch_tok:
-        ch_name = fetch_campaign_name(ch_id, ch_tok)
-        campaigns.append({"id": ch_id, "token": ch_tok, "label": "CLIENTHUB", "name": ch_name})
-        print(f"  CLIENTHUB campaign: {ch_id} ({ch_name})")
-    elif ch_id:
-        print(f"  CLIENTHUB campaign: {ch_id} (NO TOKEN)")
+    def add(env_id, env_tok, default_label):
+        cid = os.environ.get(env_id, "").strip()
+        tok = os.environ.get(env_tok, "").strip()
+        if cid and tok:
+            name = fetch_campaign_name(cid, tok) or default_label
+            campaigns.append({"id": cid, "token": tok, "name": name})
+            print(f"  Campaign: {default_label} -> {cid} ({name})")
+        elif cid:
+            print(f"  Campaign: {default_label} -> {cid} (NO TOKEN, skipping)")
 
-    ch_new_id  = os.environ.get("CAMPAIGN_CLIENTHUB_NEW_ID", "").strip()
-    ch_new_tok = os.environ.get("CAMPAIGN_CLIENTHUB_NEW_TOKEN", "").strip()
-    if ch_new_id and ch_new_tok:
-        ch_new_name = fetch_campaign_name(ch_new_id, ch_new_tok)
-        campaigns.append({"id": ch_new_id, "token": ch_new_tok, "label": "CLIENTHUB", "name": ch_new_name})
-        print(f"  CLIENTHUB_NEW campaign: {ch_new_id} ({ch_new_name})")
-    elif ch_new_id:
-        print(f"  CLIENTHUB_NEW campaign: {ch_new_id} (NO TOKEN)")
+    add("CAMPAIGN_CLIENTHUB_ID",           "CAMPAIGN_CLIENTHUB_TOKEN",           "CLIENTHUB")
+    add("CAMPAIGN_CLIENTHUB_NEW_ID",       "CAMPAIGN_CLIENTHUB_NEW_TOKEN",       "CLIENTHUB_NEW")
+    add("CAMPAIGN_CLIENTHUB_NO_ANSWER_ID", "CAMPAIGN_CLIENTHUB_NO_ANSWER_TOKEN", "CLIENTHUB_NO_ANSWER")
 
     i = 1
     while True:
-        cid  = os.environ.get(f"CAMPAIGN_{i}_ID", "").strip()
-        ctok = os.environ.get(f"CAMPAIGN_{i}_TOKEN", "").strip()
-        if not cid:
+        if not os.environ.get(f"CAMPAIGN_{i}_ID", "").strip():
             break
-        if ctok:
-            cname = fetch_campaign_name(cid, ctok)
-            campaigns.append({"id": cid, "token": ctok, "label": f"CAMP{i}", "name": cname})
-            print(f"  Campaign {i}: {cid} ({cname})")
-        else:
-            print(f"  Campaign {i}: {cid} (NO TOKEN)")
+        add(f"CAMPAIGN_{i}_ID", f"CAMPAIGN_{i}_TOKEN", f"CAMP{i}")
         i += 1
 
-    ass_cm_id  = os.environ.get("ASSASSINS_CM_ID", "").strip()
-    ass_cm_tok = os.environ.get("ASSASSINS_CM_TOKEN", "").strip()
-    if ass_cm_id and ass_cm_tok:
-        ass_cm_name = fetch_campaign_name(ass_cm_id, ass_cm_tok)
-        campaigns.append({"id": ass_cm_id, "token": ass_cm_tok, "label": "ASSASSINS_CM", "name": ass_cm_name})
-        print(f"  Assassins CM campaign: {ass_cm_id} ({ass_cm_name})")
+    add("ASSASSINS_CM_ID", "ASSASSINS_CM_TOKEN", "ASSASSINS_CM")
+    add("ASSASSINS_NA_ID", "ASSASSINS_NA_TOKEN", "ASSASSINS_NA")
+    add("AMIGOS_CM_ID",    "AMIGOS_CM_TOKEN",    "AMIGOS_CM")
+    add("AMIGOS_NA_ID",    "AMIGOS_NA_TOKEN",    "AMIGOS_NA")
 
-    ass_na_id  = os.environ.get("ASSASSINS_NA_ID", "").strip()
-    ass_na_tok = os.environ.get("ASSASSINS_NA_TOKEN", "").strip()
-    if ass_na_id and ass_na_tok:
-        ass_na_name = fetch_campaign_name(ass_na_id, ass_na_tok)
-        campaigns.append({"id": ass_na_id, "token": ass_na_tok, "label": "ASSASSINS_NA", "name": ass_na_name})
-        print(f"  Assassins NA campaign: {ass_na_id} ({ass_na_name})")
-
-    amigos_cm_id  = os.environ.get("AMIGOS_CM_ID", "").strip()
-    amigos_cm_tok = os.environ.get("AMIGOS_CM_TOKEN", "").strip()
-    if amigos_cm_id and amigos_cm_tok:
-        amigos_cm_name = fetch_campaign_name(amigos_cm_id, amigos_cm_tok)
-        campaigns.append({"id": amigos_cm_id, "token": amigos_cm_tok, "label": "AMIGOS_CM", "name": amigos_cm_name})
-        print(f"  Amigos CM campaign: {amigos_cm_id} ({amigos_cm_name})")
-
-    amigos_na_id  = os.environ.get("AMIGOS_NA_ID", "").strip()
-    amigos_na_tok = os.environ.get("AMIGOS_NA_TOKEN", "").strip()
-    if amigos_na_id and amigos_na_tok:
-        amigos_na_name = fetch_campaign_name(amigos_na_id, amigos_na_tok)
-        campaigns.append({"id": amigos_na_id, "token": amigos_na_tok, "label": "AMIGOS_NA", "name": amigos_na_name})
-        print(f"  Amigos NA campaign: {amigos_na_id} ({amigos_na_name})")
-
+    # Legacy single-campaign env var
     leg_id  = os.environ.get("DIALFIRE_CAMPAIGN_ID", "").strip()
     leg_tok = os.environ.get("DIALFIRE_CAMPAIGN_TOKEN", "").strip()
-    if leg_id and leg_tok:
-        if not any(c["id"] == leg_id for c in campaigns):
-            leg_name = fetch_campaign_name(leg_id, leg_tok)
-            campaigns.append({"id": leg_id, "token": leg_tok, "label": "LEGACY", "name": leg_name})
-            print(f"  Legacy campaign: {leg_id} ({leg_name})")
+    if leg_id and leg_tok and not any(c["id"] == leg_id for c in campaigns):
+        name = fetch_campaign_name(leg_id, leg_tok) or "LEGACY"
+        campaigns.append({"id": leg_id, "token": leg_tok, "name": name})
+        print(f"  Campaign: LEGACY -> {leg_id} ({name})")
 
-    # Always append from DIALFIRE_CAMPAIGNS (in addition to any hardcoded vars above)
+    # JSON list fallback
     raw = os.environ.get("DIALFIRE_CAMPAIGNS", "")
     if raw:
         try:
             for c in json.loads(raw):
-                if c.get("id") and c.get("token"):
+                if c.get("id") and c.get("token") and not any(x["id"] == c["id"] for x in campaigns):
+                    if not c.get("name"):
+                        c["name"] = fetch_campaign_name(c["id"], c["token"]) or c["id"]
                     campaigns.append(c)
+                    print(f"  Campaign: JSON -> {c['id']} ({c['name']})")
         except json.JSONDecodeError as e:
-            print(f"WARNING: Could not parse DIALFIRE_CAMPAIGNS: {e}")
+            print(f"  Warning: could not parse DIALFIRE_CAMPAIGNS: {e}")
 
+    return campaigns
+
+
+# ---------------------------------------------------------------------------
+# Classification + final stats
+# ---------------------------------------------------------------------------
+def finalize(agents):
+    """Compute cph, successRate, RM/Fancy classification, meetsTarget."""
+    for a in agents.values():
+        a["cph"] = round(a["calls"] / a["workTime"], 1) if a["workTime"] > 0 else 0.0
+        a["successRate"] = round(a["success"] / a["calls"] * 100, 1) if a["calls"] > 0 else 0.0
+
+        camps = set(a.get("campaigns", []))
+        a["is_rm"] = bool(camps) and camps.issubset(RM_CAMPAIGNS)
+
+        bench = BENCHMARKS["rm_success_rate"] if a["is_rm"] else BENCHMARKS["fc_success_rate"]
+        a["meetsTarget"] = (a["cph"] >= BENCHMARKS["cph"] and a["successRate"] >= bench) if a["calls"] > 0 else False
+
+
+# ---------------------------------------------------------------------------
+# Main
+# ---------------------------------------------------------------------------
+def main():
+    now_utc  = datetime.datetime.now(timezone.utc)
+    now_sast = now_utc.astimezone(TIMEZONE)
+    monday, sunday = get_week_bounds(now_sast)
+    ts = dates_to_timespan(monday, sunday)
+
+    print(f"=== DialFire Weekly Fetch ===")
+    print(f"Week: {monday} (Mon) -> {sunday} (Sun) | timespan={ts}")
+
+    campaigns = load_campaigns()
     if not campaigns:
-        print("No campaigns configured.")
+        print("ERROR: no campaigns configured.")
         return
 
-    print(f"Total campaigns: {len(campaigns)}")
+    agents = {}
+    for campaign in campaigns:
+        rows = fetch_campaign_week(campaign, ts)
+        cname = _norm_camp(campaign.get("name", "")) or campaign.get("name", "")
+        for row in rows:
+            parsed = parse_row(row)
+            if parsed is None:
+                continue
+            merge_agent_row(agents, parsed, cname)
+
+    finalize(agents)
+
+    rm_agents    = sorted([a for a in agents.values() if a["is_rm"]],     key=lambda x: -x["calls"])
+    fancy_agents = sorted([a for a in agents.values() if not a["is_rm"]], key=lambda x: -x["calls"])
+
     print()
+    print(f"Unique agents: {len(agents)} | RM: {len(rm_agents)} | Fancy: {len(fancy_agents)}")
+    for a in rm_agents + fancy_agents:
+        grp = "RM   " if a["is_rm"] else "FANCY"
+        print(f"  {grp} {a['name']:<22} calls={a['calls']:>4} workH={a['workTime']:>7.2f} cph={a['cph']:>5} campaigns={a.get('campaigns')}")
 
-    all_rows = []
-    for idx, c in enumerate(campaigns):
-        rows = fetch_campaign(c["id"], c["token"], idx, len(campaigns),
-                              period_start, period_end, ts,
-                              campaign_label=c.get("label", ""),
-                              campaign_name=c.get("name", ""))
-        all_rows.extend(rows)
-
-    print()
-    print(f"Raw rows collected: {len(all_rows)}")
-
-    merged = {}
-    def _norm_camp(n):
-        """Strip CM/NA suffixes: Goal Diggers - CM -> Goal Diggers"""
-        import re
-        return re.sub(r"\s*[-\s]*(CM|NA)\s*$", "", n, flags=re.IGNORECASE).strip()
-
-    agent_campaigns = {}  # name -> list of campaign names this agent appeared in
-    for row in all_rows:
-        agent = parse_row(row)
-        if agent is None:
-            continue
-        name = agent["name"]
-        cname = _norm_camp(row.get("campaign_name", row.get("campaign_label", "")))
-        # Track which campaigns this agent appeared in
-        if name not in agent_campaigns:
-            agent_campaigns[name] = []
-        if cname and cname not in agent_campaigns[name]:
-            agent_campaigns[name].append(cname)
-        # Mark as RM if they appear in the CLIENTHUB campaign
-        if row.get("campaign_label", "") == "CLIENTHUB":
-            agent["is_rm"] = True
-        if name in merged:
-            ex = merged[name]
-            ex["calls"]    += agent["calls"]
-            ex["success"]  += agent["success"]
-            ex["seller"]   += agent["seller"]
-            ex["rental"]   += agent["rental"]
-            ex["email"]    += agent["email"]
-            ex["workTime"]  = round(ex["workTime"] + agent["workTime"], 4)
-            # Once flagged as RM (CLIENTHUB), keep that flag
-            if agent.get("is_rm"):
-                ex["is_rm"] = True
-        else:
-            merged[name] = agent
-
-    # Attach campaign list to each agent
-    for name, agent in merged.items():
-        agent["campaigns"] = agent_campaigns.get(name, [])
-
-    # Re-classify agents based on campaigns:
-    # RM          = ONLY worked on ClientHub / New Contacts campaigns
-    # Fancy Caller = worked on ClientHub AND assassins (or any other non-RM campaign)
-    _RM_CAMPS = {"Clienthub Master", "New Contacts", "No Answer / Not contacted"}
-    for _name, _agent in merged.items():
-        _camps = set(_agent.get("campaigns", []))
-        # RM: all campaigns are RM-type (clienthub / new contacts only)
-        _agent["is_rm"] = bool(_camps) and _camps.issubset(_RM_CAMPS)
-    agents = list(merged.values())
-    for a in agents:
-        a["cph"] = round(a["calls"] / a["workTime"], 1) if a["workTime"] > 0 else 0.0
-        is_rm    = a.get("is_rm", False)
-        bench    = BENCHMARKS["rm_success_rate"] if is_rm else BENCHMARKS["fc_success_rate"]
-        a["meetsTarget"] = a["cph"] >= BENCHMARKS["cph"] and a["successRate"] >= bench
-
-    rm_agents    = sorted([a for a in agents if a.get("is_rm", False)],     key=lambda x: -x["calls"])
-    fancy_agents = sorted([a for a in agents if not a.get("is_rm", False)],  key=lambda x: -x["calls"])
-
-    print(f"Unique agents: {len(agents)}")
-    print(f"RM: {len(rm_agents)} | Fancy: {len(fancy_agents)}")
-    for a in rm_agents:
-        print(f"  RM   {a['name']:<22} calls={a['calls']:>4} success={a['success']:>3} "
-              f"seller={a['seller']:>3} rental={a['rental']:>3} email={a['email']:>3} cph={a['cph']:>5} campaigns={a.get('campaigns')}")
-    for a in fancy_agents:
-        print(f"  FANCY {a['name']:<22} calls={a['calls']:>4} success={a['success']:>3} "
-              f"seller={a['seller']:>3} rental={a['rental']:>3} email={a['email']:>3} cph={a['cph']:>5} campaigns={a.get('campaigns')}")
-
-    week_str = str(period_start)
+    # ---- weekly_data.json (current snapshot for the dashboard) ----
+    week_str = str(monday)
     output = {
         "generated":   now_utc.isoformat(),
         "week":        week_str,
-        "periodStart": str(period_start),
-        "periodEnd":   str(period_end),
+        "weekStart":   week_str,
+        "weekEnd":     str(sunday),
+        "periodStart": week_str,
+        "periodEnd":   str(sunday),
         "rm":          rm_agents,
         "fancy":       fancy_agents,
     }
 
-    out_path = os.path.join(os.path.dirname(__file__), "..", "data", "weekly_data.json")
-    with open(out_path, "w") as f:
+    os.makedirs("data", exist_ok=True)
+    with open("data/weekly_data.json", "w") as f:
         json.dump(output, f, indent=2)
-    print(f"\nWritten to {os.path.abspath(out_path)}")
+    print(f"\nWrote data/weekly_data.json")
 
-    hist_path = os.path.join(os.path.dirname(__file__), "..", "data", "history.json")
+    # ---- history.json (week-by-week archive) ----
+    hist_path = "data/history.json"
     try:
         with open(hist_path) as f:
             history = json.load(f)
+        if isinstance(history, dict):
+            history = list(history.values())
         if not isinstance(history, list):
             history = []
-    except Exception:
+    except (FileNotFoundError, json.JSONDecodeError):
         history = []
 
-    entry = {
-        "generated": now_utc.isoformat(),
-        "week":      week_str,
-        "weekStart": str(period_start),
-        "weekEnd":   str(period_end),
-        "rm":        rm_agents,
-        "fancy":     fancy_agents,
-    }
-
-    history = [h for h in history if h.get("weekStart") != str(period_start)]
-    history.insert(0, entry)
-    history = history[:52]
+    # Replace any existing entry for this week, then insert fresh at the top.
+    history = [e for e in history if e.get("week") != week_str and e.get("weekStart") != week_str]
+    history.insert(0, output)
 
     with open(hist_path, "w") as f:
         json.dump(history, f, indent=2)
-    print(f"History updated: {len(history)} weeks")
+    print(f"Updated data/history.json -- {len(history)} weeks total")
 
 
 if __name__ == "__main__":
