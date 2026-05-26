@@ -99,7 +99,9 @@ def fetch_json(url, params, label, tag, max_poll=10):
                     r2 = requests.get(loc, timeout=30)
                     if r2.status_code == 200:
                         try:    return r2.json()
-                        except: return {}
+                        except Exception as e:
+                            print(f"  [{label}] {tag} -> poll JSON parse error: {e}")
+                            return {}
                     if r2.status_code in (401, 403):
                         print(f"  [{label}] {tag} -> poll {r2.status_code}")
                         return None
@@ -112,7 +114,9 @@ def fetch_json(url, params, label, tag, max_poll=10):
                     r2 = requests.get(url, params=params, timeout=30)
                     if r2.status_code == 200:
                         try:    return r2.json()
-                        except: return {}
+                        except Exception as e:
+                            print(f"  [{label}] {tag} -> retry JSON parse error: {e}")
+                            return {}
                     if r2.status_code in (401, 403):
                         return None
                     if r2.status_code != 202:
@@ -146,8 +150,8 @@ def fetch_campaign_name(cid, token):
             name = (data.get("name") or data.get("title") or data.get("label") or "").strip()
             if name:
                 return name
-    except Exception:
-        pass
+    except Exception as e:
+        print(f"  Warning: could not fetch campaign name for {cid}: {e}")
     return cid
 
 
@@ -265,7 +269,7 @@ def parse_row(row):
     cols = row.get("columns", [])
     def _col(i, default=0):
         try:    return float(cols[i] or 0)
-        except: return float(default)
+        except Exception:  return float(default)
 
     calls   = int(row.get("completed") or row.get("calls") or _col(0) or 0)
     success = int(row.get("success") or _col(1) or 0)

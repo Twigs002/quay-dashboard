@@ -2,11 +2,15 @@ name: Update Dashboard Data
 
 on:
   schedule:
-          # Runs at 05:00 AM SAST (00:27 UTC) every weekday Monday-Friday (scheduled early to account for GitHub Actions delay)
+          # Runs at 02:27 SAST (00:27 UTC) every weekday Monday-Friday
           - cron: '27 0 * * 1-5'
 
   # Allow manual trigger from GitHub Actions tab
   workflow_dispatch:
+
+concurrency:
+  group: data-update
+  cancel-in-progress: true
 
 jobs:
   fetch-and-update:
@@ -27,7 +31,7 @@ jobs:
           python-version: '3.11'
 
       - name: Install dependencies
-        run: pip install requests pytz
+        run: pip install -r requirements.txt
 
       - name: Fetch DialFire data
         env:
@@ -44,6 +48,14 @@ jobs:
           CAMPAIGN_2_TOKEN: ${{ secrets.CAMPAIGN_2_TOKEN }}
           CAMPAIGN_CLIENTHUB_NO_ANSWER_ID: ${{ secrets.CAMPAIGN_CLIENTHUB_NO_ANSWER_ID }}
           CAMPAIGN_CLIENTHUB_NO_ANSWER_TOKEN: ${{ secrets.CAMPAIGN_CLIENTHUB_NO_ANSWER_TOKEN }}
+          ASSASSINS_CM_ID: ${{ secrets.ASSASSINS_CM_ID }}
+          ASSASSINS_CM_TOKEN: ${{ secrets.ASSASSINS_CM_TOKEN }}
+          ASSASSINS_NA_ID: ${{ secrets.ASSASSINS_NA_ID }}
+          ASSASSINS_NA_TOKEN: ${{ secrets.ASSASSINS_NA_TOKEN }}
+          AMIGOS_CM_ID: ${{ secrets.AMIGOS_CM_ID }}
+          AMIGOS_CM_TOKEN: ${{ secrets.AMIGOS_CM_TOKEN }}
+          AMIGOS_NA_ID: ${{ secrets.AMIGOS_NA_ID }}
+          AMIGOS_NA_TOKEN: ${{ secrets.AMIGOS_NA_TOKEN }}
         run: python scripts/fetch_dialfire.py
 
       - name: Commit updated data

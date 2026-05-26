@@ -16,6 +16,10 @@ on:
         required: false
         default: 'false'
 
+concurrency:
+  group: data-update
+  cancel-in-progress: true
+
 jobs:
   backfill:
     runs-on: ubuntu-latest
@@ -26,7 +30,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - run: pip install requests
+      - name: Install dependencies
+        run: pip install -r requirements.txt
       - name: Run backfill
         env:
           CAMPAIGN_CLIENTHUB_ID: ${{ secrets.CAMPAIGN_CLIENTHUB_ID }}
@@ -39,6 +44,14 @@ jobs:
           CAMPAIGN_2_TOKEN: ${{ secrets.CAMPAIGN_2_TOKEN }}
           CAMPAIGN_CLIENTHUB_NO_ANSWER_ID: ${{ secrets.CAMPAIGN_CLIENTHUB_NO_ANSWER_ID }}
           CAMPAIGN_CLIENTHUB_NO_ANSWER_TOKEN: ${{ secrets.CAMPAIGN_CLIENTHUB_NO_ANSWER_TOKEN }}
+          ASSASSINS_CM_ID: ${{ secrets.ASSASSINS_CM_ID }}
+          ASSASSINS_CM_TOKEN: ${{ secrets.ASSASSINS_CM_TOKEN }}
+          ASSASSINS_NA_ID: ${{ secrets.ASSASSINS_NA_ID }}
+          ASSASSINS_NA_TOKEN: ${{ secrets.ASSASSINS_NA_TOKEN }}
+          AMIGOS_CM_ID: ${{ secrets.AMIGOS_CM_ID }}
+          AMIGOS_CM_TOKEN: ${{ secrets.AMIGOS_CM_TOKEN }}
+          AMIGOS_NA_ID: ${{ secrets.AMIGOS_NA_ID }}
+          AMIGOS_NA_TOKEN: ${{ secrets.AMIGOS_NA_TOKEN }}
           DIALFIRE_CAMPAIGNS: ${{ secrets.DIALFIRE_CAMPAIGNS }}
           DIALFIRE_TENANT_ID: ${{ secrets.DIALFIRE_TENANT_ID }}
           FORCE_REFETCH: ${{ github.event.inputs.force_refetch }}
