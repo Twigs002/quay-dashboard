@@ -30,7 +30,7 @@ EMAIL_STATUSES  = {"GOT_EMAIL"}
 RM_CAMPAIGNS = {
     "Clienthub Master",
     "New Contacts",
-    "No Answer / Not contacted",
+    "No Answer / Not Contacted",
     "CLIENTHUB",
 }
 
