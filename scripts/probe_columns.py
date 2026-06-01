@@ -1,93 +1,86 @@
 """
-One-shot probe: ask DialFire's editsDef_v2 endpoint for every plausible
-time-related column key and print which ones return real numeric data.
+DialFire metadata probe — find the API column keys for talk/wrap/waiting time.
 
-Used to discover the exact column-name strings the API accepts when the
-public documentation doesn't list them. Run via the
-'.github/workflows/probe-columns.yml' workflow once — read its logs, then
-hardcode the discovered keys into fetch_dialfire.py.
+Strategy: enumerate DialFire's reports metadata endpoints. The user has saved
+reports called "Wrap up Time" and "Talk Time Proportion Daily" in the UI; their
+stored definitions should contain the column-key strings the API expects.
 """
-import os, sys
-from dialfire_common import LOCALE, API_BASE, fetch_json
+import os, sys, json, requests
+from dialfire_common import LOCALE, API_BASE
 
-CAMPAIGN_ID    = os.environ.get("CAMPAIGN_CLIENTHUB_ID", "").strip()
-CAMPAIGN_TOKEN = os.environ.get("CAMPAIGN_CLIENTHUB_TOKEN", "").strip()
+CID = os.environ.get("CAMPAIGN_CLIENTHUB_ID", "").strip()
+TOK = os.environ.get("CAMPAIGN_CLIENTHUB_TOKEN", "").strip()
 
-CANDIDATES = [
-    # known good
-    "workTime", "pauseTime",
-    # snake_case
-    "talk_time", "talk_time_dialer", "wrap_time", "wrap_up_time",
-    "waiting_time", "waiting_time_dialer", "handling_time", "preparation_time",
-    # labels with spaces / parentheses (from the DialFire UI directly)
-    "Talk time", "Talk time (dialer)", "Wrap-up time", "Wrap up time",
-    "Waiting time", "Waiting time (dialer)", "Handling time", "Preparation time",
-    "Work time",
-    # lowercase no-space
-    "talktime", "wraptime", "wrapuptime", "waitingtime", "handlingtime",
-    "preparationtime",
-    # short
-    "talk", "wrap", "wait", "handling", "preparation",
-    # tt prefix style
-    "tt_talk", "tt_wrap", "tt_wait",
-    # German (DialFire origin)
-    "gespraechszeit", "gespraech", "nachbearbeitung", "nachbearbeitungszeit",
-    "wartezeit", "bearbeitungszeit", "vorbereitungszeit",
-    # other guesses
-    "dialerTalkTime", "dialerWaitingTime", "tt", "wt", "ct",
-    "successRate", "completed",  # sanity check — these we know work
-]
 
-def probe(col):
-    params = {
-        "access_token": CAMPAIGN_TOKEN,
-        "asTree":       "true",
-        "timespan":     "7-1day",
-        "group0":       "user",
-        "column0":      col,
-    }
-    url  = f"{API_BASE}/api/campaigns/{CAMPAIGN_ID}/reports/editsDef_v2/report/{LOCALE}"
-    data = fetch_json(url, params, "probe", f"col={col}")
-    if data is None:
-        return "AUTH_ERR", []
-    if not data or "groups" not in data:
-        return "NO_DATA", []
-    samples = []
-    nonzero = 0
-    for g in data.get("groups", []):
-        if not isinstance(g, dict):
-            continue
-        name = str(g.get("value", "")).strip()
-        cols = g.get("columns", [])
-        if not cols:
-            continue
-        val = cols[0]
+def hit(path, params=None, raw=False):
+    url = f"{API_BASE}{path}"
+    p   = {"access_token": TOK}
+    if params:
+        p.update(params)
+    try:
+        r = requests.get(url, params=p, timeout=20)
+        print(f"\n=== GET {path}  ({r.status_code}) ===")
+        if r.status_code != 200:
+            print(r.text[:500])
+            return None
         try:
-            num = float(val) if val not in (None, "", "-") else 0
+            data = r.json()
         except Exception:
-            num = 0
-        if num != 0:
-            nonzero += 1
-            if len(samples) < 3:
-                samples.append((name, val))
-    return ("FOUND" if nonzero else "ALL_ZERO"), samples
+            print(r.text[:1000])
+            return None
+        if raw:
+            print(json.dumps(data, indent=2)[:4000])
+        return data
+    except Exception as e:
+        print(f"  ERROR: {e}")
+        return None
+
 
 def main():
-    if not (CAMPAIGN_ID and CAMPAIGN_TOKEN):
-        print("ERROR: CAMPAIGN_CLIENTHUB_ID/TOKEN not set")
+    if not (CID and TOK):
+        print("ERROR: ClientHub creds missing")
         sys.exit(1)
-    print(f"Probing {len(CANDIDATES)} candidate column names against ClientHub Master\n")
-    results = []
-    for col in CANDIDATES:
-        verdict, samples = probe(col)
-        marker = "✓" if verdict == "FOUND" else ("·" if verdict == "ALL_ZERO" else "✗")
-        sample_str = ", ".join(f"{n}={v}" for n, v in samples) if samples else ""
-        line = f"  {marker} {col:<22} {verdict:<10} {sample_str}"
-        print(line)
-        results.append((col, verdict, samples))
-    print()
-    found = [c for c, v, _ in results if v == "FOUND"]
-    print(f"COLUMNS_THAT_RETURN_DATA: {found}")
+
+    # 1) Campaign root – sometimes lists report URLs.
+    hit(f"/api/campaigns/{CID}", raw=False)
+
+    # 2) Try a couple of likely listing endpoints.
+    for path in [
+        f"/api/campaigns/{CID}/reports",
+        f"/api/campaigns/{CID}/reports/",
+        f"/api/campaigns/{CID}/reports/saved",
+        f"/api/campaigns/{CID}/reports/list",
+        f"/api/campaigns/{CID}/reports/definitions",
+        f"/api/campaigns/{CID}/reports/edits/definitions",
+        f"/api/campaigns/{CID}/reports/editsDef_v2",
+        f"/api/campaigns/{CID}/reports/editsDef_v2/columns",
+        f"/api/campaigns/{CID}/reports/editsDef_v2/{LOCALE}",
+        f"/api/campaigns/{CID}/reports/editsDef_v2/definition/{LOCALE}",
+        f"/api/campaigns/{CID}/reports/editsDef_v2/columns/{LOCALE}",
+        f"/api/campaigns/{CID}/reports/editsDef_v2/meta/{LOCALE}",
+        f"/api/campaigns/{CID}/reports/editsDef_v2/fields/{LOCALE}",
+    ]:
+        data = hit(path)
+        if data:
+            print(json.dumps(data, indent=2)[:3000])
+
+    # 3) Ask editsDef_v2 with NO column params – see if it returns something
+    # describing the available column set.
+    print("\n\n=== editsDef_v2 report with NO columns ===")
+    hit(
+        f"/api/campaigns/{CID}/reports/editsDef_v2/report/{LOCALE}",
+        params={"timespan": "7-1day", "group0": "user"},
+        raw=True,
+    )
+
+    # 4) Ask with a deliberately bogus column to see if the error message
+    # lists valid options.
+    print("\n\n=== editsDef_v2 with bogus column ===")
+    hit(
+        f"/api/campaigns/{CID}/reports/editsDef_v2/report/{LOCALE}",
+        params={"timespan": "7-1day", "group0": "user", "column0": "thisColumnDoesNotExistXYZ"},
+        raw=True,
+    )
 
 if __name__ == "__main__":
     main()
