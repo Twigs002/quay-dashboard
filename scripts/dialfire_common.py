@@ -196,6 +196,7 @@ def parse_row(row):
     talk_hrs  = float(_col(4) or 0)   # connectTimeDialer
     wrap_hrs  = float(_col(5) or 0)   # wrapupTime
     pause_hrs = float(_col(6) or 0)   # pauseTime
+    wait_hrs  = float(_col(7) or 0)   # waitTimeDialer
 
     cph = round(calls / work_hrs, 1) if work_hrs > 0 else 0.0
     sr  = round(success / calls * 100, 1) if calls > 0 else 0.0
@@ -213,6 +214,7 @@ def parse_row(row):
         "talkTime":    round(talk_hrs, 4),
         "wrapTime":    round(wrap_hrs, 4),
         "pauseTime":   round(pause_hrs, 4),
+        "waitTime":    round(wait_hrs, 4),
         "is_rm":       False,
         "meetsTarget": False,
         "campaigns":   [],
@@ -251,6 +253,7 @@ def merge_agent_row(agents, parsed, cname):
     a["talkTime"]  = round(a.get("talkTime",0)  + parsed.get("talkTime",0),  4)
     a["wrapTime"]  = round(a.get("wrapTime",0)  + parsed.get("wrapTime",0),  4)
     a["pauseTime"] = round(a.get("pauseTime",0) + parsed.get("pauseTime",0), 4)
+    a["waitTime"]  = round(a.get("waitTime",0)  + parsed.get("waitTime",0),  4)
     if cname and cname not in a["campaigns"]:
         a["campaigns"].append(cname)
 
@@ -268,6 +271,7 @@ def finalize(agents):
         wt = a.get("workTime", 0) or 0
         a["talkPct"] = round(a.get("talkTime", 0) / wt * 100, 1) if wt > 0 else 0.0
         a["wrapPct"] = round(a.get("wrapTime", 0) / wt * 100, 1) if wt > 0 else 0.0
+        a["waitPct"] = round(a.get("waitTime", 0) / wt * 100, 1) if wt > 0 else 0.0
         # "work %" = % of session actively dialling (not paused)
         denom = wt + a.get("pauseTime", 0)
         a["workPct"] = round(wt / denom * 100, 1) if denom > 0 else 0.0
