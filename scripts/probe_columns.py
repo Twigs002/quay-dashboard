@@ -9,22 +9,28 @@ if not (CID and TOK):
     print("ERROR"); sys.exit(1)
 
 CANDIDATES = [
+    # NEW: try the actual chip labels seen in the activity log
+    "inactiveTime", "inactivityTime", "inactive", "inactivity",
+    "inactiveTimeDialer", "inactivityTimeDialer",
+    "inactiveTimeShare", "inactivityShare",
     # close to known-working connectTimeDialer / wrapupTime patterns
     "waitTimeDialer", "waitingTimeDialer", "idleTimeDialer", "dialerWaitingTime",
     "dialerWaitTime", "dialerIdleTime",
-    "connectingTimeDialer", "connectingTime", "connectingTimeDialerShare",
+    "connectingTimeDialer", "connectingTime",
     "ringTimeDialer", "ringTime",
     "dialingTime", "dialingTimeDialer",
-    # standalone (no Dialer suffix)
+    # standalone
     "waitingTime", "waitTime", "idleTime",
-    # "pending"
-    "pendingTime", "pendingTimeDialer",
-    # share variants in case absolute is hidden
-    "waitingShare", "waitShare", "idleShare", "waitingTimeShare",
-    "waitingTimeDialerShare", "idleTimeDialerShare", "connectingTimeShare",
-    # bonus: handlingTime variants
+    # share variants
+    "waitingTimeDialerShare", "waitTimeDialerShare", "idleTimeDialerShare",
+    "inactiveTimeDialerShare",
+    # "Contact edit" / "contactEdit" / "edit" might be the talk slot
+    "contactEditTime", "editTime",
+    # German fallback
+    "wartezeit", "leerlaufzeit", "untaetigkeitszeit",
+    # bonus
     "handlingTimeDialer", "preparationTimeDialer",
-    # backstop sanity
+    # backstop
     "workTime",
 ]
 
