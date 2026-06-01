@@ -122,6 +122,9 @@ def fetch_campaign_week(campaign, date_from, date_to):
         "column1": "success",
         "column2": "successRate",
         "column3": "workTime",
+        "column4": "connectTimeDialer",
+        "column5": "wrapupTime",
+        "column6": "pauseTime",
     }
 
     data = fetch_json(f"{base}/reports/editsDef_v2/report/{LOCALE}", params, label, f"editsDef_v2 ts={ts}")

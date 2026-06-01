@@ -193,6 +193,10 @@ def parse_row(row):
     # in which case it's milliseconds.
     work_hrs = wt_raw / 3600000 if wt_raw > 1000 else wt_raw
 
+    talk_hrs  = float(_col(4) or 0)   # connectTimeDialer
+    wrap_hrs  = float(_col(5) or 0)   # wrapupTime
+    pause_hrs = float(_col(6) or 0)   # pauseTime
+
     cph = round(calls / work_hrs, 1) if work_hrs > 0 else 0.0
     sr  = round(success / calls * 100, 1) if calls > 0 else 0.0
 
@@ -206,6 +210,9 @@ def parse_row(row):
         "cph":         cph,
         "successRate": sr,
         "workTime":    round(work_hrs, 4),
+        "talkTime":    round(talk_hrs, 4),
+        "wrapTime":    round(wrap_hrs, 4),
+        "pauseTime":   round(pause_hrs, 4),
         "is_rm":       False,
         "meetsTarget": False,
         "campaigns":   [],
@@ -240,7 +247,10 @@ def merge_agent_row(agents, parsed, cname):
     a["seller"]   += parsed["seller"]
     a["rental"]   += parsed["rental"]
     a["email"]    += parsed["email"]
-    a["workTime"]  = round(a["workTime"] + parsed["workTime"], 4)
+    a["workTime"]  = round(a["workTime"]  + parsed["workTime"],  4)
+    a["talkTime"]  = round(a.get("talkTime",0)  + parsed.get("talkTime",0),  4)
+    a["wrapTime"]  = round(a.get("wrapTime",0)  + parsed.get("wrapTime",0),  4)
+    a["pauseTime"] = round(a.get("pauseTime",0) + parsed.get("pauseTime",0), 4)
     if cname and cname not in a["campaigns"]:
         a["campaigns"].append(cname)
 
@@ -249,10 +259,18 @@ def merge_agent_row(agents, parsed, cname):
 # Classification + final stats
 # ---------------------------------------------------------------------------
 def finalize(agents):
-    """Compute cph, successRate, RM/Fancy classification, meetsTarget."""
+    """Compute cph, successRate, RM/Fancy classification, meetsTarget,
+    plus the three time-share percentages used by the All Staff page."""
     for a in agents.values():
         a["cph"] = round(a["calls"] / a["workTime"], 1) if a["workTime"] > 0 else 0.0
         a["successRate"] = round(a["success"] / a["calls"] * 100, 1) if a["calls"] > 0 else 0.0
+
+        wt = a.get("workTime", 0) or 0
+        a["talkPct"] = round(a.get("talkTime", 0) / wt * 100, 1) if wt > 0 else 0.0
+        a["wrapPct"] = round(a.get("wrapTime", 0) / wt * 100, 1) if wt > 0 else 0.0
+        # "work %" = % of session actively dialling (not paused)
+        denom = wt + a.get("pauseTime", 0)
+        a["workPct"] = round(wt / denom * 100, 1) if denom > 0 else 0.0
 
         camps = set(a.get("campaigns", []))
         a["is_rm"] = bool(camps) and camps.issubset(RM_CAMPAIGNS)
