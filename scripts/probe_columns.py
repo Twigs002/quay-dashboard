@@ -14,12 +14,28 @@ CAMPAIGN_ID    = os.environ.get("CAMPAIGN_CLIENTHUB_ID", "").strip()
 CAMPAIGN_TOKEN = os.environ.get("CAMPAIGN_CLIENTHUB_TOKEN", "").strip()
 
 CANDIDATES = [
-    "workTime",
-    "talkTime", "talkTimeDialer", "talkTime_dialer", "callTime",
-    "wrapTime", "wrapUpTime", "wrapuptime", "afterCallTime", "acwTime",
-    "waitingTime", "waitTime", "idleTime", "readyTime",
-    "handlingTime", "preparationTime", "prepTime",
-    "holdTime", "pauseTime", "breakTime",
+    # known good
+    "workTime", "pauseTime",
+    # snake_case
+    "talk_time", "talk_time_dialer", "wrap_time", "wrap_up_time",
+    "waiting_time", "waiting_time_dialer", "handling_time", "preparation_time",
+    # labels with spaces / parentheses (from the DialFire UI directly)
+    "Talk time", "Talk time (dialer)", "Wrap-up time", "Wrap up time",
+    "Waiting time", "Waiting time (dialer)", "Handling time", "Preparation time",
+    "Work time",
+    # lowercase no-space
+    "talktime", "wraptime", "wrapuptime", "waitingtime", "handlingtime",
+    "preparationtime",
+    # short
+    "talk", "wrap", "wait", "handling", "preparation",
+    # tt prefix style
+    "tt_talk", "tt_wrap", "tt_wait",
+    # German (DialFire origin)
+    "gespraechszeit", "gespraech", "nachbearbeitung", "nachbearbeitungszeit",
+    "wartezeit", "bearbeitungszeit", "vorbereitungszeit",
+    # other guesses
+    "dialerTalkTime", "dialerWaitingTime", "tt", "wt", "ct",
+    "successRate", "completed",  # sanity check — these we know work
 ]
 
 def probe(col):
