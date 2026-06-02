@@ -12,10 +12,13 @@ import sys
 import requests
 
 API_BASE = "https://api.dialfire.com"
-CID   = os.environ.get("CAMPAIGN_1_ID")
-TOKEN = os.environ.get("CAMPAIGN_1_TOKEN")
+CID    = os.environ.get("CAMPAIGN_1_ID")
+TOKEN  = os.environ.get("CAMPAIGN_1_TOKEN")
+TENANT = os.environ.get("DIALFIRE_TENANT_ID")
+TTOK   = os.environ.get("DIALFIRE_TENANT_TOKEN")
 if not CID or not TOKEN:
     sys.exit("set CAMPAIGN_1_ID and CAMPAIGN_1_TOKEN")
+print(f"tenant={TENANT!r} have_tenant_token={bool(TTOK)}")
 
 # Candidate endpoints. Sorted from most-likely to least-likely.
 PROBES = [
@@ -33,6 +36,31 @@ PROBES = [
     ("GET", f"/api/campaigns/{CID}/tasks/dispositions",            {}),
 ]
 
+def try_token(label, token, extra_paths=()):
+    probes = list(PROBES) + list(extra_paths)
+    print(f"\n========== TOKEN: {label} ==========")
+    for method, path, extra in probes:
+        params = {"access_token": token, **extra}
+        try:
+            r = requests.get(API_BASE + path, params=params, timeout=20, allow_redirects=False)
+            body = r.text[:300].replace("\n", " ")
+            print(f"[{r.status_code}] GET {path}  extra={list(extra)}  body[:300]: {body!r}")
+        except Exception as e:
+            print(f"[ERR] GET {path}: {e}")
+
+try_token("CAMPAIGN_1_TOKEN", TOKEN)
+if TTOK:
+    tenant_paths = [
+        ("GET", f"/api/tenants/{TENANT}/campaigns",                {}),
+        ("GET", f"/api/tenants/{TENANT}/campaigns/{CID}",          {}),
+        ("GET", f"/api/tenants/{TENANT}/campaigns/{CID}/stats",    {}),
+        ("GET", f"/api/tenants/{TENANT}/campaigns/{CID}/tasks",    {"limit": "1"}),
+        ("GET", f"/api/tenants/{TENANT}/campaigns/{CID}/tasks/_count", {}),
+    ]
+    try_token("DIALFIRE_TENANT_TOKEN", TTOK, tenant_paths)
+sys.exit(0)
+
+# unreachable below
 print(f"Probing campaign {CID} ...")
 for method, path, extra in PROBES:
     params = {"access_token": TOKEN, **extra}

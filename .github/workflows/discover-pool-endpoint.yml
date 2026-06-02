@@ -18,6 +18,8 @@ jobs:
       - run: pip install requests
       - name: Probe endpoints
         env:
-          CAMPAIGN_1_ID:    ${{ secrets.CAMPAIGN_1_ID }}
-          CAMPAIGN_1_TOKEN: ${{ secrets.CAMPAIGN_1_TOKEN }}
+          CAMPAIGN_1_ID:         ${{ secrets.CAMPAIGN_1_ID }}
+          CAMPAIGN_1_TOKEN:      ${{ secrets.CAMPAIGN_1_TOKEN }}
+          DIALFIRE_TENANT_ID:    ${{ secrets.DIALFIRE_TENANT_ID }}
+          DIALFIRE_TENANT_TOKEN: ${{ secrets.DIALFIRE_TENANT_TOKEN }}
         run: python scripts/discover_pool_endpoint.py
