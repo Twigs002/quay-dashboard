@@ -1,0 +1,23 @@
+name: Discover Pool Endpoint (one-shot)
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: data-update
+  cancel-in-progress: true
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install requests
+      - name: Probe endpoints
+        env:
+          CAMPAIGN_1_ID:    ${{ secrets.CAMPAIGN_1_ID }}
+          CAMPAIGN_1_TOKEN: ${{ secrets.CAMPAIGN_1_TOKEN }}
+        run: python scripts/discover_pool_endpoint.py
