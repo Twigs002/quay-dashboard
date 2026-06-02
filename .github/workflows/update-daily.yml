@@ -1,0 +1,67 @@
+name: Update Daily Data
+
+on:
+  schedule:
+    # Runs at 06:00 SAST (04:00 UTC) every day
+    - cron: '0 4 * * *'
+
+  workflow_dispatch:
+    inputs:
+      start_date:
+        description: Start date YYYY-MM-DD leave blank for 30 days ago
+        required: false
+        default: ''
+      end_date:
+        description: End date YYYY-MM-DD leave blank for yesterday
+        required: false
+        default: ''
+
+concurrency:
+  group: data-update
+  cancel-in-progress: true
+
+jobs:
+  fetch-daily:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Fetch DialFire daily data
+        env:
+          CAMPAIGN_CLIENTHUB_ID: ${{ secrets.CAMPAIGN_CLIENTHUB_ID }}
+          CAMPAIGN_CLIENTHUB_TOKEN: ${{ secrets.CAMPAIGN_CLIENTHUB_TOKEN }}
+          CAMPAIGN_CLIENTHUB_NEW_ID: ${{ secrets.CAMPAIGN_CLIENTHUB_NEW_ID }}
+          CAMPAIGN_CLIENTHUB_NEW_TOKEN: ${{ secrets.CAMPAIGN_CLIENTHUB_NEW_TOKEN }}
+          CAMPAIGN_1_ID: ${{ secrets.CAMPAIGN_1_ID }}
+          CAMPAIGN_1_TOKEN: ${{ secrets.CAMPAIGN_1_TOKEN }}
+          CAMPAIGN_2_ID: ${{ secrets.CAMPAIGN_2_ID }}
+          CAMPAIGN_2_TOKEN: ${{ secrets.CAMPAIGN_2_TOKEN }}
+          CAMPAIGN_CLIENTHUB_NO_ANSWER_ID: ${{ secrets.CAMPAIGN_CLIENTHUB_NO_ANSWER_ID }}
+          CAMPAIGN_CLIENTHUB_NO_ANSWER_TOKEN: ${{ secrets.CAMPAIGN_CLIENTHUB_NO_ANSWER_TOKEN }}
+          ASSASSINS_CM_ID: ${{ secrets.ASSASSINS_CM_ID }}
+          ASSASSINS_CM_TOKEN: ${{ secrets.ASSASSINS_CM_TOKEN }}
+          ASSASSINS_NA_ID: ${{ secrets.ASSASSINS_NA_ID }}
+          ASSASSINS_NA_TOKEN: ${{ secrets.ASSASSINS_NA_TOKEN }}
+          AMIGOS_CM_ID: ${{ secrets.AMIGOS_CM_ID }}
+          AMIGOS_CM_TOKEN: ${{ secrets.AMIGOS_CM_TOKEN }}
+          AMIGOS_NA_ID: ${{ secrets.AMIGOS_NA_ID }}
+          AMIGOS_NA_TOKEN: ${{ secrets.AMIGOS_NA_TOKEN }}
+          DIALFIRE_CAMPAIGNS: ${{ secrets.DIALFIRE_CAMPAIGNS }}
+          DIALFIRE_TENANT_ID: ${{ secrets.DIALFIRE_TENANT_ID }}
+          START_DATE: ${{ github.event.inputs.start_date }}
+          END_DATE: ${{ github.event.inputs.end_date }}
+        run: python scripts/fetch_dialfire_daily.py
+      - name: Commit daily data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/daily_data.json
+          git diff --staged --quiet || git commit -m "Update daily data"
+          git pull --rebase origin main
+          git push
