@@ -193,14 +193,36 @@ def main():
         return
 
     agents = {}
+    by_campaign = {}                                      # raw campaign-name -> totals
     for campaign in campaigns:
         rows = fetch_campaign_week(campaign, ts)
-        cname = _norm_camp(campaign.get("name", "")) or campaign.get("name", "")
+        cname    = _norm_camp(campaign.get("name", "")) or campaign.get("name", "")
+        raw_name = campaign.get("name", "") or cname      # keep the CM/NA suffix here
+        tot = {"calls":0, "success":0, "seller":0, "rental":0, "email":0,
+               "workTime":0.0, "talkTime":0.0, "wrapTime":0.0,
+               "pauseTime":0.0, "waitTime":0.0}
+        seen_agents = set()
         for row in rows:
             parsed = parse_row(row)
             if parsed is None:
                 continue
             merge_agent_row(agents, parsed, cname)
+            tot["calls"]    += parsed.get("calls", 0)
+            tot["success"]  += parsed.get("success", 0)
+            tot["seller"]   += parsed.get("seller", 0)
+            tot["rental"]   += parsed.get("rental", 0)
+            tot["email"]    += parsed.get("email", 0)
+            tot["workTime"] += parsed.get("workTime", 0.0)
+            tot["talkTime"] += parsed.get("talkTime", 0.0)
+            tot["wrapTime"] += parsed.get("wrapTime", 0.0)
+            tot["pauseTime"]+= parsed.get("pauseTime", 0.0)
+            tot["waitTime"] += parsed.get("waitTime", 0.0)
+            seen_agents.add((parsed.get("name") or "").strip().lower())
+        # Round floats to keep diff noise low.
+        for k in ("workTime","talkTime","wrapTime","pauseTime","waitTime"):
+            tot[k] = round(tot[k], 4)
+        tot["agent_count"] = len(seen_agents)
+        by_campaign[raw_name] = tot
 
     finalize(agents)
 
@@ -224,6 +246,7 @@ def main():
         "periodEnd":   str(sunday),
         "rm":          rm_agents,
         "fancy":       fancy_agents,
+        "by_campaign": by_campaign,
     }
 
     os.makedirs("data", exist_ok=True)
