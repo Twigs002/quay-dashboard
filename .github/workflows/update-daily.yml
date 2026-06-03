@@ -17,8 +17,11 @@ on:
         default: ''
 
 concurrency:
-  group: data-update
-  cancel-in-progress: true
+  # Separate group so a backfill or weekly fetch can't kill the fast daily
+  # job (and vice versa). Within this group we still queue rather than
+  # cancel — two daily runs in a row should both produce data.
+  group: daily-update
+  cancel-in-progress: false
 
 jobs:
   fetch-daily:

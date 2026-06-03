@@ -11,7 +11,7 @@ containing week's totals.
 Environment variables:
   CAMPAIGN_*_ID / CAMPAIGN_*_TOKEN  (same as fetch_dialfire.py)
   DIALFIRE_CAMPAIGNS                 (JSON list fallback)
-  START_DATE                         e.g. "2026-05-01" -- defaults to 30 days ago SAST
+  START_DATE                         e.g. "2026-05-01" -- defaults to yesterday SAST (single-day fetch)
   END_DATE                           e.g. "2026-06-01" -- defaults to yesterday SAST
 """
 import os, json, datetime, requests
@@ -161,13 +161,15 @@ def load_campaigns():
 def get_date_range(now_sast):
     """Return list of dates from START_DATE to END_DATE (inclusive).
 
-    Defaults: END_DATE = yesterday SAST, START_DATE = 30 days before END_DATE.
+    Defaults: END_DATE = yesterday SAST, START_DATE = yesterday SAST (single day).
+    This keeps the scheduled daily run fast (~3-5 min). For larger windows
+    use workflow_dispatch with explicit start_date / end_date inputs.
     """
     yesterday = now_sast.date() - timedelta(days=1)
     end_str   = (os.environ.get("END_DATE") or "").strip() or str(yesterday)
     end       = datetime.datetime.strptime(end_str, "%Y-%m-%d").date()
 
-    start_str = (os.environ.get("START_DATE") or "").strip() or str(end - timedelta(days=30))
+    start_str = (os.environ.get("START_DATE") or "").strip() or str(end)
     start     = datetime.datetime.strptime(start_str, "%Y-%m-%d").date()
 
     if start > end:
