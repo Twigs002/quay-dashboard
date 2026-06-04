@@ -2,8 +2,17 @@ name: Update Daily Data
 
 on:
   schedule:
-    # Runs at 06:00 SAST (04:00 UTC) every day
-    - cron: '0 4 * * *'
+    # GitHub Actions free-tier scheduled crons are NOT reliable — they get
+    # silently delayed or skipped under load (especially on round-hour UTC
+    # times like 04:00). To work around this we fire at THREE near times
+    # (06:00, 07:00, 08:00 SAST). Each run is fast (default = yesterday only,
+    # ~3-5 min) and the script auto-dedupes by date — re-running for the
+    # same day overwrites the same JSON entry, no duplicates. So even if all
+    # three fire we're still correct; we just want AT LEAST ONE to actually
+    # run each morning.
+    - cron: '0 4 * * *'   # 06:00 SAST
+    - cron: '0 5 * * *'   # 07:00 SAST
+    - cron: '0 6 * * *'   # 08:00 SAST
 
   workflow_dispatch:
     inputs:
