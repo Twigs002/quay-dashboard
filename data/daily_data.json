@@ -1,7 +1,7 @@
 [
   {
     "date": "2026-07-09",
-    "generated": "2026-07-10T08:23:04.619876+00:00",
+    "generated": "2026-07-10T09:28:41.470591+00:00",
     "rm": [
       {
         "name": "Test",
@@ -129,27 +129,27 @@
       },
       {
         "name": "TamzinJacobs",
-        "calls": 207,
+        "calls": 208,
         "success": 7,
         "seller": 0,
         "rental": 0,
         "email": 7,
-        "cph": 31.6,
+        "cph": 25.9,
         "successRate": 3.4,
-        "workTime": 6.55,
+        "workTime": 8.0156,
         "talkTime": 0.5403,
-        "wrapTime": 5.6175,
+        "wrapTime": 7.0814,
         "pauseTime": 0.0106,
-        "waitTime": 0.3817,
+        "waitTime": 0.3833,
         "is_rm": false,
         "meetsTarget": false,
         "campaigns": [
           "HOEKERS"
         ],
-        "talkPct": 8.2,
-        "wrapPct": 85.8,
-        "waitPct": 5.8,
-        "workPct": 99.8
+        "talkPct": 6.7,
+        "wrapPct": 88.3,
+        "waitPct": 4.8,
+        "workPct": 99.9
       },
       {
         "name": "JoshAdonis",
