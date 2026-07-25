@@ -1,7 +1,7 @@
 [
   {
     "date": "2026-07-24",
-    "generated": "2026-07-25T06:08:04.529960+00:00",
+    "generated": "2026-07-25T07:18:12.565519+00:00",
     "rm": [
       {
         "name": "Test",
@@ -292,6 +292,30 @@
         "wrapPct": 23.3,
         "waitPct": 51.1,
         "workPct": 98.0
+      },
+      {
+        "name": "AnneeqaWilliams",
+        "calls": 7,
+        "success": 1,
+        "seller": 0,
+        "rental": 0,
+        "email": 1,
+        "cph": 39.3,
+        "successRate": 14.3,
+        "workTime": 0.1783,
+        "talkTime": 0.0856,
+        "wrapTime": 0.0267,
+        "pauseTime": 0.0,
+        "waitTime": 0.0661,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "GUNSLINGERS"
+        ],
+        "talkPct": 48.0,
+        "wrapPct": 15.0,
+        "waitPct": 37.1,
+        "workPct": 100.0
       },
       {
         "name": "QhayiyaDayimani",
