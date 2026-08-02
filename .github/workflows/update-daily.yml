@@ -2,11 +2,11 @@ name: Update Daily Data
 
 on:
   schedule:
-    # GitHub Actions free-tier scheduled crons are NOT reliable — they get
+    # GitHub Actions free-tier scheduled crons are NOT reliable - they get
     # silently delayed or skipped under load (especially on round-hour UTC
     # times like 04:00). To work around this we fire at THREE near times
     # (06:00, 07:00, 08:00 SAST). Each run is fast (default = yesterday only,
-    # ~3-5 min) and the script auto-dedupes by date — re-running for the
+    # ~3-5 min) and the script auto-dedupes by date - re-running for the
     # same day overwrites the same JSON entry, no duplicates. So even if all
     # three fire we're still correct; we just want AT LEAST ONE to actually
     # run each morning.
@@ -28,7 +28,7 @@ on:
 concurrency:
   # Separate group so a backfill or weekly fetch can't kill the fast daily
   # job (and vice versa). Within this group we still queue rather than
-  # cancel — two daily runs in a row should both produce data.
+  # cancel - two daily runs in a row should both produce data.
   group: daily-update
   cancel-in-progress: false
 
@@ -74,6 +74,23 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add data/daily_data.json
-          git diff --staged --quiet || git commit -m "Update daily data"
-          git pull --rebase origin main
-          git push
+          if git diff --staged --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+          git commit -m "Update daily data"
+          # GitHub-hosted runners occasionally blip on the network (a single
+          # push once timed out after 134s connecting to github.com and failed
+          # the whole run even though the fetch had succeeded). Retry the
+          # rebase+push so one transient timeout doesn't turn a good run red.
+          for attempt in 1 2 3 4 5; do
+            if git pull --rebase origin main && git push; then
+              echo "Pushed on attempt $attempt."
+              exit 0
+            fi
+            echo "Push attempt $attempt failed; retrying in 15s..." >&2
+            git rebase --abort 2>/dev/null || true
+            sleep 15
+          done
+          echo "All push attempts failed after 5 tries." >&2
+          exit 1
