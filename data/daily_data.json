@@ -1,5 +1,109 @@
 [
   {
+    "date": "2026-08-02",
+    "generated": "2026-08-03T06:49:37.869706+00:00",
+    "rm": [
+      {
+        "name": "Test",
+        "calls": 38,
+        "success": 3,
+        "seller": 0,
+        "rental": 0,
+        "email": 3,
+        "cph": 52.7,
+        "successRate": 7.9,
+        "workTime": 0.7211,
+        "talkTime": 0.1919,
+        "wrapTime": 0.4975,
+        "pauseTime": 0.0125,
+        "waitTime": 0.0192,
+        "is_rm": true,
+        "meetsTarget": false,
+        "campaigns": [
+          "No Answer / Not Contacted"
+        ],
+        "talkPct": 26.6,
+        "wrapPct": 69.0,
+        "waitPct": 2.7,
+        "workPct": 98.3
+      },
+      {
+        "name": "SadiqaCarelse",
+        "calls": 23,
+        "success": 1,
+        "seller": 1,
+        "rental": 0,
+        "email": 0,
+        "cph": 50.6,
+        "successRate": 4.3,
+        "workTime": 0.4547,
+        "talkTime": 0.1336,
+        "wrapTime": 0.3089,
+        "pauseTime": 0.0,
+        "waitTime": 0.0122,
+        "is_rm": true,
+        "meetsTarget": false,
+        "campaigns": [
+          "No Answer / Not Contacted"
+        ],
+        "talkPct": 29.4,
+        "wrapPct": 67.9,
+        "waitPct": 2.7,
+        "workPct": 100.0
+      }
+    ],
+    "fancy": [
+      {
+        "name": "Aqeefah Arendse",
+        "calls": 32,
+        "success": 1,
+        "seller": 0,
+        "rental": 0,
+        "email": 1,
+        "cph": 57.8,
+        "successRate": 3.1,
+        "workTime": 0.5534,
+        "talkTime": 0.1714,
+        "wrapTime": 0.227,
+        "pauseTime": 0.0136,
+        "waitTime": 0.1414,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "DEALMAKERS"
+        ],
+        "talkPct": 31.0,
+        "wrapPct": 41.0,
+        "waitPct": 25.6,
+        "workPct": 97.6
+      },
+      {
+        "name": "DeclanT",
+        "calls": 9,
+        "success": 1,
+        "seller": 0,
+        "rental": 0,
+        "email": 1,
+        "cph": 30.1,
+        "successRate": 11.1,
+        "workTime": 0.2992,
+        "talkTime": 0.0453,
+        "wrapTime": 0.2406,
+        "pauseTime": 0.0036,
+        "waitTime": 0.0097,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "SPARTANS"
+        ],
+        "talkPct": 15.1,
+        "wrapPct": 80.4,
+        "waitPct": 3.2,
+        "workPct": 98.8
+      }
+    ]
+  },
+  {
     "date": "2026-08-01",
     "generated": "2026-08-02T08:34:41.931050+00:00",
     "rm": [],
