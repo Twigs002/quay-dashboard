@@ -1,31 +1,31 @@
 [
   {
     "date": "2026-08-06",
-    "generated": "2026-08-07T05:26:18.949649+00:00",
+    "generated": "2026-08-07T06:09:07.145585+00:00",
     "rm": [
       {
         "name": "Test",
-        "calls": 411,
+        "calls": 416,
         "success": 49,
         "seller": 0,
         "rental": 0,
         "email": 49,
         "cph": 54.7,
-        "successRate": 11.9,
-        "workTime": 7.5078,
-        "talkTime": 2.0981,
-        "wrapTime": 5.0206,
-        "pauseTime": 0.0406,
-        "waitTime": 0.3486,
+        "successRate": 11.8,
+        "workTime": 7.6036,
+        "talkTime": 2.1136,
+        "wrapTime": 5.0928,
+        "pauseTime": 0.0433,
+        "waitTime": 0.3539,
         "is_rm": true,
         "meetsTarget": false,
         "campaigns": [
           "Clienthub Master"
         ],
-        "talkPct": 27.9,
-        "wrapPct": 66.9,
-        "waitPct": 4.6,
-        "workPct": 99.5
+        "talkPct": 27.8,
+        "wrapPct": 67.0,
+        "waitPct": 4.7,
+        "workPct": 99.4
       },
       {
         "name": "Gio",
