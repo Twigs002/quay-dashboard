@@ -1,9 +1,155 @@
 [
   {
     "date": "2026-08-10",
-    "generated": "2026-08-11T05:53:00.664939+00:00",
-    "rm": [],
-    "fancy": []
+    "generated": "2026-08-11T06:59:43.552921+00:00",
+    "rm": [
+      {
+        "name": "Test",
+        "calls": 57,
+        "success": 4,
+        "seller": 0,
+        "rental": 0,
+        "email": 4,
+        "cph": 66.3,
+        "successRate": 7.0,
+        "workTime": 0.8594,
+        "talkTime": 0.2286,
+        "wrapTime": 0.5969,
+        "pauseTime": 0.0011,
+        "waitTime": 0.0328,
+        "is_rm": true,
+        "meetsTarget": false,
+        "campaigns": [
+          "No Answer / Not Contacted"
+        ],
+        "talkPct": 26.6,
+        "wrapPct": 69.5,
+        "waitPct": 3.8,
+        "workPct": 99.9
+      },
+      {
+        "name": "Gio",
+        "calls": 35,
+        "success": 2,
+        "seller": 0,
+        "rental": 0,
+        "email": 2,
+        "cph": 58.7,
+        "successRate": 5.7,
+        "workTime": 0.5961,
+        "talkTime": 0.1303,
+        "wrapTime": 0.4444,
+        "pauseTime": 0.0047,
+        "waitTime": 0.0167,
+        "is_rm": true,
+        "meetsTarget": false,
+        "campaigns": [
+          "No Answer / Not Contacted"
+        ],
+        "talkPct": 21.9,
+        "wrapPct": 74.6,
+        "waitPct": 2.8,
+        "workPct": 99.2
+      },
+      {
+        "name": "SiphesihleSibanyoni",
+        "calls": 26,
+        "success": 1,
+        "seller": 0,
+        "rental": 0,
+        "email": 1,
+        "cph": 39.5,
+        "successRate": 3.8,
+        "workTime": 0.6575,
+        "talkTime": 0.0528,
+        "wrapTime": 0.5819,
+        "pauseTime": 0.0094,
+        "waitTime": 0.0133,
+        "is_rm": true,
+        "meetsTarget": false,
+        "campaigns": [
+          "No Answer / Not Contacted"
+        ],
+        "talkPct": 8.0,
+        "wrapPct": 88.5,
+        "waitPct": 2.0,
+        "workPct": 98.6
+      }
+    ],
+    "fancy": [
+      {
+        "name": "Aqeefah Arendse",
+        "calls": 33,
+        "success": 8,
+        "seller": 0,
+        "rental": 0,
+        "email": 8,
+        "cph": 41.8,
+        "successRate": 24.2,
+        "workTime": 0.7894,
+        "talkTime": 0.4956,
+        "wrapTime": 0.0425,
+        "pauseTime": 0.0328,
+        "waitTime": 0.2186,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "DEALMAKERS"
+        ],
+        "talkPct": 62.8,
+        "wrapPct": 5.4,
+        "waitPct": 27.7,
+        "workPct": 96.0
+      },
+      {
+        "name": "DeclanT",
+        "calls": 24,
+        "success": 1,
+        "seller": 0,
+        "rental": 0,
+        "email": 1,
+        "cph": 27.8,
+        "successRate": 4.2,
+        "workTime": 0.8636,
+        "talkTime": 0.0811,
+        "wrapTime": 0.7333,
+        "pauseTime": 0.0222,
+        "waitTime": 0.0269,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "SPARTANS"
+        ],
+        "talkPct": 9.4,
+        "wrapPct": 84.9,
+        "waitPct": 3.1,
+        "workPct": 97.5
+      },
+      {
+        "name": "ZivanaKriel",
+        "calls": 11,
+        "success": 5,
+        "seller": 0,
+        "rental": 0,
+        "email": 5,
+        "cph": 39.6,
+        "successRate": 45.5,
+        "workTime": 0.2778,
+        "talkTime": 0.0833,
+        "wrapTime": 0.0017,
+        "pauseTime": 0.0,
+        "waitTime": 0.1928,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "Amigos"
+        ],
+        "talkPct": 30.0,
+        "wrapPct": 0.6,
+        "waitPct": 69.4,
+        "workPct": 100.0
+      }
+    ]
   },
   {
     "date": "2026-08-09",
