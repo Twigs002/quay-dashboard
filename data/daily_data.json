@@ -1,22 +1,22 @@
 [
   {
     "date": "2026-08-11",
-    "generated": "2026-08-12T05:21:35.603854+00:00",
+    "generated": "2026-08-12T06:14:53.296813+00:00",
     "rm": [
       {
         "name": "Test",
-        "calls": 433,
-        "success": 29,
+        "calls": 447,
+        "success": 30,
         "seller": 2,
         "rental": 1,
-        "email": 24,
-        "cph": 62.2,
+        "email": 25,
+        "cph": 62.5,
         "successRate": 6.7,
-        "workTime": 6.965,
-        "talkTime": 1.6156,
-        "wrapTime": 5.0717,
+        "workTime": 7.1475,
+        "talkTime": 1.6589,
+        "wrapTime": 5.2025,
         "pauseTime": 0.0392,
-        "waitTime": 0.2386,
+        "waitTime": 0.2469,
         "is_rm": true,
         "meetsTarget": false,
         "campaigns": [
@@ -24,8 +24,8 @@
         ],
         "talkPct": 23.2,
         "wrapPct": 72.8,
-        "waitPct": 3.4,
-        "workPct": 99.4
+        "waitPct": 3.5,
+        "workPct": 99.5
       },
       {
         "name": "Gio",
@@ -121,6 +121,30 @@
         "talkPct": 15.0,
         "wrapPct": 83.3,
         "waitPct": 1.7,
+        "workPct": 100.0
+      },
+      {
+        "name": "SadiqaCarelse",
+        "calls": 5,
+        "success": 0,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 36.2,
+        "successRate": 0.0,
+        "workTime": 0.1381,
+        "talkTime": 0.0128,
+        "wrapTime": 0.1217,
+        "pauseTime": 0.0,
+        "waitTime": 0.0036,
+        "is_rm": true,
+        "meetsTarget": false,
+        "campaigns": [
+          "No Answer / Not Contacted"
+        ],
+        "talkPct": 9.3,
+        "wrapPct": 88.1,
+        "waitPct": 2.6,
         "workPct": 100.0
       }
     ],
