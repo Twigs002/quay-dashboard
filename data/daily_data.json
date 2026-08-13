@@ -1,29 +1,30 @@
 [
   {
     "date": "2026-08-12",
-    "generated": "2026-08-13T05:25:21.716478+00:00",
+    "generated": "2026-08-13T06:16:51.608189+00:00",
     "rm": [
       {
         "name": "Test",
-        "calls": 421,
+        "calls": 430,
         "success": 24,
         "seller": 1,
         "rental": 0,
         "email": 23,
-        "cph": 63.8,
-        "successRate": 5.7,
-        "workTime": 6.5972,
-        "talkTime": 1.57,
-        "wrapTime": 4.4783,
+        "cph": 63.1,
+        "successRate": 5.6,
+        "workTime": 6.8139,
+        "talkTime": 1.6289,
+        "wrapTime": 4.6227,
         "pauseTime": 0.0406,
-        "waitTime": 0.5083,
+        "waitTime": 0.5216,
         "is_rm": true,
         "meetsTarget": false,
         "campaigns": [
+          "Clienthub Master",
           "No Answer / Not Contacted"
         ],
-        "talkPct": 23.8,
-        "wrapPct": 67.9,
+        "talkPct": 23.9,
+        "wrapPct": 67.8,
         "waitPct": 7.7,
         "workPct": 99.4
       },
@@ -53,26 +54,27 @@
       },
       {
         "name": "SadiqaCarelse",
-        "calls": 252,
+        "calls": 255,
         "success": 15,
         "seller": 5,
         "rental": 0,
         "email": 10,
-        "cph": 47.3,
-        "successRate": 6.0,
-        "workTime": 5.3242,
-        "talkTime": 1.1211,
-        "wrapTime": 3.9333,
+        "cph": 47.4,
+        "successRate": 5.9,
+        "workTime": 5.3803,
+        "talkTime": 1.1355,
+        "wrapTime": 3.9711,
         "pauseTime": 0.0225,
-        "waitTime": 0.2472,
+        "waitTime": 0.2511,
         "is_rm": true,
         "meetsTarget": false,
         "campaigns": [
+          "Clienthub Master",
           "No Answer / Not Contacted"
         ],
         "talkPct": 21.1,
-        "wrapPct": 73.9,
-        "waitPct": 4.6,
+        "wrapPct": 73.8,
+        "waitPct": 4.7,
         "workPct": 99.6
       },
       {
@@ -128,27 +130,28 @@
     "fancy": [
       {
         "name": "Aqeefah Arendse",
-        "calls": 51,
+        "calls": 54,
         "success": 3,
         "seller": 1,
         "rental": 0,
         "email": 2,
         "cph": 20.4,
-        "successRate": 5.9,
-        "workTime": 2.5053,
-        "talkTime": 0.5256,
-        "wrapTime": 0.71,
+        "successRate": 5.6,
+        "workTime": 2.6475,
+        "talkTime": 0.5334,
+        "wrapTime": 0.8406,
         "pauseTime": 0.0381,
-        "waitTime": 1.2317,
+        "waitTime": 1.2356,
         "is_rm": false,
         "meetsTarget": false,
         "campaigns": [
+          "Clienthub Master",
           "CHARGERS_NEW"
         ],
-        "talkPct": 21.0,
-        "wrapPct": 28.3,
-        "waitPct": 49.2,
-        "workPct": 98.5
+        "talkPct": 20.1,
+        "wrapPct": 31.8,
+        "waitPct": 46.7,
+        "workPct": 98.6
       },
       {
         "name": "BronwynBotha",
@@ -342,6 +345,30 @@
         "wrapPct": 3.6,
         "waitPct": 15.5,
         "workPct": 100.0
+      },
+      {
+        "name": "DeclanT",
+        "calls": 2,
+        "success": 0,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 21.7,
+        "successRate": 0.0,
+        "workTime": 0.0922,
+        "talkTime": 0.0061,
+        "wrapTime": 0.0828,
+        "pauseTime": 0.0003,
+        "waitTime": 0.0031,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "SPARTANS"
+        ],
+        "talkPct": 6.6,
+        "wrapPct": 89.8,
+        "waitPct": 3.4,
+        "workPct": 99.7
       }
     ]
   },
