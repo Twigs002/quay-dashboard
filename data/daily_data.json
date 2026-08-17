@@ -1,9 +1,179 @@
 [
   {
     "date": "2026-08-16",
-    "generated": "2026-08-17T05:35:14.546493+00:00",
-    "rm": [],
-    "fancy": []
+    "generated": "2026-08-17T06:45:12.326152+00:00",
+    "rm": [
+      {
+        "name": "Test",
+        "calls": 34,
+        "success": 8,
+        "seller": 1,
+        "rental": 0,
+        "email": 7,
+        "cph": 53.7,
+        "successRate": 23.5,
+        "workTime": 0.6333,
+        "talkTime": 0.1839,
+        "wrapTime": 0.4267,
+        "pauseTime": 0.0014,
+        "waitTime": 0.0214,
+        "is_rm": true,
+        "meetsTarget": true,
+        "campaigns": [
+          "Clienthub Master"
+        ],
+        "talkPct": 29.0,
+        "wrapPct": 67.4,
+        "waitPct": 3.4,
+        "workPct": 99.8
+      },
+      {
+        "name": "Gio",
+        "calls": 32,
+        "success": 0,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 57.4,
+        "successRate": 0.0,
+        "workTime": 0.5572,
+        "talkTime": 0.0942,
+        "wrapTime": 0.4331,
+        "pauseTime": 0.0086,
+        "waitTime": 0.0214,
+        "is_rm": true,
+        "meetsTarget": false,
+        "campaigns": [
+          "Clienthub Master"
+        ],
+        "talkPct": 16.9,
+        "wrapPct": 77.7,
+        "waitPct": 3.8,
+        "workPct": 98.5
+      },
+      {
+        "name": "SadiqaCarelse",
+        "calls": 29,
+        "success": 4,
+        "seller": 0,
+        "rental": 0,
+        "email": 4,
+        "cph": 47.8,
+        "successRate": 13.8,
+        "workTime": 0.6067,
+        "talkTime": 0.1794,
+        "wrapTime": 0.4069,
+        "pauseTime": 0.0,
+        "waitTime": 0.0203,
+        "is_rm": true,
+        "meetsTarget": false,
+        "campaigns": [
+          "Clienthub Master"
+        ],
+        "talkPct": 29.6,
+        "wrapPct": 67.1,
+        "waitPct": 3.3,
+        "workPct": 100.0
+      },
+      {
+        "name": "Aqeefah Arendse",
+        "calls": 17,
+        "success": 1,
+        "seller": 0,
+        "rental": 0,
+        "email": 1,
+        "cph": 38.0,
+        "successRate": 5.9,
+        "workTime": 0.4469,
+        "talkTime": 0.075,
+        "wrapTime": 0.3483,
+        "pauseTime": 0.0103,
+        "waitTime": 0.0133,
+        "is_rm": true,
+        "meetsTarget": false,
+        "campaigns": [
+          "Clienthub Master"
+        ],
+        "talkPct": 16.8,
+        "wrapPct": 77.9,
+        "waitPct": 3.0,
+        "workPct": 97.7
+      },
+      {
+        "name": "SiphesihleSibanyoni",
+        "calls": 1,
+        "success": 1,
+        "seller": 0,
+        "rental": 0,
+        "email": 1,
+        "cph": 20.0,
+        "successRate": 100.0,
+        "workTime": 0.05,
+        "talkTime": 0.0258,
+        "wrapTime": 0.0217,
+        "pauseTime": 0.0019,
+        "waitTime": 0.0006,
+        "is_rm": true,
+        "meetsTarget": false,
+        "campaigns": [
+          "Clienthub Master"
+        ],
+        "talkPct": 51.6,
+        "wrapPct": 43.4,
+        "waitPct": 1.2,
+        "workPct": 96.3
+      }
+    ],
+    "fancy": [
+      {
+        "name": "NeelamJameel",
+        "calls": 20,
+        "success": 0,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 46.6,
+        "successRate": 0.0,
+        "workTime": 0.4294,
+        "talkTime": 0.1233,
+        "wrapTime": 0.0564,
+        "pauseTime": 0.0081,
+        "waitTime": 0.2417,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "QUEENS"
+        ],
+        "talkPct": 28.7,
+        "wrapPct": 13.1,
+        "waitPct": 56.3,
+        "workPct": 98.1
+      },
+      {
+        "name": "DeclanT",
+        "calls": 9,
+        "success": 1,
+        "seller": 0,
+        "rental": 0,
+        "email": 1,
+        "cph": 16.9,
+        "successRate": 11.1,
+        "workTime": 0.5333,
+        "talkTime": 0.0547,
+        "wrapTime": 0.4211,
+        "pauseTime": 0.0114,
+        "waitTime": 0.0461,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "SPARTANS"
+        ],
+        "talkPct": 10.3,
+        "wrapPct": 79.0,
+        "waitPct": 8.6,
+        "workPct": 97.9
+      }
+    ]
   },
   {
     "date": "2026-08-15",
