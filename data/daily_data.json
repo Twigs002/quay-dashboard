@@ -1,31 +1,31 @@
 [
   {
     "date": "2026-08-18",
-    "generated": "2026-08-19T05:31:00.051161+00:00",
+    "generated": "2026-08-19T06:36:27.600267+00:00",
     "rm": [
       {
         "name": "SadiqaCarelse",
-        "calls": 241,
-        "success": 23,
+        "calls": 265,
+        "success": 24,
         "seller": 12,
         "rental": 1,
-        "email": 10,
-        "cph": 36.2,
-        "successRate": 9.5,
-        "workTime": 6.6511,
-        "talkTime": 1.7347,
-        "wrapTime": 4.6758,
+        "email": 11,
+        "cph": 36.9,
+        "successRate": 9.1,
+        "workTime": 7.1794,
+        "talkTime": 1.8975,
+        "wrapTime": 5.0214,
         "pauseTime": 0.0322,
-        "waitTime": 0.2083,
+        "waitTime": 0.2283,
         "is_rm": true,
         "meetsTarget": false,
         "campaigns": [
           "Clienthub Master"
         ],
-        "talkPct": 26.1,
-        "wrapPct": 70.3,
-        "waitPct": 3.1,
-        "workPct": 99.5
+        "talkPct": 26.4,
+        "wrapPct": 69.9,
+        "waitPct": 3.2,
+        "workPct": 99.6
       },
       {
         "name": "Test",
@@ -103,27 +103,51 @@
     "fancy": [
       {
         "name": "JoshAdonis",
-        "calls": 88,
-        "success": 5,
+        "calls": 90,
+        "success": 6,
         "seller": 0,
         "rental": 0,
-        "email": 5,
-        "cph": 19.5,
-        "successRate": 5.7,
-        "workTime": 4.5092,
-        "talkTime": 0.6111,
-        "wrapTime": 3.1428,
+        "email": 6,
+        "cph": 19.3,
+        "successRate": 6.7,
+        "workTime": 4.6681,
+        "talkTime": 0.6505,
+        "wrapTime": 3.2547,
         "pauseTime": 0.0022,
-        "waitTime": 0.7531,
+        "waitTime": 0.7606,
         "is_rm": false,
         "meetsTarget": false,
         "campaigns": [
           "HOOLIGANS"
         ],
-        "talkPct": 13.6,
+        "talkPct": 13.9,
         "wrapPct": 69.7,
-        "waitPct": 16.7,
+        "waitPct": 16.3,
         "workPct": 100.0
+      },
+      {
+        "name": "Aqeefah Arendse",
+        "calls": 67,
+        "success": 6,
+        "seller": 2,
+        "rental": 0,
+        "email": 4,
+        "cph": 11.9,
+        "successRate": 9.0,
+        "workTime": 5.6114,
+        "talkTime": 0.865,
+        "wrapTime": 2.9072,
+        "pauseTime": 0.0244,
+        "waitTime": 1.8147,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CHARGERS_NEW"
+        ],
+        "talkPct": 15.4,
+        "wrapPct": 51.8,
+        "waitPct": 32.3,
+        "workPct": 99.6
       },
       {
         "name": "StaddyMalonga",
@@ -148,30 +172,6 @@
         "wrapPct": 9.1,
         "waitPct": 34.7,
         "workPct": 99.8
-      },
-      {
-        "name": "Aqeefah Arendse",
-        "calls": 55,
-        "success": 6,
-        "seller": 2,
-        "rental": 0,
-        "email": 4,
-        "cph": 10.7,
-        "successRate": 10.9,
-        "workTime": 5.1406,
-        "talkTime": 0.7508,
-        "wrapTime": 2.8981,
-        "pauseTime": 0.015,
-        "waitTime": 1.4767,
-        "is_rm": false,
-        "meetsTarget": false,
-        "campaigns": [
-          "CHARGERS_NEW"
-        ],
-        "talkPct": 14.6,
-        "wrapPct": 56.4,
-        "waitPct": 28.7,
-        "workPct": 99.7
       },
       {
         "name": "ZivanaKriel",
@@ -223,6 +223,30 @@
         "workPct": 98.2
       },
       {
+        "name": "DeclanT",
+        "calls": 22,
+        "success": 5,
+        "seller": 0,
+        "rental": 1,
+        "email": 4,
+        "cph": 14.8,
+        "successRate": 22.7,
+        "workTime": 1.485,
+        "talkTime": 0.2256,
+        "wrapTime": 1.0172,
+        "pauseTime": 0.0261,
+        "waitTime": 0.2161,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "SPARTANS"
+        ],
+        "talkPct": 15.2,
+        "wrapPct": 68.5,
+        "waitPct": 14.6,
+        "workPct": 98.3
+      },
+      {
         "name": "BronwynBotha",
         "calls": 20,
         "success": 1,
@@ -269,30 +293,6 @@
         "wrapPct": 72.2,
         "waitPct": 3.8,
         "workPct": 100.0
-      },
-      {
-        "name": "DeclanT",
-        "calls": 15,
-        "success": 3,
-        "seller": 0,
-        "rental": 0,
-        "email": 3,
-        "cph": 13.8,
-        "successRate": 20.0,
-        "workTime": 1.085,
-        "talkTime": 0.1542,
-        "wrapTime": 0.7647,
-        "pauseTime": 0.0161,
-        "waitTime": 0.15,
-        "is_rm": false,
-        "meetsTarget": false,
-        "campaigns": [
-          "SPARTANS"
-        ],
-        "talkPct": 14.2,
-        "wrapPct": 70.5,
-        "waitPct": 13.8,
-        "workPct": 98.5
       },
       {
         "name": "QhayiyaDayimani",
