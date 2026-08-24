@@ -1,9 +1,84 @@
 [
   {
     "date": "2026-08-23",
-    "generated": "2026-08-24T05:38:28.395141+00:00",
-    "rm": [],
-    "fancy": []
+    "generated": "2026-08-24T06:50:08.219223+00:00",
+    "rm": [
+      {
+        "name": "SiphesihleSibanyoni",
+        "calls": 1,
+        "success": 0,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 31.8,
+        "successRate": 0.0,
+        "workTime": 0.0314,
+        "talkTime": 0.0019,
+        "wrapTime": 0.0289,
+        "pauseTime": 0.0,
+        "waitTime": 0.0006,
+        "is_rm": true,
+        "meetsTarget": false,
+        "campaigns": [
+          "Clienthub Master"
+        ],
+        "talkPct": 6.1,
+        "wrapPct": 92.0,
+        "waitPct": 1.9,
+        "workPct": 100.0
+      }
+    ],
+    "fancy": [
+      {
+        "name": "DeclanT",
+        "calls": 18,
+        "success": 2,
+        "seller": 0,
+        "rental": 0,
+        "email": 2,
+        "cph": 30.2,
+        "successRate": 11.1,
+        "workTime": 0.5969,
+        "talkTime": 0.0803,
+        "wrapTime": 0.4672,
+        "pauseTime": 0.0136,
+        "waitTime": 0.0358,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "Clienthub Master",
+          "SPARTANS"
+        ],
+        "talkPct": 13.5,
+        "wrapPct": 78.3,
+        "waitPct": 6.0,
+        "workPct": 97.8
+      },
+      {
+        "name": "Aqeefah Arendse",
+        "calls": 7,
+        "success": 0,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 20.7,
+        "successRate": 0.0,
+        "workTime": 0.3383,
+        "talkTime": 0.05,
+        "wrapTime": 0.0214,
+        "pauseTime": 0.0,
+        "waitTime": 0.2669,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "CHARGERS_NEW"
+        ],
+        "talkPct": 14.8,
+        "wrapPct": 6.3,
+        "waitPct": 78.9,
+        "workPct": 100.0
+      }
+    ]
   },
   {
     "date": "2026-08-22",
