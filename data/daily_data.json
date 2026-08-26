@@ -1,32 +1,32 @@
 [
   {
     "date": "2026-08-25",
-    "generated": "2026-08-26T05:34:42.209906+00:00",
+    "generated": "2026-08-26T06:40:44.313853+00:00",
     "rm": [
       {
         "name": "Gio",
-        "calls": 242,
-        "success": 23,
+        "calls": 249,
+        "success": 26,
         "seller": 2,
         "rental": 0,
-        "email": 21,
-        "cph": 28.5,
-        "successRate": 9.5,
-        "workTime": 8.4817,
-        "talkTime": 1.5836,
-        "wrapTime": 5.9833,
-        "pauseTime": 0.0425,
-        "waitTime": 0.8723,
+        "email": 24,
+        "cph": 28.8,
+        "successRate": 10.4,
+        "workTime": 8.6467,
+        "talkTime": 1.6652,
+        "wrapTime": 6.0169,
+        "pauseTime": 0.0522,
+        "waitTime": 0.9123,
         "is_rm": true,
         "meetsTarget": false,
         "campaigns": [
           "Clienthub Master",
           "No Answer / Not Contacted"
         ],
-        "talkPct": 18.7,
-        "wrapPct": 70.5,
-        "waitPct": 10.3,
-        "workPct": 99.5
+        "talkPct": 19.3,
+        "wrapPct": 69.6,
+        "waitPct": 10.6,
+        "workPct": 99.4
       },
       {
         "name": "DeclanT",
@@ -51,6 +51,78 @@
         "wrapPct": 86.8,
         "waitPct": 1.9,
         "workPct": 97.2
+      },
+      {
+        "name": "SadiqaCarelse",
+        "calls": 15,
+        "success": 4,
+        "seller": 0,
+        "rental": 0,
+        "email": 4,
+        "cph": 30.8,
+        "successRate": 26.7,
+        "workTime": 0.4867,
+        "talkTime": 0.2394,
+        "wrapTime": 0.0203,
+        "pauseTime": 0.0,
+        "waitTime": 0.2269,
+        "is_rm": true,
+        "meetsTarget": false,
+        "campaigns": [
+          "Clienthub Master"
+        ],
+        "talkPct": 49.2,
+        "wrapPct": 4.2,
+        "waitPct": 46.6,
+        "workPct": 100.0
+      },
+      {
+        "name": "JoshAdonis",
+        "calls": 10,
+        "success": 3,
+        "seller": 1,
+        "rental": 0,
+        "email": 2,
+        "cph": 26.8,
+        "successRate": 30.0,
+        "workTime": 0.3728,
+        "talkTime": 0.1617,
+        "wrapTime": 0.0436,
+        "pauseTime": 0.0133,
+        "waitTime": 0.1542,
+        "is_rm": true,
+        "meetsTarget": false,
+        "campaigns": [
+          "No Answer / Not Contacted"
+        ],
+        "talkPct": 43.4,
+        "wrapPct": 11.7,
+        "waitPct": 41.4,
+        "workPct": 96.6
+      },
+      {
+        "name": "NeelamJameel",
+        "calls": 7,
+        "success": 2,
+        "seller": 0,
+        "rental": 0,
+        "email": 2,
+        "cph": 37.2,
+        "successRate": 28.6,
+        "workTime": 0.1883,
+        "talkTime": 0.1017,
+        "wrapTime": 0.0147,
+        "pauseTime": 0.0047,
+        "waitTime": 0.0672,
+        "is_rm": true,
+        "meetsTarget": false,
+        "campaigns": [
+          "Clienthub Master"
+        ],
+        "talkPct": 54.0,
+        "wrapPct": 7.8,
+        "waitPct": 35.7,
+        "workPct": 97.6
       }
     ],
     "fancy": [
