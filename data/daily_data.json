@@ -1,5 +1,232 @@
 [
   {
+    "date": "2026-08-28",
+    "generated": "2026-08-29T10:31:34.660542+00:00",
+    "rm": [
+      {
+        "name": "SadiqaCarelse",
+        "calls": 207,
+        "success": 33,
+        "seller": 11,
+        "rental": 0,
+        "email": 21,
+        "cph": 41.8,
+        "successRate": 15.9,
+        "workTime": 4.9558,
+        "talkTime": 2.6858,
+        "wrapTime": 0.2319,
+        "pauseTime": 0.0203,
+        "waitTime": 2.0178,
+        "is_rm": true,
+        "meetsTarget": false,
+        "campaigns": [
+          "Clienthub Master"
+        ],
+        "talkPct": 54.2,
+        "wrapPct": 4.7,
+        "waitPct": 40.7,
+        "workPct": 99.6
+      },
+      {
+        "name": "NeelamJameel",
+        "calls": 202,
+        "success": 12,
+        "seller": 3,
+        "rental": 0,
+        "email": 9,
+        "cph": 47.1,
+        "successRate": 5.9,
+        "workTime": 4.2897,
+        "talkTime": 2.0283,
+        "wrapTime": 0.3603,
+        "pauseTime": 0.0644,
+        "waitTime": 1.8367,
+        "is_rm": true,
+        "meetsTarget": false,
+        "campaigns": [
+          "Clienthub Master"
+        ],
+        "talkPct": 47.3,
+        "wrapPct": 8.4,
+        "waitPct": 42.8,
+        "workPct": 98.5
+      },
+      {
+        "name": "Gio",
+        "calls": 161,
+        "success": 30,
+        "seller": 9,
+        "rental": 0,
+        "email": 21,
+        "cph": 36.8,
+        "successRate": 18.6,
+        "workTime": 4.3794,
+        "talkTime": 2.0308,
+        "wrapTime": 0.7603,
+        "pauseTime": 0.0589,
+        "waitTime": 1.5294,
+        "is_rm": true,
+        "meetsTarget": false,
+        "campaigns": [
+          "Clienthub Master"
+        ],
+        "talkPct": 46.4,
+        "wrapPct": 17.4,
+        "waitPct": 34.9,
+        "workPct": 98.7
+      },
+      {
+        "name": "DeclanT",
+        "calls": 34,
+        "success": 4,
+        "seller": 1,
+        "rental": 0,
+        "email": 3,
+        "cph": 21.5,
+        "successRate": 11.8,
+        "workTime": 1.5811,
+        "talkTime": 0.4325,
+        "wrapTime": 0.7992,
+        "pauseTime": 0.0148,
+        "waitTime": 0.3347,
+        "is_rm": true,
+        "meetsTarget": false,
+        "campaigns": [
+          "Clienthub Master",
+          "New Contacts"
+        ],
+        "talkPct": 27.4,
+        "wrapPct": 50.5,
+        "waitPct": 21.2,
+        "workPct": 99.1
+      }
+    ],
+    "fancy": [
+      {
+        "name": "KirstenLS",
+        "calls": 164,
+        "success": 2,
+        "seller": 1,
+        "rental": 0,
+        "email": 1,
+        "cph": 36.2,
+        "successRate": 1.2,
+        "workTime": 4.5292,
+        "talkTime": 1.3928,
+        "wrapTime": 1.5319,
+        "pauseTime": 0.0399,
+        "waitTime": 1.5645,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "FARMERS",
+          "HOEKERS"
+        ],
+        "talkPct": 30.8,
+        "wrapPct": 33.8,
+        "waitPct": 34.5,
+        "workPct": 99.1
+      },
+      {
+        "name": "Aqeefah Arendse",
+        "calls": 44,
+        "success": 5,
+        "seller": 0,
+        "rental": 0,
+        "email": 5,
+        "cph": 6.6,
+        "successRate": 11.4,
+        "workTime": 6.6197,
+        "talkTime": 0.6081,
+        "wrapTime": 5.6228,
+        "pauseTime": 0.0244,
+        "waitTime": 0.3645,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "Clienthub Master",
+          "CHARGERS"
+        ],
+        "talkPct": 9.2,
+        "wrapPct": 84.9,
+        "waitPct": 5.5,
+        "workPct": 99.6
+      },
+      {
+        "name": "AnneeqaWilliams",
+        "calls": 27,
+        "success": 10,
+        "seller": 0,
+        "rental": 0,
+        "email": 9,
+        "cph": 26.9,
+        "successRate": 37.0,
+        "workTime": 1.0022,
+        "talkTime": 0.5528,
+        "wrapTime": 0.135,
+        "pauseTime": 0.0108,
+        "waitTime": 0.3036,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "DRAGONS"
+        ],
+        "talkPct": 55.2,
+        "wrapPct": 13.5,
+        "waitPct": 30.3,
+        "workPct": 98.9
+      },
+      {
+        "name": "ShanikaLotz",
+        "calls": 9,
+        "success": 0,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 35.1,
+        "successRate": 0.0,
+        "workTime": 0.2564,
+        "talkTime": 0.0225,
+        "wrapTime": 0.2222,
+        "pauseTime": 0.0011,
+        "waitTime": 0.0106,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "KNIGHTS"
+        ],
+        "talkPct": 8.8,
+        "wrapPct": 86.7,
+        "waitPct": 4.1,
+        "workPct": 99.6
+      },
+      {
+        "name": "LukevanWyk",
+        "calls": 4,
+        "success": 0,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 20.1,
+        "successRate": 0.0,
+        "workTime": 0.1986,
+        "talkTime": 0.1006,
+        "wrapTime": 0.0019,
+        "pauseTime": 0.0056,
+        "waitTime": 0.0906,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "BOETS"
+        ],
+        "talkPct": 50.7,
+        "wrapPct": 1.0,
+        "waitPct": 45.6,
+        "workPct": 97.3
+      }
+    ]
+  },
+  {
     "date": "2026-08-27",
     "generated": "2026-08-28T18:08:46.766356+00:00",
     "rm": [
