@@ -1,5 +1,157 @@
 [
   {
+    "date": "2026-08-30",
+    "generated": "2026-08-31T10:11:06.374796+00:00",
+    "rm": [
+      {
+        "name": "Gio",
+        "calls": 103,
+        "success": 9,
+        "seller": 5,
+        "rental": 0,
+        "email": 4,
+        "cph": 42.6,
+        "successRate": 8.7,
+        "workTime": 2.4203,
+        "talkTime": 1.2081,
+        "wrapTime": 0.4181,
+        "pauseTime": 0.0322,
+        "waitTime": 0.7619,
+        "is_rm": true,
+        "meetsTarget": false,
+        "campaigns": [
+          "New Contacts"
+        ],
+        "talkPct": 49.9,
+        "wrapPct": 17.3,
+        "waitPct": 31.5,
+        "workPct": 98.7
+      },
+      {
+        "name": "NeelamJameel",
+        "calls": 95,
+        "success": 7,
+        "seller": 1,
+        "rental": 0,
+        "email": 6,
+        "cph": 35.3,
+        "successRate": 7.4,
+        "workTime": 2.6892,
+        "talkTime": 0.995,
+        "wrapTime": 0.1911,
+        "pauseTime": 0.0267,
+        "waitTime": 1.4764,
+        "is_rm": true,
+        "meetsTarget": false,
+        "campaigns": [
+          "Clienthub Master"
+        ],
+        "talkPct": 37.0,
+        "wrapPct": 7.1,
+        "waitPct": 54.9,
+        "workPct": 99.0
+      }
+    ],
+    "fancy": [
+      {
+        "name": "CraigCarroll",
+        "calls": 100,
+        "success": 23,
+        "seller": 3,
+        "rental": 0,
+        "email": 20,
+        "cph": 44.5,
+        "successRate": 23.0,
+        "workTime": 2.2456,
+        "talkTime": 1.0558,
+        "wrapTime": 0.0733,
+        "pauseTime": 0.0267,
+        "waitTime": 1.0897,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "Goal Diggers"
+        ],
+        "talkPct": 47.0,
+        "wrapPct": 3.3,
+        "waitPct": 48.5,
+        "workPct": 98.8
+      },
+      {
+        "name": "TamzinJacobs",
+        "calls": 35,
+        "success": 2,
+        "seller": 1,
+        "rental": 0,
+        "email": 1,
+        "cph": 25.5,
+        "successRate": 5.7,
+        "workTime": 1.3714,
+        "talkTime": 0.1094,
+        "wrapTime": 1.1097,
+        "pauseTime": 0.0,
+        "waitTime": 0.1522,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "HOEKERS"
+        ],
+        "talkPct": 8.0,
+        "wrapPct": 80.9,
+        "waitPct": 11.1,
+        "workPct": 100.0
+      },
+      {
+        "name": "BronwynBotha",
+        "calls": 32,
+        "success": 0,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 11.3,
+        "successRate": 0.0,
+        "workTime": 2.8278,
+        "talkTime": 0.1197,
+        "wrapTime": 2.4308,
+        "pauseTime": 0.0011,
+        "waitTime": 0.2761,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "DUTCHMEN"
+        ],
+        "talkPct": 4.2,
+        "wrapPct": 86.0,
+        "waitPct": 9.8,
+        "workPct": 100.0
+      },
+      {
+        "name": "KirstenLS",
+        "calls": 0,
+        "success": 0,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 0.0,
+        "successRate": 0.0,
+        "workTime": 3.215,
+        "talkTime": 0.3831,
+        "wrapTime": 2.5383,
+        "pauseTime": 0.0017,
+        "waitTime": 0.2919,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "TORNADOES"
+        ],
+        "talkPct": 11.9,
+        "wrapPct": 79.0,
+        "waitPct": 9.1,
+        "workPct": 99.9
+      }
+    ]
+  },
+  {
     "date": "2026-08-29",
     "generated": "2026-08-30T11:09:43.558684+00:00",
     "rm": [],
