@@ -1,8 +1,32 @@
 [
   {
     "date": "2026-09-03",
-    "generated": "2026-09-04T08:16:26.377385+00:00",
+    "generated": "2026-09-04T09:21:43.316412+00:00",
     "rm": [
+      {
+        "name": "DeclanT",
+        "calls": 168,
+        "success": 26,
+        "seller": 3,
+        "rental": 0,
+        "email": 23,
+        "cph": 19.0,
+        "successRate": 15.5,
+        "workTime": 8.8308,
+        "talkTime": 2.1733,
+        "wrapTime": 4.0236,
+        "pauseTime": 0.225,
+        "waitTime": 2.4089,
+        "is_rm": true,
+        "meetsTarget": false,
+        "campaigns": [
+          "Clienthub Master"
+        ],
+        "talkPct": 24.6,
+        "wrapPct": 45.6,
+        "waitPct": 27.3,
+        "workPct": 97.5
+      },
       {
         "name": "Gio",
         "calls": 158,
@@ -28,78 +52,54 @@
         "workPct": 99.5
       },
       {
-        "name": "DeclanT",
-        "calls": 157,
-        "success": 25,
-        "seller": 3,
-        "rental": 0,
-        "email": 22,
-        "cph": 19.8,
-        "successRate": 15.9,
-        "workTime": 7.9142,
-        "talkTime": 2.0661,
-        "wrapTime": 3.4006,
-        "pauseTime": 0.2058,
-        "waitTime": 2.2417,
-        "is_rm": true,
-        "meetsTarget": false,
-        "campaigns": [
-          "Clienthub Master"
-        ],
-        "talkPct": 26.1,
-        "wrapPct": 43.0,
-        "waitPct": 28.3,
-        "workPct": 97.5
-      },
-      {
         "name": "ClintP",
-        "calls": 10,
-        "success": 2,
+        "calls": 36,
+        "success": 11,
         "seller": 0,
         "rental": 0,
-        "email": 2,
-        "cph": 37.6,
-        "successRate": 20.0,
-        "workTime": 0.2658,
-        "talkTime": 0.1067,
-        "wrapTime": 0.0325,
+        "email": 11,
+        "cph": 35.8,
+        "successRate": 30.6,
+        "workTime": 1.0044,
+        "talkTime": 0.4644,
+        "wrapTime": 0.0511,
         "pauseTime": 0.0011,
-        "waitTime": 0.1256,
+        "waitTime": 0.4878,
         "is_rm": true,
         "meetsTarget": false,
         "campaigns": [
           "Clienthub Master"
         ],
-        "talkPct": 40.1,
-        "wrapPct": 12.2,
-        "waitPct": 47.3,
-        "workPct": 99.6
+        "talkPct": 46.2,
+        "wrapPct": 5.1,
+        "waitPct": 48.6,
+        "workPct": 99.9
       }
     ],
     "fancy": [
       {
         "name": "CraigCarroll",
-        "calls": 186,
+        "calls": 197,
         "success": 11,
         "seller": 0,
         "rental": 0,
         "email": 11,
-        "cph": 40.0,
-        "successRate": 5.9,
-        "workTime": 4.6506,
-        "talkTime": 1.0217,
-        "wrapTime": 2.6031,
-        "pauseTime": 0.0325,
-        "waitTime": 0.9933,
+        "cph": 39.5,
+        "successRate": 5.6,
+        "workTime": 4.9856,
+        "talkTime": 1.0497,
+        "wrapTime": 2.8106,
+        "pauseTime": 0.0486,
+        "waitTime": 1.0767,
         "is_rm": false,
         "meetsTarget": false,
         "campaigns": [
           "AVENGERS"
         ],
-        "talkPct": 22.0,
-        "wrapPct": 56.0,
-        "waitPct": 21.4,
-        "workPct": 99.3
+        "talkPct": 21.1,
+        "wrapPct": 56.4,
+        "waitPct": 21.6,
+        "workPct": 99.0
       },
       {
         "name": "BronwynBotha",
@@ -151,27 +151,27 @@
       },
       {
         "name": "KirstenLS",
-        "calls": 43,
+        "calls": 60,
         "success": 1,
         "seller": 1,
         "rental": 0,
         "email": 0,
-        "cph": 24.6,
-        "successRate": 2.3,
-        "workTime": 1.7467,
-        "talkTime": 0.4536,
-        "wrapTime": 0.5592,
-        "pauseTime": 0.0,
-        "waitTime": 0.7339,
+        "cph": 27.7,
+        "successRate": 1.7,
+        "workTime": 2.1639,
+        "talkTime": 0.5931,
+        "wrapTime": 0.67,
+        "pauseTime": 0.0044,
+        "waitTime": 0.8964,
         "is_rm": false,
         "meetsTarget": false,
         "campaigns": [
           "FARMERS"
         ],
-        "talkPct": 26.0,
-        "wrapPct": 32.0,
-        "waitPct": 42.0,
-        "workPct": 100.0
+        "talkPct": 27.4,
+        "wrapPct": 31.0,
+        "waitPct": 41.4,
+        "workPct": 99.8
       },
       {
         "name": "AnneeqaWilliams",
