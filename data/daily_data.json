@@ -1,5 +1,110 @@
 [
   {
+    "date": "2026-09-06",
+    "generated": "2026-09-07T08:41:36.343861+00:00",
+    "rm": [],
+    "fancy": [
+      {
+        "name": "CraigCarroll",
+        "calls": 166,
+        "success": 2,
+        "seller": 0,
+        "rental": 0,
+        "email": 2,
+        "cph": 68.0,
+        "successRate": 1.2,
+        "workTime": 2.4405,
+        "talkTime": 0.6413,
+        "wrapTime": 1.6778,
+        "pauseTime": 0.0169,
+        "waitTime": 0.1044,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "AVENGERS_NEW",
+          "AVENGERS"
+        ],
+        "talkPct": 26.3,
+        "wrapPct": 68.7,
+        "waitPct": 4.3,
+        "workPct": 99.3
+      },
+      {
+        "name": "DeclanT",
+        "calls": 50,
+        "success": 0,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 22.6,
+        "successRate": 0.0,
+        "workTime": 2.2167,
+        "talkTime": 0.0756,
+        "wrapTime": 1.9483,
+        "pauseTime": 0.0419,
+        "waitTime": 0.1508,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "SPARTANS"
+        ],
+        "talkPct": 3.4,
+        "wrapPct": 87.9,
+        "waitPct": 6.8,
+        "workPct": 98.1
+      },
+      {
+        "name": "BronwynBotha",
+        "calls": 33,
+        "success": 1,
+        "seller": 1,
+        "rental": 0,
+        "email": 0,
+        "cph": 38.0,
+        "successRate": 3.0,
+        "workTime": 0.8678,
+        "talkTime": 0.1792,
+        "wrapTime": 0.6228,
+        "pauseTime": 0.0006,
+        "waitTime": 0.0653,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "DUTCHMEN"
+        ],
+        "talkPct": 20.6,
+        "wrapPct": 71.8,
+        "waitPct": 7.5,
+        "workPct": 99.9
+      },
+      {
+        "name": "QhayiyaDayimani",
+        "calls": 30,
+        "success": 1,
+        "seller": 0,
+        "rental": 0,
+        "email": 1,
+        "cph": 25.9,
+        "successRate": 3.3,
+        "workTime": 1.1581,
+        "talkTime": 0.1234,
+        "wrapTime": 0.8689,
+        "pauseTime": 0.0111,
+        "waitTime": 0.1547,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "Assassins",
+          "CITY_SUNSETS"
+        ],
+        "talkPct": 10.7,
+        "wrapPct": 75.0,
+        "waitPct": 13.4,
+        "workPct": 99.1
+      }
+    ]
+  },
+  {
     "date": "2026-09-05",
     "generated": "2026-09-06T10:11:39.087645+00:00",
     "rm": [],
