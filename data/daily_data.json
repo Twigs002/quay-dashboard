@@ -1,5 +1,230 @@
 [
   {
+    "date": "2026-09-25",
+    "generated": "2026-09-26T08:52:36.951869+00:00",
+    "rm": [
+      {
+        "name": "Gio",
+        "calls": 182,
+        "success": 33,
+        "seller": 10,
+        "rental": 1,
+        "email": 23,
+        "cph": 33.5,
+        "successRate": 18.1,
+        "workTime": 5.4397,
+        "talkTime": 1.75,
+        "wrapTime": 0.4856,
+        "pauseTime": 0.0481,
+        "waitTime": 3.1561,
+        "is_rm": true,
+        "meetsTarget": false,
+        "campaigns": [
+          "Clienthub Master"
+        ],
+        "talkPct": 32.2,
+        "wrapPct": 8.9,
+        "waitPct": 58.0,
+        "workPct": 99.1
+      },
+      {
+        "name": "BrandonH",
+        "calls": 174,
+        "success": 18,
+        "seller": 10,
+        "rental": 1,
+        "email": 7,
+        "cph": 33.1,
+        "successRate": 10.3,
+        "workTime": 5.2578,
+        "talkTime": 1.9,
+        "wrapTime": 0.1928,
+        "pauseTime": 0.0192,
+        "waitTime": 3.1458,
+        "is_rm": true,
+        "meetsTarget": false,
+        "campaigns": [
+          "Clienthub Master"
+        ],
+        "talkPct": 36.1,
+        "wrapPct": 3.7,
+        "waitPct": 59.8,
+        "workPct": 99.6
+      },
+      {
+        "name": "ZeakK",
+        "calls": 110,
+        "success": 21,
+        "seller": 0,
+        "rental": 1,
+        "email": 20,
+        "cph": 15.9,
+        "successRate": 19.1,
+        "workTime": 6.9233,
+        "talkTime": 1.2403,
+        "wrapTime": 3.7067,
+        "pauseTime": 0.0681,
+        "waitTime": 1.9083,
+        "is_rm": true,
+        "meetsTarget": false,
+        "campaigns": [
+          "Clienthub Master"
+        ],
+        "talkPct": 17.9,
+        "wrapPct": 53.5,
+        "waitPct": 27.6,
+        "workPct": 99.0
+      }
+    ],
+    "fancy": [
+      {
+        "name": "CraigCarroll",
+        "calls": 296,
+        "success": 5,
+        "seller": 0,
+        "rental": 0,
+        "email": 5,
+        "cph": 50.1,
+        "successRate": 1.7,
+        "workTime": 5.9086,
+        "talkTime": 0.8492,
+        "wrapTime": 2.9792,
+        "pauseTime": 0.078,
+        "waitTime": 2.0023,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "GOAL_DIGGERS_NEW",
+          "GOAL_DIGGERS"
+        ],
+        "talkPct": 14.4,
+        "wrapPct": 50.4,
+        "waitPct": 33.9,
+        "workPct": 98.7
+      },
+      {
+        "name": "KirstenLS",
+        "calls": 150,
+        "success": 0,
+        "seller": 0,
+        "rental": 0,
+        "email": 0,
+        "cph": 34.0,
+        "successRate": 0.0,
+        "workTime": 4.4097,
+        "talkTime": 0.5292,
+        "wrapTime": 3.1,
+        "pauseTime": 0.0178,
+        "waitTime": 0.7628,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "FARMERS"
+        ],
+        "talkPct": 12.0,
+        "wrapPct": 70.3,
+        "waitPct": 17.3,
+        "workPct": 99.6
+      },
+      {
+        "name": "KayleighDucroq",
+        "calls": 105,
+        "success": 6,
+        "seller": 3,
+        "rental": 0,
+        "email": 3,
+        "cph": 30.6,
+        "successRate": 5.7,
+        "workTime": 3.4275,
+        "talkTime": 0.4061,
+        "wrapTime": 2.9114,
+        "pauseTime": 0.0069,
+        "waitTime": 0.1031,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "WARRIORS"
+        ],
+        "talkPct": 11.8,
+        "wrapPct": 84.9,
+        "waitPct": 3.0,
+        "workPct": 99.8
+      },
+      {
+        "name": "LisabellPanze",
+        "calls": 82,
+        "success": 5,
+        "seller": 0,
+        "rental": 0,
+        "email": 4,
+        "cph": 67.1,
+        "successRate": 6.1,
+        "workTime": 1.2225,
+        "talkTime": 0.1494,
+        "wrapTime": 0.8553,
+        "pauseTime": 0.0036,
+        "waitTime": 0.2142,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "PIRATES"
+        ],
+        "talkPct": 12.2,
+        "wrapPct": 70.0,
+        "waitPct": 17.5,
+        "workPct": 99.7
+      },
+      {
+        "name": "QhayiyaDayimani",
+        "calls": 76,
+        "success": 1,
+        "seller": 1,
+        "rental": 0,
+        "email": 0,
+        "cph": 21.3,
+        "successRate": 1.3,
+        "workTime": 3.5753,
+        "talkTime": 0.1808,
+        "wrapTime": 3.3003,
+        "pauseTime": 0.0008,
+        "waitTime": 0.0933,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "Assassins"
+        ],
+        "talkPct": 5.1,
+        "wrapPct": 92.3,
+        "waitPct": 2.6,
+        "workPct": 100.0
+      },
+      {
+        "name": "Nicolette",
+        "calls": 15,
+        "success": 3,
+        "seller": 0,
+        "rental": 0,
+        "email": 3,
+        "cph": 20.1,
+        "successRate": 20.0,
+        "workTime": 0.7458,
+        "talkTime": 0.1786,
+        "wrapTime": 0.415,
+        "pauseTime": 0.0075,
+        "waitTime": 0.1447,
+        "is_rm": false,
+        "meetsTarget": false,
+        "campaigns": [
+          "DRAGONS"
+        ],
+        "talkPct": 23.9,
+        "wrapPct": 55.6,
+        "waitPct": 19.4,
+        "workPct": 99.0
+      }
+    ]
+  },
+  {
     "date": "2026-09-24",
     "generated": "2026-09-25T11:02:33.164638+00:00",
     "rm": [
